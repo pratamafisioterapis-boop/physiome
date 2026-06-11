@@ -12,7 +12,7 @@ export default () => {
     router.use('/integrated-ai', integratedAiRouter);
     router.use('/billing', billingRouter);
     router.use('/auth', authRouter);
-    router.use('/language', languageRouter);
+    router.use('/user-preferences/language', languageRouter); // Memasang languageRouter di path yang benar
 
     return router;
 };

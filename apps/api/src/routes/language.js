@@ -1,75 +1,104 @@
 import express from 'express';
-import pb from '../utils/pocketbaseClient.js';
-import { pocketbaseAuth } from '../middleware/pocketbase-auth.js';
+import prisma from '../utils/prismaClient.js';
+import { jwtAuth } from '../middleware/jwt-auth.js';
 
 const router = express.Router();
 
-router.use(pocketbaseAuth);
+router.use(jwtAuth); // Gunakan middleware JWT untuk proteksi rute
 
-// POST /language/set-preference - Set user language preference
-router.post('/set-preference', async (req, res) => {
-  const { language } = req.body;
+// GET /:userId - Ambil preferensi bahasa pengguna
+router.get('/:userId', async (req, res, next) => {
+  const { userId } = req.params;
 
-  if (!language) {
-    return res.status(400).json({ error: 'language is required' });
+  // Verifikasi bahwa pengguna yang diautentikasi memiliki izin untuk mengakses preferensi ini
+  // req.userId diset oleh middleware jwtAuth
+  if (req.userId !== userId && req.userRole !== 'admin') {
+    return res.status(403).json({ error: 'Forbidden: Anda hanya dapat mengakses preferensi bahasa Anda sendiri.' });
   }
 
-  if (!['id', 'en'].includes(language)) {
-    return res.status(400).json({ error: 'language must be "id" or "en"' });
-  }
-
-  // Get or create user language preference record
-  const userId = req.pocketbaseUserId;
-  let preference = await pb.collection('user_language_preferences').getFirstListItem(
-    `userId = "${userId}"`,
-    { requestKey: null }
-  ).catch(() => null);
-
-  if (preference) {
-    // Update existing preference
-    await pb.collection('user_language_preferences').update(preference.id, {
-      preferred_language: language,
-      app_language: language,
+  try {
+    const preference = await prisma.user_language_preferences.findFirst({
+      where: { user_id: userId }
     });
-  } else {
-    // Create new preference
-    await pb.collection('user_language_preferences').create({
-      userId,
-      preferred_language: language,
-      app_language: language,
-      exercise_language: language,
-      reminder_language: language,
-    });
-  }
 
-  res.json({ success: true, language });
+    if (!preference) {
+      // Jika tidak ditemukan, kembalikan preferensi default dengan status 200 OK
+      return res.status(200).json({
+        preferred_language: 'en',
+        app_language: 'en',
+        exercise_language: 'en',
+        reminder_language: 'en',
+      });
+    }
+
+    res.json(preference);
+  } catch (error) {
+    next(error); // Teruskan error ke error middleware
+  }
 });
 
-// GET /language/preferences - Get user language preferences
-router.get('/preferences', async (req, res) => {
-  const userId = req.pocketbaseUserId;
+// POST / - Buat preferensi bahasa baru
+router.post('/', async (req, res, next) => {
+  const { user_id, preferred_language, app_language, exercise_language, reminder_language } = req.body;
 
-  const preference = await pb.collection('user_language_preferences').getFirstListItem(
-    `userId = "${userId}"`,
-    { requestKey: null }
-  ).catch(() => null);
-
-  if (!preference) {
-    // Return default preferences if not found
-    return res.json({
-      preferred_language: 'en',
-      app_language: 'en',
-      exercise_language: 'en',
-      reminder_language: 'en',
-    });
+  // Verifikasi bahwa pengguna yang diautentikasi memiliki izin untuk membuat preferensi ini
+  if (req.userId !== user_id && req.userRole !== 'admin') {
+    return res.status(403).json({ error: 'Forbidden: Anda hanya dapat membuat preferensi bahasa untuk diri sendiri.' });
   }
 
-  res.json({
-    preferred_language: preference.preferred_language || 'en',
-    app_language: preference.app_language || 'en',
-    exercise_language: preference.exercise_language || 'en',
-    reminder_language: preference.reminder_language || 'en',
-  });
+  try {
+    // Generate ID unik manual (sesuai format PocketBase ID)
+    const id = Math.random().toString(36).substring(2, 17);
+    const now = new Date().toISOString();
+
+    const newPref = await prisma.user_language_preferences.create({
+      data: {
+        id,
+        user_id,
+        preferred_language,
+        app_language,
+        exercise_language,
+        reminder_language,
+        created: now,
+        updated: now
+      }
+    });
+    res.status(201).json(newPref); // 201 Created
+  } catch (error) {
+    next(error);
+  }
+});
+
+// PUT /:userId - Perbarui preferensi bahasa
+router.put('/:userId', async (req, res, next) => {
+  const { userId } = req.params;
+  const data = req.body;
+
+  // Verifikasi bahwa pengguna yang diautentikasi memiliki izin untuk memperbarui preferensi ini
+  if (req.userId !== userId && req.userRole !== 'admin') {
+    return res.status(403).json({ error: 'Forbidden: Anda hanya dapat memperbarui preferensi bahasa Anda sendiri.' });
+  }
+
+  try {
+    const existingPreference = await prisma.user_language_preferences.findFirst({
+      where: { user_id: userId }
+    });
+
+    if (!existingPreference) {
+      return res.status(404).json({ error: 'Preferensi bahasa tidak ditemukan.' });
+    }
+
+    const updated = await prisma.user_language_preferences.update({
+      where: { id: existingPreference.id }, // Update berdasarkan ID unik preferensi
+      data: {
+        ...data,
+        updated: new Date().toISOString()
+      }
+    });
+    res.json(updated);
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default router;

@@ -1,8 +1,7 @@
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import pb from '@/lib/pocketbaseClient.js';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import apiServerClient from '@/lib/apiServerClient.js';
-import { syncLanguagePreference } from '@/contexts/LanguageContext.jsx';
+import { syncLanguagePreference } from './LanguageContext.jsx'; // Corrected import path
 import { toast } from 'sonner';
 
 const AuthContext = createContext(null);
@@ -21,23 +20,25 @@ export const AuthProvider = ({ children }) => {
   
   useEffect(() => {
     const initAuth = async () => {
-      if (pb.authStore.isValid && pb.authStore.model) {
+      const token = localStorage.getItem('auth_token');
+      
+      if (token) {
         try {
-          // Refresh the token on mount to ensure session is valid and extend its lifetime
-          const authData = await pb.collection('users').authRefresh({ $autoCancel: false });
-          setCurrentUser(authData.record);
-          syncLanguagePreference(authData.record.id);
+          // Panggil endpoint /me di backend MySQL untuk verifikasi token & ambil data user
+          const user = await apiServerClient.fetch('/auth/me');
+          if (user && user.id) {
+            setCurrentUser(user);
+            syncLanguagePreference(user.id);
+          }
         } catch (error) {
           console.error('Session expired or invalid token:', error);
-          pb.authStore.clear();
+          localStorage.removeItem('auth_token');
           setCurrentUser(null);
-          // Only show toast if it was a real expiration, not just a network error
-          if (error?.status === 401 || error?.status === 403) {
-            toast.error('Your session has expired. Please log in again.');
+          if (error.message.includes('401') || error.message.includes('403')) {
+            toast.error('Sesi Anda telah berakhir. Silakan login kembali.');
           }
         }
       } else {
-        pb.authStore.clear();
         setCurrentUser(null);
       }
       setInitialLoading(false);
@@ -48,12 +49,23 @@ export const AuthProvider = ({ children }) => {
   
   const login = async (email, password) => {
     try {
-      const authData = await pb.collection('users').authWithPassword(email, password, { $autoCancel: false });
-      setCurrentUser(authData.record);
-      await syncLanguagePreference(authData.record.id);
-      return authData.record;
+      const response = await apiServerClient.fetch('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      // apiServerClient.fetch sekarang akan melempar error jika response.ok false
+      // dan mengembalikan JSON jika response.ok true
+      if (response.token && response.user) {
+        localStorage.setItem('auth_token', response.token); // Simpan token
+        setCurrentUser(response.user); // Set user
+        await syncLanguagePreference(response.user.id); // Sinkronkan preferensi bahasa
+        return response.user; // Kembalikan data user
+      }
+      throw new Error('Invalid response from server');
     } catch (error) {
-      pb.authStore.clear();
+      localStorage.removeItem('auth_token');
       setCurrentUser(null);
       throw error;
     }
@@ -61,7 +73,7 @@ export const AuthProvider = ({ children }) => {
   
   const signup = async (clinicName, fullName, email, password, inviteCode) => {
     try {
-      // Use the backend registration endpoint to handle invite code validation and user creation
+      // Panggil endpoint register di backend MySQL
       const response = await apiServerClient.fetch('/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -73,34 +85,29 @@ export const AuthProvider = ({ children }) => {
         })
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || errorData.message || 'Registration failed');
-      }
+      // Setelah register berhasil, langsung login untuk mendapatkan token
+      const userData = await login(email, password);
       
-      // Log the user in after successful registration
-      const authData = await pb.collection('users').authWithPassword(email, password, { $autoCancel: false });
-      setCurrentUser(authData.record);
-      await syncLanguagePreference(authData.record.id);
-      
-      return { user: authData.record, clinicName };
+      return { user: userData, clinicName };
     } catch (error) {
-      pb.authStore.clear();
+      localStorage.removeItem('auth_token');
       setCurrentUser(null);
       throw error;
     }
   };
   
   const logout = useCallback(() => {
-    pb.authStore.clear();
+    localStorage.removeItem('auth_token');
     setCurrentUser(null);
   }, []);
   
   const updateUserClinicId = async (clinicId) => {
     try {
-      const updated = await pb.collection('users').update(currentUser.id, {
-        clinic_id: clinicId
-      }, { $autoCancel: false });
+      // Refactor ke endpoint API kustom jika perlu update clinic_id
+      const updated = await apiServerClient.fetch(`/users/${currentUser.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ clinic_id: clinicId })
+      });
       setCurrentUser(updated);
       return updated;
     } catch (error) {
@@ -110,9 +117,9 @@ export const AuthProvider = ({ children }) => {
   };
   
   const refreshUser = async () => {
-    if (currentUser && pb.authStore.isValid) {
+    if (currentUser && localStorage.getItem('auth_token')) {
       try {
-        const updated = await pb.collection('users').getOne(currentUser.id, { $autoCancel: false });
+        const updated = await apiServerClient.fetch('/auth/me');
         setCurrentUser(updated);
       } catch (error) {
         console.error('Failed to refresh user data:', error);
@@ -120,7 +127,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-  const isAuthenticated = !!currentUser && pb.authStore.isValid;
+  const isAuthenticated = useMemo(() => !!currentUser && !!localStorage.getItem('auth_token'), [currentUser]);
   
   const value = {
     currentUser,

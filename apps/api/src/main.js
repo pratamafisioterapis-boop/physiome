@@ -58,7 +58,7 @@ app.use((req, res) => {
 	res.status(404).json({ error: 'Route not found' });
 });
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3003;
 
 app.listen(port, () => {
 	logger.info(`🚀 API Server running on http://localhost:${port}`);

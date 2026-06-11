@@ -1,0 +1,1449 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model AIGenerationHistory {
+  age                   Decimal @db.Decimal(10, 0)
+  body_region           String  @db.Text
+  clinic_id             String  @db.Text
+  confidence_score      Decimal @db.Decimal(10, 0)
+  created               String  @db.Text
+  diagnosis             String  @db.Text
+  functional_limitation String  @db.Text
+  id                    String  @db.Text
+  pain_level            Decimal @db.Decimal(10, 0)
+  program_id            String  @db.Text
+  recovery_stage        String  @db.Text
+  updated               String  @db.Text
+  user_id               String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model AssessmentHistory {
+  assessment_type String  @db.Text
+  clinic_id       String  @db.Text
+  created         String  @db.Text
+  dates           String? @db.Text
+  id              String  @db.Text
+  patient_id      String  @db.Text
+  scores          String? @db.Text
+  updated         String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model AssessmentQuestions {
+  assessment_type  String  @db.Text
+  clinic_id        String  @db.Text
+  created          String  @db.Text
+  id               String  @db.Text
+  question_number  Decimal @db.Decimal(10, 0)
+  question_text    String  @db.Text
+  response_options String? @db.Text
+  response_type    String  @db.Text
+  scoring_value    Decimal @db.Decimal(10, 0)
+  updated          String  @db.Text
+  help_text        String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model AssessmentResponses {
+  assigned_assessment_id String  @db.Text
+  clinic_id              String  @db.Text
+  created                String  @db.Text
+  id                     String  @db.Text
+  patient_id             String  @db.Text
+  question_number        Decimal @db.Decimal(10, 0)
+  response_value         Decimal @db.Decimal(10, 0)
+  updated                String  @db.Text
+  timestamp              String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model AssessmentScores {
+  assigned_assessment_id String  @db.Text
+  clinic_id              String  @db.Text
+  created                String  @db.Text
+  id                     String  @db.Text
+  interpretation         String  @db.Text
+  patient_id             String  @db.Text
+  percentage_score       Decimal @db.Decimal(10, 0)
+  raw_score              Decimal @db.Decimal(10, 0)
+  therapist_id           String  @db.Text
+  updated                String  @db.Text
+  completed_date         String  @db.Text
+  total_score            Decimal @db.Decimal(10, 0)
+  subscale_scores        String? @db.Text
+  clinical_summary       String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model AssessmentSummaries {
+  assessment_score_id  String @db.Text
+  clinic_id            String @db.Text
+  clinical_summary     String @db.Text
+  created              String @db.Text
+  id                   String @db.Text
+  next_assessment_date String @db.Text
+  patient_id           String @db.Text
+  recommendations      String @db.Text
+  trend_analysis       String @db.Text
+  updated              String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model AssessmentTypes {
+  clinic_id       String  @db.Text
+  created         String  @db.Text
+  description     String  @db.Text
+  id              String  @db.Text
+  name            String  @db.Text
+  scale_max       Decimal @db.Decimal(10, 0)
+  scale_min       Decimal @db.Decimal(10, 0)
+  scoring_formula String  @db.Text
+  total_items     Decimal @db.Decimal(10, 0)
+  updated         String  @db.Text
+  questions_count Decimal @db.Decimal(10, 0)
+  estimated_time  Decimal @db.Decimal(10, 0)
+  active          BigInt
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model AssignedAssessments {
+  assessment_type     String @db.Text
+  clinic_id           String @db.Text
+  created             String @db.Text
+  due_date            String @db.Text
+  id                  String @db.Text
+  patient_id          String @db.Text
+  status              String @db.Text
+  therapist_id        String @db.Text
+  updated             String @db.Text
+  assigned_date       String @db.Text
+  instructions        String @db.Text
+  assessment_type_id  String @db.Text
+  clinical_indication String @db.Text
+  notes               String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model SOAPHistory {
+  created        String  @db.Text
+  deleted        BigInt
+  generated_soap String? @db.Text
+  id             String  @db.Text
+  input_notes    String  @db.Text
+  patient_id     String  @db.Text
+  therapist_id   String  @db.Text
+  timestamp      String  @db.Text
+  updated        String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model SOAPNotes {
+  assessment     String @db.Text
+  clinic_id      String @db.Text
+  created        String @db.Text
+  created_date   String @db.Text
+  id             String @db.Text
+  objective      String @db.Text
+  original_notes String @db.Text
+  patient_id     String @db.Text
+  plan_          String @map("[plan]") @db.Text
+  status         String @db.Text
+  subjective     String @db.Text
+  therapist_id   String @db.Text
+  updated        String @db.Text
+  updated_date   String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model authOrigins {
+  collectionRef String @db.Text
+  created       String @db.Text
+  fingerprint   String @db.Text
+  id            String @db.Text
+  recordRef     String @db.Text
+  updated       String @db.Text
+
+  @@map("_authOrigins")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model collections {
+  id         String  @db.Text
+  system     BigInt
+  type       String  @db.Text
+  name       String  @db.Text
+  fields     String  @db.Text
+  indexes    String  @db.Text
+  listRule   String? @db.Text
+  viewRule   String? @db.Text
+  createRule String? @db.Text
+  updateRule String? @db.Text
+  deleteRule String? @db.Text
+  options    String  @db.Text
+  created    String  @db.Text
+  updated    String  @db.Text
+
+  @@map("_collections")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model externalAuths {
+  collectionRef String @db.Text
+  created       String @db.Text
+  id            String @db.Text
+  provider      String @db.Text
+  providerId    String @db.Text
+  recordRef     String @db.Text
+  updated       String @db.Text
+
+  @@map("_externalAuths")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model integratedAiImages {
+  created String @db.Text
+  file    String @db.Text
+  id      String @db.Text
+
+  @@map("_integratedAiImages")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model integratedAiMessages {
+  content String? @db.Text
+  created String  @db.Text
+  id      String  @db.Text
+  role    String  @db.Text
+  updated String  @db.Text
+  userId  String  @db.Text
+
+  @@map("_integratedAiMessages")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model mfas {
+  collectionRef String @db.Text
+  created       String @db.Text
+  id            String @db.Text
+  method        String @db.Text
+  recordRef     String @db.Text
+  updated       String @db.Text
+
+  @@map("_mfas")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model migrations {
+  file    String @db.LongText
+  applied Int
+
+  @@map("_migrations")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model otps {
+  collectionRef String @db.Text
+  created       String @db.Text
+  id            String @db.Text
+  password      String @db.Text
+  recordRef     String @db.Text
+  sentTo        String @db.Text
+  updated       String @db.Text
+
+  @@map("_otps")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model params {
+  id      String  @db.Text
+  value   String? @db.Text
+  created String  @db.Text
+  updated String  @db.Text
+
+  @@map("_params")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model superusers {
+  created         String @db.Text
+  email           String @db.Text
+  emailVisibility BigInt
+  id              String @db.Text
+  password        String @db.Text
+  tokenKey        String @db.Text
+  updated         String @db.Text
+  verified        BigInt
+
+  @@map("_superusers")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model achievements {
+  badge_color     String  @db.Text
+  created         String  @db.Text
+  created_at      String  @db.Text
+  description     String  @db.Text
+  icon            String  @db.Text
+  id              String  @db.Text
+  name            String  @db.Text
+  points          Decimal @db.Decimal(10, 0)
+  unlock_criteria String? @db.Text
+  updated         String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model analytics_events {
+  created      String  @db.Text
+  created_at   String  @db.Text
+  event_data   String? @db.Text
+  event_name   String  @db.Text
+  event_type   String  @db.Text
+  id           String  @db.Text
+  ip_address   String  @db.Text
+  page_url     String  @db.Text
+  referrer_url String  @db.Text
+  updated      String  @db.Text
+  user_agent   String  @db.Text
+  user_id      String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model appointment_reminders {
+  appointment_id String  @db.Text
+  created        String  @db.Text
+  created_at     String  @db.Text
+  id             String  @db.Text
+  reminder_time  Decimal @db.Decimal(10, 0)
+  reminder_type  String  @db.Text
+  sent           BigInt
+  sent_at        String  @db.Text
+  updated        String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model appointments {
+  clinic_id    String  @db.Text
+  created      String  @db.Text
+  created_at   String  @db.Text
+  date         String  @db.Text
+  duration     Decimal @db.Decimal(10, 0)
+  id           String  @db.Text
+  notes        String  @db.Text
+  patient_id   String  @db.Text
+  status       String  @db.Text
+  therapist_id String  @db.Text
+  time         String  @db.Text
+  updated      String  @db.Text
+  updated_at   String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model assessment_questions {
+  assessment_id  String  @db.Text
+  correct_answer String  @db.Text
+  created        String  @db.Text
+  created_at     String  @db.Text
+  id             String  @db.Text
+  options        String? @db.Text
+  order          Decimal @db.Decimal(10, 0)
+  points         Decimal @db.Decimal(10, 0)
+  question_text  String  @db.Text
+  question_type  String  @db.Text
+  updated        String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model assessment_submissions {
+  answers       String? @db.Text
+  assignment_id String  @db.Text
+  created       String  @db.Text
+  created_at    String  @db.Text
+  id            String  @db.Text
+  max_score     Decimal @db.Decimal(10, 0)
+  patient_id    String  @db.Text
+  percentage    Decimal @db.Decimal(10, 0)
+  score         Decimal @db.Decimal(10, 0)
+  submitted_at  String  @db.Text
+  updated       String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model assigned_programs {
+  adherence_rate  Decimal @db.Decimal(10, 0)
+  assigned_date   String  @db.Text
+  clinic_id       String  @db.Text
+  completion_rate Decimal @db.Decimal(10, 0)
+  created         String  @db.Text
+  id              String  @db.Text
+  patient_id      String  @db.Text
+  program_id      String  @db.Text
+  status          String  @db.Text
+  updated         String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model auto_progression_plans {
+  clinic_id     String  @db.Text
+  created       String  @db.Text
+  cycles        Decimal @db.Decimal(10, 0)
+  exercise_id   String  @db.Text
+  hold_duration Decimal @db.Decimal(10, 0)
+  id            String  @db.Text
+  repetitions   Decimal @db.Decimal(10, 0)
+  sets          Decimal @db.Decimal(10, 0)
+  updated       String  @db.Text
+  week_number   Decimal @db.Decimal(10, 0)
+  work_time     Decimal @db.Decimal(10, 0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model billingSettings {
+  clinic_id           String  @db.Text
+  created             String  @db.Text
+  id                  String  @db.Text
+  invoice_prefix      String  @db.Text
+  late_fee_percentage Decimal @db.Decimal(10, 0)
+  payment_terms       String  @db.Text
+  tax_enabled         BigInt
+  tax_name            String  @db.Text
+  tax_percentage      Decimal @db.Decimal(10, 0)
+  updated             String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model categories {
+  clinic_id          String  @db.Text
+  color              String  @db.Text
+  created            String  @db.Text
+  description        String  @db.Text
+  exercise_count     Decimal @db.Decimal(10, 0)
+  icon_url           String  @db.Text
+  id                 String  @db.Text
+  name               String  @db.Text
+  parent_category_id String  @db.Text
+  slug               String  @db.Text
+  status             String  @db.Text
+  updated            String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model clinics {
+  address    String @db.Text
+  city       String @db.Text
+  created    String @db.Text
+  created_by String @db.Text
+  id         String @db.Text
+  name       String @db.Text
+  phone      String @db.Text
+  updated    String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model conversations {
+  created          String @db.Text
+  created_at       String @db.Text
+  id               String @db.Text
+  last_message_at  String @db.Text
+  last_message_id  String @db.Text
+  participant_1_id String @db.Text
+  participant_2_id String @db.Text
+  updated          String @db.Text
+  updated_at       String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model education_article_favorites {
+  article_id String @db.Text
+  created    String @db.Text
+  created_at String @db.Text
+  id         String @db.Text
+  updated    String @db.Text
+  user_id    String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model education_articles {
+  author_id      String  @db.Text
+  category       String  @db.Text
+  content        String  @db.Text
+  created        String  @db.Text
+  created_at     String  @db.Text
+  featured_image String  @db.Text
+  id             String  @db.Text
+  status         String  @db.Text
+  title          String  @db.Text
+  updated        String  @db.Text
+  updated_at     String  @db.Text
+  view_count     Decimal @db.Decimal(10, 0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model education_content {
+  category     String  @db.Text
+  content      String  @db.Text
+  created      String  @db.Text
+  id           String  @db.Text
+  pdf_url      String  @db.Text
+  reading_time Decimal @db.Decimal(10, 0)
+  title        String  @db.Text
+  type         String  @db.Text
+  updated      String  @db.Text
+  video_url    String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model exercise_completions {
+  assignment_id String  @db.Text
+  clinic_id     String  @db.Text
+  comments      String  @db.Text
+  completed     BigInt
+  created       String  @db.Text
+  date          String  @db.Text
+  exercise_id   String  @db.Text
+  id            String  @db.Text
+  pain_score    Decimal @db.Decimal(10, 0)
+  updated       String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model exercise_favorites {
+  created     String @db.Text
+  created_at  String @db.Text
+  exercise_id String @db.Text
+  id          String @db.Text
+  updated     String @db.Text
+  user_id     String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model exercise_programs {
+  body_region         String  @db.Text
+  clinic_id           String  @db.Text
+  clinical_goal       String  @db.Text
+  created             String  @db.Text
+  created_by          String  @db.Text
+  description         String  @db.Text
+  exercises           String? @db.Text
+  expected_duration   String  @db.Text
+  id                  String  @db.Text
+  name                String  @db.Text
+  status              String  @db.Text
+  updated             String  @db.Text
+  ai_generated        BigInt
+  ai_confidence_score Decimal @db.Decimal(10, 0)
+  ai_prompt           String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model exercise_progress {
+  assigned_program_id String  @db.Text
+  clinic_id           String  @db.Text
+  completion_count    Decimal @db.Decimal(10, 0)
+  created             String  @db.Text
+  exercise_id         String  @db.Text
+  id                  String  @db.Text
+  last_completed_date String  @db.Text
+  pain_score          Decimal @db.Decimal(10, 0)
+  updated             String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model exercise_statistics {
+  average_pain_score Decimal @db.Decimal(10, 0)
+  clinic_id          String  @db.Text
+  completion_rate    Decimal @db.Decimal(10, 0)
+  created            String  @db.Text
+  exercise_id        String  @db.Text
+  id                 String  @db.Text
+  last_assigned_date String  @db.Text
+  times_assigned     Decimal @db.Decimal(10, 0)
+  updated            String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model exercise_translations {
+  clinic_id         String @db.Text
+  contraindications String @db.Text
+  created           String @db.Text
+  description       String @db.Text
+  exercise_id       String @db.Text
+  id                String @db.Text
+  instructions      String @db.Text
+  language_code     String @db.Text
+  name              String @db.Text
+  progression_notes String @db.Text
+  updated           String @db.Text
+  warnings          String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model exercises {
+  body_region       String  @db.Text
+  category          String  @db.Text
+  clinic_id         String  @db.Text
+  contraindications String  @db.Text
+  created           String  @db.Text
+  description       String  @db.Text
+  difficulty        String  @db.Text
+  id                String  @db.Text
+  instructions      String  @db.Text
+  name              String  @db.Text
+  progression_tips  String  @db.Text
+  target_muscles    String  @db.Text
+  thumbnail_url     String  @db.Text
+  updated           String  @db.Text
+  slug              String  @db.Text
+  equipment_needed  String? @db.Text
+  gif_url           String  @db.Text
+  times_assigned    Decimal @db.Decimal(10, 0)
+  completion_rate   Decimal @db.Decimal(10, 0)
+  updated_by        String  @db.Text
+  video_url         String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model invite_codes {
+  code       String @db.Text
+  created    String @db.Text
+  created_by String @db.Text
+  expires_at String @db.Text
+  id         String @db.Text
+  is_active  BigInt
+  role       String @db.Text
+  updated    String @db.Text
+  used_by    String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model invoices {
+  clinic_id          String  @db.Text
+  created            String  @db.Text
+  discount           Decimal @db.Decimal(10, 0)
+  due_date           String  @db.Text
+  id                 String  @db.Text
+  invoice_date       String  @db.Text
+  invoice_number     String  @db.Text
+  notes              String  @db.Text
+  patient_id         String  @db.Text
+  patient_package_id String  @db.Text
+  status             String  @db.Text
+  subtotal           Decimal @db.Decimal(10, 0)
+  tax                Decimal @db.Decimal(10, 0)
+  total              Decimal @db.Decimal(10, 0)
+  updated            String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model languages {
+  created       String @db.Text
+  created_at    String @db.Text
+  id            String @db.Text
+  is_active     BigInt
+  is_default    BigInt
+  language_code String @db.Text
+  language_name String @db.Text
+  updated       String @db.Text
+  updated_at    String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model message_translations {
+  created         String @db.Text
+  created_at      String @db.Text
+  id              String @db.Text
+  language_code   String @db.Text
+  message_id      String @db.Text
+  translated_text String @db.Text
+  updated         String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model notification_preferences {
+  appointment_reminders_enabled BigInt
+  created                       String @db.Text
+  created_at                    String @db.Text
+  email_notifications_enabled   BigInt
+  exercise_reminders_enabled    BigInt
+  id                            String @db.Text
+  in_app_notifications_enabled  BigInt
+  message_notifications_enabled BigInt
+  progress_updates_enabled      BigInt
+  reminder_time                 String @db.Text
+  sms_notifications_enabled     BigInt
+  updated                       String @db.Text
+  updated_at                    String @db.Text
+  user_id                       String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model notification_templates {
+  created           String @db.Text
+  id                String @db.Text
+  language_code     String @db.Text
+  notification_type String @db.Text
+  template_text     String @db.Text
+  updated           String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model packages {
+  active        BigInt
+  clinic_id     String  @db.Text
+  created       String  @db.Text
+  description   String  @db.Text
+  id            String  @db.Text
+  name          String  @db.Text
+  price         Decimal @db.Decimal(10, 0)
+  sessions      Decimal @db.Decimal(10, 0)
+  updated       String  @db.Text
+  validity_days Decimal @db.Decimal(10, 0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model pain_logs {
+  created     String  @db.Text
+  id          String  @db.Text
+  location    String  @db.Text
+  notes       String  @db.Text
+  pain_after  Decimal @db.Decimal(10, 0)
+  pain_before Decimal @db.Decimal(10, 0)
+  pain_level  Decimal @db.Decimal(10, 0)
+  patient_id  String  @db.Text
+  timestamp   String  @db.Text
+  updated     String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model pain_tracking {
+  created    String  @db.Text
+  id         String  @db.Text
+  notes      String  @db.Text
+  pain_score Decimal @db.Decimal(10, 0)
+  patient_id String  @db.Text
+  timestamp  String  @db.Text
+  updated    String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model patientPackages {
+  assigned_date String  @db.Text
+  clinic_id     String  @db.Text
+  created       String  @db.Text
+  expiry_date   String  @db.Text
+  id            String  @db.Text
+  notes         String  @db.Text
+  package_id    String  @db.Text
+  patient_id    String  @db.Text
+  sessions_used Decimal @db.Decimal(10, 0)
+  status        String  @db.Text
+  updated       String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model patient_achievements {
+  achievement_type String  @db.Text
+  created          String  @db.Text
+  id               String  @db.Text
+  patient_id       String  @db.Text
+  progress         Decimal @db.Decimal(10, 0)
+  unlocked_date    String  @db.Text
+  updated          String  @db.Text
+  achievement_id   String  @db.Text
+  achievement_name String  @db.Text
+  badge_icon       String  @db.Text
+  description      String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model patient_analytics {
+  adherence_rate      Decimal @db.Decimal(10, 0)
+  average_pain_after  Decimal @db.Decimal(10, 0)
+  average_pain_before Decimal @db.Decimal(10, 0)
+  completed_sessions  Decimal @db.Decimal(10, 0)
+  completion_rate     Decimal @db.Decimal(10, 0)
+  created             String  @db.Text
+  created_at          String  @db.Text
+  id                  String  @db.Text
+  last_session_date   String  @db.Text
+  missed_sessions     Decimal @db.Decimal(10, 0)
+  pain_reduction      Decimal @db.Decimal(10, 0)
+  patient_id          String  @db.Text
+  program_id          String  @db.Text
+  skipped_sessions    Decimal @db.Decimal(10, 0)
+  total_sessions      Decimal @db.Decimal(10, 0)
+  updated             String  @db.Text
+  updated_at          String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model patient_assessments {
+  assessment_type String  @db.Text
+  created         String  @db.Text
+  date            String  @db.Text
+  id              String  @db.Text
+  interpretation  String  @db.Text
+  patient_id      String  @db.Text
+  previous_score  Decimal @db.Decimal(10, 0)
+  score           Decimal @db.Decimal(10, 0)
+  updated         String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model patient_bookmarks {
+  bookmarked_date String @db.Text
+  content_id      String @db.Text
+  created         String @db.Text
+  id              String @db.Text
+  patient_id      String @db.Text
+  updated         String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model patient_exercises {
+  completed_count     Decimal @db.Decimal(10, 0)
+  created             String  @db.Text
+  exercise_id         String  @db.Text
+  id                  String  @db.Text
+  last_completed_date String  @db.Text
+  notes               String  @db.Text
+  patient_id          String  @db.Text
+  program_id          String  @db.Text
+  updated             String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model patient_medical_history {
+  condition_name String @db.Text
+  created        String @db.Text
+  created_at     String @db.Text
+  diagnosis_date String @db.Text
+  id             String @db.Text
+  notes          String @db.Text
+  patient_id     String @db.Text
+  status         String @db.Text
+  updated        String @db.Text
+  updated_at     String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model patient_messages {
+  created          String @db.Text
+  id               String @db.Text
+  image_url        String @db.Text
+  message          String @db.Text
+  message_category String @db.Text
+  patient_id       String @db.Text
+  read             BigInt
+  therapist_id     String @db.Text
+  timestamp        String @db.Text
+  updated          String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model patient_programs {
+  adherence_rate  Decimal @db.Decimal(10, 0)
+  assigned_date   String  @db.Text
+  completion_rate Decimal @db.Decimal(10, 0)
+  created         String  @db.Text
+  id              String  @db.Text
+  patient_id      String  @db.Text
+  program_id      String  @db.Text
+  status          String  @db.Text
+  updated         String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model patients {
+  address        String @db.Text
+  clinic_id      String @db.Text
+  created        String @db.Text
+  date_of_birth  String @db.Text
+  diagnosis      String @db.Text
+  email          String @db.Text
+  full_name      String @db.Text
+  gender         String @db.Text
+  id             String @db.Text
+  main_complaint String @db.Text
+  occupation     String @db.Text
+  phone          String @db.Text
+  status         String @db.Text
+  updated        String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model payments {
+  amount           Decimal @db.Decimal(10, 0)
+  clinic_id        String  @db.Text
+  created          String  @db.Text
+  id               String  @db.Text
+  invoice_id       String  @db.Text
+  method           String  @db.Text
+  notes            String  @db.Text
+  patient_id       String  @db.Text
+  payment_date     String  @db.Text
+  reference_number String  @db.Text
+  updated          String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model program_assignment_progress {
+  assignment_id     String @db.Text
+  completed_date    String @db.Text
+  completion_status String @db.Text
+  created           String @db.Text
+  created_at        String @db.Text
+  exercise_id       String @db.Text
+  id                String @db.Text
+  notes             String @db.Text
+  updated           String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model program_assignments {
+  assigned_date   String @db.Text
+  clinic_id       String @db.Text
+  created         String @db.Text
+  end_date        String @db.Text
+  id              String @db.Text
+  patient_id      String @db.Text
+  program_id      String @db.Text
+  start_date      String @db.Text
+  status          String @db.Text
+  therapist_notes String @db.Text
+  updated         String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model program_exercises {
+  created           String  @db.Text
+  created_at        String  @db.Text
+  cycles            Decimal @db.Decimal(10, 0)
+  exercise_id       String  @db.Text
+  hold_duration     Decimal @db.Decimal(10, 0)
+  id                String  @db.Text
+  notes             String  @db.Text
+  notes_id          String  @db.Text
+  order             Decimal @db.Decimal(10, 0)
+  prepare_time      Decimal @db.Decimal(10, 0)
+  program_id        String  @db.Text
+  repetitions       Decimal @db.Decimal(10, 0)
+  rest_between_sets Decimal @db.Decimal(10, 0)
+  rest_time         Decimal @db.Decimal(10, 0)
+  sets              Decimal @db.Decimal(10, 0)
+  updated           String  @db.Text
+  updated_at        String  @db.Text
+  work_time         Decimal @db.Decimal(10, 0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model program_templates {
+  category           String  @db.Text
+  clinic_id          String  @db.Text
+  created            String  @db.Text
+  description        String  @db.Text
+  estimated_duration Decimal @db.Decimal(10, 0)
+  exercises_list     String? @db.Text
+  id                 String  @db.Text
+  name               String  @db.Text
+  updated            String  @db.Text
+  created_by         String  @db.Text
+  program_id         String  @db.Text
+  is_public          BigInt
+  usage_count        Decimal @db.Decimal(10, 0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model program_translations {
+  clinic_id         String @db.Text
+  created           String @db.Text
+  id                String @db.Text
+  instructions      String @db.Text
+  language_code     String @db.Text
+  name              String @db.Text
+  notes             String @db.Text
+  program_id        String @db.Text
+  recovery_guidance String @db.Text
+  updated           String @db.Text
+  created_at        String @db.Text
+  updated_at        String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model programs {
+  clinic_id      String  @db.Text
+  created        String  @db.Text
+  created_by     String  @db.Text
+  created_date   String  @db.Text
+  description    String  @db.Text
+  exercises_list String? @db.Text
+  id             String  @db.Text
+  name           String  @db.Text
+  status         String  @db.Text
+  updated        String  @db.Text
+  updated_date   String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model recovery_notes {
+  content    String @db.Text
+  created    String @db.Text
+  file       String @db.Text
+  id         String @db.Text
+  patient_id String @db.Text
+  timestamp  String @db.Text
+  title      String @db.Text
+  updated    String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model recovery_timer_configs {
+  clinic_id         String  @db.Text
+  created           String  @db.Text
+  cycles            Decimal @db.Decimal(10, 0)
+  exercise_id       String  @db.Text
+  hold_duration     Decimal @db.Decimal(10, 0)
+  id                String  @db.Text
+  max_value         Decimal @db.Decimal(10, 0)
+  min_value         Decimal @db.Decimal(10, 0)
+  permission_mode   String  @db.Text
+  prepare_time      Decimal @db.Decimal(10, 0)
+  repetitions       Decimal @db.Decimal(10, 0)
+  rest_between_sets Decimal @db.Decimal(10, 0)
+  rest_time         Decimal @db.Decimal(10, 0)
+  sets              Decimal @db.Decimal(10, 0)
+  updated           String  @db.Text
+  work_time         Decimal @db.Decimal(10, 0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model session_data {
+  adherence_rate        Decimal @db.Decimal(10, 0)
+  clinic_id             String  @db.Text
+  completion_percentage Decimal @db.Decimal(10, 0)
+  created               String  @db.Text
+  cycles_completed      Decimal @db.Decimal(10, 0)
+  duration              Decimal @db.Decimal(10, 0)
+  exercises_completed   Decimal @db.Decimal(10, 0)
+  id                    String  @db.Text
+  notes                 String  @db.Text
+  pain_after            Decimal @db.Decimal(10, 0)
+  pain_before           Decimal @db.Decimal(10, 0)
+  patient_id            String  @db.Text
+  program_id            String  @db.Text
+  session_date          String  @db.Text
+  sets_completed        Decimal @db.Decimal(10, 0)
+  skipped_exercises     Decimal @db.Decimal(10, 0)
+  updated               String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model sessions {
+  clinic_id          String  @db.Text
+  created            String  @db.Text
+  duration           Decimal @db.Decimal(10, 0)
+  id                 String  @db.Text
+  notes              String  @db.Text
+  patient_package_id String  @db.Text
+  session_date       String  @db.Text
+  session_time       String  @db.Text
+  therapist_id       String  @db.Text
+  updated            String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model soap_note_attachments {
+  created      String  @db.Text
+  created_at   String  @db.Text
+  file         String  @db.Text
+  file_size    Decimal @db.Decimal(10, 0)
+  file_type    String  @db.Text
+  id           String  @db.Text
+  soap_note_id String  @db.Text
+  updated      String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model telehealth_session_notes {
+  created    String @db.Text
+  created_at String @db.Text
+  created_by String @db.Text
+  id         String @db.Text
+  notes      String @db.Text
+  session_id String @db.Text
+  updated    String @db.Text
+  updated_at String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model telehealth_sessions {
+  created       String @db.Text
+  id            String @db.Text
+  join_link     String @db.Text
+  notes         String @db.Text
+  patient_id    String @db.Text
+  recording_url String @db.Text
+  session_date  String @db.Text
+  session_time  String @db.Text
+  status        String @db.Text
+  therapist_id  String @db.Text
+  updated       String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model therapist_analytics {
+  active_patients              Decimal @db.Decimal(10, 0)
+  average_patient_satisfaction Decimal @db.Decimal(10, 0)
+  completed_appointments       Decimal @db.Decimal(10, 0)
+  completed_patients           Decimal @db.Decimal(10, 0)
+  created                      String  @db.Text
+  created_at                   String  @db.Text
+  id                           String  @db.Text
+  therapist_id                 String  @db.Text
+  total_appointments           Decimal @db.Decimal(10, 0)
+  total_patients               Decimal @db.Decimal(10, 0)
+  total_programs_created       Decimal @db.Decimal(10, 0)
+  updated                      String  @db.Text
+  updated_at                   String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model therapist_language_settings {
+  clinic_default_language  String @db.Text
+  created                  String @db.Text
+  id                       String @db.Text
+  notification_language    String @db.Text
+  patient_default_language String @db.Text
+  preferred_language       String @db.Text
+  therapist_id             String @db.Text
+  updated                  String @db.Text
+  updated_at               String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model therapists {
+  clinic_id String @db.Text
+  created   String @db.Text
+  email     String @db.Text
+  id        String @db.Text
+  name      String @db.Text
+  phone     String @db.Text
+  updated   String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model timer_templates {
+  category        String  @db.Text
+  clinic_id       String  @db.Text
+  created         String  @db.Text
+  id              String  @db.Text
+  template_config String? @db.Text
+  template_name   String  @db.Text
+  therapist_id    String  @db.Text
+  updated         String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model translation_status {
+  completion_percentage Decimal @db.Decimal(10, 0)
+  created               String  @db.Text
+  id                    String  @db.Text
+  language_code         String  @db.Text
+  total_fields          Decimal @db.Decimal(10, 0)
+  translated_fields     Decimal @db.Decimal(10, 0)
+  updated               String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model user_language_preferences {
+  app_language       String @db.Text
+  created            String @db.Text
+  exercise_language  String @db.Text
+  id                 String @db.Text
+  preferred_language String @db.Text
+  reminder_language  String @db.Text
+  updated            String @db.Text
+  user_id            String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model user_permissions {
+  created         String @db.Text
+  created_at      String @db.Text
+  description     String @db.Text
+  id              String @db.Text
+  permission_name String @db.Text
+  role_name       String @db.Text
+  updated         String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model user_roles {
+  assigned_at String  @db.Text
+  assigned_by String  @db.Text
+  created     String  @db.Text
+  id          String  @db.Text
+  permissions String? @db.Text
+  role_name   String  @db.Text
+  updated     String  @db.Text
+  user_id     String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model user_sessions {
+  created       String @db.Text
+  created_at    String @db.Text
+  expires_at    String @db.Text
+  id            String @db.Text
+  ip_address    String @db.Text
+  last_activity String @db.Text
+  refresh_token String @db.Text
+  token         String @db.Text
+  updated       String @db.Text
+  user_agent    String @db.Text
+  user_id       String @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model users {
+  avatar                  String @db.Text
+  created                 String @db.Text
+  email                   String @db.Text
+  emailVisibility         BigInt
+  id                      String @db.Text
+  name                    String @db.Text
+  password                String @db.Text
+  tokenKey                String @db.Text
+  updated                 String @db.Text
+  verified                BigInt
+  clinic_id               String @db.Text
+  full_name               String @db.Text
+  invite_code             String @db.Text
+  role                    String @db.Text
+  medical_diagnosis       String @db.Text
+  medical_history         String @db.Text
+  allergies               String @db.Text
+  emergency_contact_name  String @db.Text
+  emergency_contact_phone String @db.Text
+  assigned_therapist_id   String @db.Text
+  notification_email      BigInt
+  notification_sms        BigInt
+  notification_push       BigInt
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model video_playback_history {
+  completion_percentage Decimal @db.Decimal(10, 0)
+  created               String  @db.Text
+  created_at            String  @db.Text
+  id                    String  @db.Text
+  last_watched_at       String  @db.Text
+  total_duration        Decimal @db.Decimal(10, 0)
+  updated               String  @db.Text
+  updated_at            String  @db.Text
+  user_id               String  @db.Text
+  video_id              String  @db.Text
+  watch_duration        Decimal @db.Decimal(10, 0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model videos {
+  body_region   String  @db.Text
+  category      String  @db.Text
+  clinic_id     String  @db.Text
+  created       String  @db.Text
+  description   String  @db.Text
+  difficulty    String  @db.Text
+  duration      Decimal @db.Decimal(10, 0)
+  equipment     String  @db.Text
+  id            String  @db.Text
+  name          String  @db.Text
+  tags          String? @db.Text
+  target_muscle String  @db.Text
+  thumbnail     String  @db.Text
+  updated       String  @db.Text
+  uploaded_by   String  @db.Text
+  video_file    String  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model voice_guidance_translations {
+  created       String @db.Text
+  guidance_key  String @db.Text
+  id            String @db.Text
+  language_code String @db.Text
+  text          String @db.Text
+  updated       String @db.Text
+
+  @@ignore
+}

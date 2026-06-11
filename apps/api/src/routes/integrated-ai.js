@@ -3,11 +3,11 @@ import { ContentBlockType, stream, uploadImagesToPocketBase } from '../api/integ
 import { SystemPrompt } from '../constants/prompts.js';
 import { uploadFiles } from '../middleware/file-upload.js';
 import { integratedAiRateLimit } from '../middleware/integrated-ai-rate-limit.js';
-import { pocketbaseAuth } from '../middleware/pocketbase-auth.js';
+import { jwtAuth } from '../middleware/jwt-auth.js';
 
 const router = Router();
 
-router.use(pocketbaseAuth);
+router.use(jwtAuth);
 
 router.post('/stream', integratedAiRateLimit, uploadFiles({
 	allowedMimeTypes: [
@@ -33,7 +33,7 @@ router.post('/stream', integratedAiRateLimit, uploadFiles({
 	}
 
 	const sseStream = await stream({
-		userId: req.pocketbaseUserId,
+		userId: req.userId,
 		systemPrompt: SystemPrompt,
 		userMessage: parsedMessage,
 	});

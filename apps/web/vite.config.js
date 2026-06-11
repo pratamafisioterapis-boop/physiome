@@ -5,7 +5,6 @@ import inlineEditPlugin from './plugins/visual-editor/vite-plugin-react-inline-e
 import editModeDevPlugin from './plugins/visual-editor/vite-plugin-edit-mode.js';
 import selectionModePlugin from './plugins/selection-mode/vite-plugin-selection-mode.js';
 import iframeRouteRestorationPlugin from './plugins/vite-plugin-iframe-route-restoration.js';
-import pocketbaseAuthPlugin from './plugins/vite-plugin-pocketbase-auth.js';
 
 import { readFileSync } from 'node:fs';
 
@@ -290,12 +289,19 @@ export default defineConfig({
 	},
 	customLogger: logger,
 	plugins: [
-		...(isDev ? [inlineEditPlugin(), editModeDevPlugin(), selectionModePlugin(), iframeRouteRestorationPlugin(), pocketbaseAuthPlugin()] : []),
+		...(isDev ? [inlineEditPlugin(), editModeDevPlugin(), selectionModePlugin(), iframeRouteRestorationPlugin()] : []),
 		react(),
 		addTransformIndexHtml
 	],
 	server: {
 		port: 3000,
+		proxy: {
+			'/hcgi/api': {
+				target: 'http://localhost:3003',// Mengubah target proxy ke port backend yang sebenarnya
+				changeOrigin: true,
+				rewrite: (path) => path.replace(/^\/hcgi\/api/, ''),
+			},
+		},
 		cors: true,
 		headers: {
 			'Cross-Origin-Embedder-Policy': 'credentialless',

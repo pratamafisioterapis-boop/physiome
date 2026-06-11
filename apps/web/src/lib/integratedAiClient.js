@@ -1,25 +1,18 @@
 const API_SERVER_URL = '/hcgi/api';
 
-function getPocketbaseToken() {
-	const pocketbaseToken = localStorage.getItem('pocketbase_auth');
-
-	if (pocketbaseToken) {
-		const bytes = new TextEncoder().encode(pocketbaseToken);
-		const binary = String.fromCharCode(...bytes);
-
-		return btoa(binary);
-	}
+function getAuthToken() {
+	return localStorage.getItem('auth_token'); // Pastikan key ini sesuai dengan tempat Anda menyimpan JWT
 }
 
 const integratedAiClient = {
 	fetch: async (path, options = {}) => {
-		const pocketbaseToken = getPocketbaseToken();
+		const token = getAuthToken();
 
 		const response = await window.fetch(API_SERVER_URL + path, {
 			...options,
 			headers: {
 				...options.headers,
-				...(pocketbaseToken && { Authorization: `Bearer ${pocketbaseToken}` }),
+				...(token && { Authorization: `Bearer ${token}` }),
 			},
 		});
 
@@ -32,11 +25,11 @@ const integratedAiClient = {
 	},
 
 	stream: async (path, { body, signal, images } = {}) => {
-		const pocketbaseToken = getPocketbaseToken();
+		const token = getAuthToken();
 
 		const headers = {
 			Accept: 'text/event-stream',
-			...(pocketbaseToken && { Authorization: `Bearer ${pocketbaseToken}` }),
+			...(token && { Authorization: `Bearer ${token}` }),
 		};
 
 		const formData = new FormData();
