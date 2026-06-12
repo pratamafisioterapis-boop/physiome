@@ -10,7 +10,8 @@ import Select from '@/components/Select.jsx';
 import StatusBadge from '@/components/appointments/StatusBadge.jsx';
 import { Plus, Search, Eye, Edit2, Trash2, Calendar as CalendarIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext.jsx';
-import pb from '@/lib/pocketbaseClient';
+// import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { Helmet } from 'react-helmet';
 import CreateAppointmentModal from '@/components/appointments/CreateAppointmentModal.jsx';
 import EditAppointmentModal from '@/components/appointments/EditAppointmentModal.jsx';
@@ -36,12 +37,7 @@ const AppointmentListPage = () => {
     if (!currentUser?.clinic_id) return;
     setIsLoading(true);
     try {
-      const records = await pb.collection('appointments').getFullList({
-        filter: `clinic_id = "${currentUser.clinic_id}"`,
-        sort: '-date,-time',
-        expand: 'patient_id,therapist_id',
-        $autoCancel: false
-      });
+      const records = await apiServerClient.fetch(`/appointments?clinic_id=${currentUser.clinic_id}`);
       setAppointments(records);
     } catch (error) {
       console.error('Error fetching appointments:', error);
@@ -142,13 +138,14 @@ const AppointmentListPage = () => {
                 </div>
               ) : (
                 <Table 
+                 className='w-full'
                   headers={['Patient', 'Therapist', 'Date & Time', 'Duration', 'Status', 'Actions']}
                   page={page}
                   totalPages={totalPages}
                   onPageChange={setPage}
                   isEmpty={paginatedAppointments.length === 0}
                   emptyMessage={
-                    <div className="flex flex-col items-center justify-center py-12">
+                    <div className="flex flex-col items-center justify-center py-12 w-full">
                       <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
                         <CalendarIcon className="w-8 h-8 text-muted-foreground" />
                       </div>

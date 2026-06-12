@@ -6,6 +6,7 @@ import Sidebar from '@/components/Sidebar.jsx';
 import Button from '@/components/Button.jsx';
 import { ArrowLeft, Edit2, Trash2, Calendar, FileText, Activity, User } from 'lucide-react';
 import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { Helmet } from 'react-helmet';
 import EditPatientModal from '@/components/patients/EditPatientModal.jsx';
 import DeletePatientConfirmation from '@/components/patients/DeletePatientConfirmation.jsx';
@@ -23,7 +24,7 @@ const PatientDetailPage = () => {
   const fetchPatient = async () => {
     setIsLoading(true);
     try {
-      const record = await pb.collection('patients').getOne(id, { $autoCancel: false });
+      const record = await apiServerClient.fetch(`/patients/${id}`);
       setPatient(record);
     } catch (error) {
       console.error('Error fetching patient:', error);

@@ -147,7 +147,6 @@ const PatientListPage = () => {
                 </div>
               ) : (
                 <Table 
-                  className="w-full"
                   headers={['Patient', 'Date of Birth', 'Contact', 'Status', 'Actions']}
                   page={page}
                   totalPages={totalPages}
@@ -173,21 +172,21 @@ const PatientListPage = () => {
                   {/* HANYA TR untuk tabel desktop */}
                   {paginatedPatients.map((patient) => (
                     <tr key={patient.id} className="hidden md:table-row border-b border-border/50">
-                      <td>
+                      <td className="py-3 px-4">
                         <div className="font-medium text-foreground">{patient.name}</div>
                         <div className="text-xs text-muted-foreground">{patient.gender}</div>
                       </td>
-                      <td>{formatDate(patient.birth_date)}</td>
-                      <td>
+                      <td className="py-3 px-4">{formatDate(patient.birth_date)}</td>
+                      <td className="py-3 px-4">
                         <div className="text-sm">{patient.phone}</div>
                         <div className="text-xs text-muted-foreground">{patient.email}</div>
                       </td>
-                      <td>
+                      <td className="py-3 px-4">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadgeColors[patient.status]}`}>
                           {patient.status}
                         </span>
                       </td>
-                      <td>
+                      <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
                           <Button variant="ghost" size="sm" onClick={() => navigate(`/patients/${patient.id}`)} className="h-8 px-2">
                             <Eye className="w-4 h-4" />

@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext.jsx';
-import { useLanguage } from '@/hooks/useLanguage.js';
+// import { useLanguage } from '@/hooks/useLanguage.js';
+import { useTranslation } from 'react-i18next';
 import { Bell, User, LogOut, Settings, Globe, Menu } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
@@ -19,7 +20,7 @@ import { SidebarContent } from '@/components/Sidebar.jsx';
 
 const Header = () => {
   const { currentUser, logout } = useAuth();
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   
   const handleLogout = () => {

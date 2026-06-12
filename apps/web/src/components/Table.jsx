@@ -13,13 +13,13 @@ const Table = ({
   emptyMessage = "No data available."
 }) => {
   return (
-    <div className="flex flex-col gap-4">
+    <div className={`flex flex-col gap-4 w-full`}>
       <div className="table-wrapper hidden md:block">
-        <table className="data-table">
+        <table className="data-table w-full border-collapse">
           <thead>
             <tr>
               {headers.map((header, i) => (
-                <th key={i}>{header}</th>
+                <th className="bg-muted text-start py-2 px-4" key={i}>{header}</th>
               ))}
             </tr>
           </thead>
