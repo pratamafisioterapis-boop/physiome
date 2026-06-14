@@ -19,6 +19,20 @@ router.get('/', async (req, res, next) => {
     }
 });
 
+// GET /exercise-programs/:id - Ambil detail program (untuk Builder/Assignment)
+router.get('/:id', async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        const program = await prisma.exercise_programs.findUnique({
+            where: { id, clinic_id: req.clinicId }
+        });
+        if (!program) return res.status(404).json({ error: 'Program not found' });
+        res.json(program);
+    } catch (error) {
+        next(error);
+    }
+});
+
 // POST /exercise-programs - Simpan program baru (dari Builder)
 router.post('/', async (req, res, next) => {
     const { name, description, clinical_goal, body_region, exercises } = req.body;

@@ -3,21 +3,51 @@ import prisma from '../utils/prismaClient.js';
 import { jwtAuth } from '../middleware/jwt-auth.js';
 
 const router = express.Router();
+router.use(jwtAuth);
 
-// GET /dashboard/admin-stats
-router.get('/admin-stats', jwtAuth, async (req, res, next) => {
-    if (req.userRole !== 'admin') return res.status(403).json({ error: 'Forbidden' });
-
+// GET /dashboard/exercise-overview - Statistik untuk Exercise Dashboard
+router.get('/exercise-overview', async (req, res, next) => {
     try {
-        const [patientsCount, therapistsCount, programsCount, appointmentsCount] = await Promise.all([
-            prisma.patients.count({ where: { clinic_id: req.clinicId } }),
-            prisma.users.count({ where: { role: 'therapist', clinic_id: req.clinicId } }),
+        const [totalExercises, totalPrograms, activeAssignments] = await Promise.all([
+            prisma.exercises.count({ where: { clinic_id: req.clinicId } }),
             prisma.exercise_programs.count({ where: { clinic_id: req.clinicId } }),
-            prisma.appointments.count({ 
+            prisma.program_assignments.count({ 
                 where: { 
                     clinic_id: req.clinicId,
-                    date: new Date() // Prisma akan otomatis memformat ke DATE MySQL
+                    status: 'Active'
                 } 
+            })
+        ]);
+
+        const recentAssignments = await prisma.program_assignments.findMany({
+            where: { clinic_id: req.clinicId },
+            include: {
+                patients: { select: { name: true } }
+            },
+            take: 5,
+            orderBy: { created_at: 'desc' }
+        });
+
+        res.json({
+            stats: { totalExercises, totalPrograms, activeAssignments },
+            recentAssignments
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// GET /dashboard/admin-stats - Statistik Utama untuk Admin Dashboard
+router.get('/admin-stats', async (req, res, next) => {
+    try {
+        const [patientsCount, therapistsCount, programsCount, appointmentsCount, adherenceResult] = await Promise.all([
+            prisma.patients.count({ where: { clinic_id: req.clinicId } }),
+            prisma.therapists.count({ where: { clinic_id: req.clinicId } }),
+            prisma.exercise_programs.count({ where: { clinic_id: req.clinicId } }),
+            prisma.appointments.count({ where: { clinic_id: req.clinicId } }),
+            prisma.program_assignments.aggregate({
+                where: { clinic_id: req.clinicId },
+                _avg: { adherence_rate: true }
             })
         ]);
 
@@ -26,26 +56,8 @@ router.get('/admin-stats', jwtAuth, async (req, res, next) => {
             therapists: therapistsCount,
             programs: programsCount,
             appointments: appointmentsCount,
-            adherence: 75
-        });
-    } catch (error) {
-        next(error);
-    }
-});
-
-// GET /dashboard/patient-stats
-router.get('/patient-stats', jwtAuth, async (req, res, next) => {
-    try {
-        const appointments = await prisma.soap_notes.findMany({
-            where: { patient_id: req.userId },
-            take: 5,
-            orderBy: { created_at: 'desc' }
-        });
-
-        res.json({
-            programs: [],
-            appointments: [],
-            stats: { completed: 12, adherence: 85, pain: '2/10' }
+            // Jika tidak ada data, kembalikan 0 alih-alih null
+            adherence: Math.round(adherenceResult._avg.adherence_rate || 0)
         });
     } catch (error) {
         next(error);

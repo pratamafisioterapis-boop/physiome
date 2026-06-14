@@ -131,7 +131,10 @@ router.post('/login', async (req, res, next) => {
     try {
         // 1. Cari user berdasarkan email
         const user = await prisma.users.findUnique({
-            where: { email }
+            where: { email },
+            include: {
+                therapist_profile: { select: { id: true } }
+            }
         });
 
         if (!user) {
@@ -162,7 +165,8 @@ router.post('/login', async (req, res, next) => {
                 id: user.id,
                 fullName: user.fullName,
                 role: user.role,
-                clinic_id: user.clinic_id
+                clinic_id: user.clinic_id,
+                therapistId: user.therapist_profile?.id
             }
         });
     } catch (error) {
@@ -235,12 +239,18 @@ router.get('/me', jwtAuth, async (req, res, next) => {
     try {
         const user = await prisma.users.findUnique({
             where: { id: req.userId },
-            select: { id: true, fullName: true, role: true, clinic_id: true, email: true }
+            select: { 
+                id: true, fullName: true, role: true, clinic_id: true, email: true,
+                therapist_profile: { select: { id: true } }
+            }
         });
         
         if (!user) return res.status(404).json({ message: 'User not found' });
         
-        res.json(user);
+        res.json({
+            ...user,
+            therapistId: user.therapist_profile?.id
+        });
     } catch (error) {
         next(error);
     }

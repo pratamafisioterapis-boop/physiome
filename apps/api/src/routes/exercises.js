@@ -6,16 +6,12 @@ import { v4 as uuidv4 } from 'uuid';
 const router = express.Router();
 router.use(jwtAuth);
 
-// GET /exercises - Mengambil semua gerakan latihan di klinik
+// GET /exercises - Ambil semua latihan untuk klinik ini
 router.get('/', async (req, res, next) => {
     try {
         const exercises = await prisma.exercises.findMany({
-            where: {
-                clinic_id: req.clinicId
-            },
-            orderBy: {
-                name: 'asc'
-            }
+            where: { clinic_id: req.clinicId },
+            orderBy: { name: 'asc' }
         });
         res.json(exercises);
     } catch (error) {
@@ -23,21 +19,30 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-// POST /exercises - Menambahkan latihan baru
+// GET /exercises/:id - Ambil detail satu latihan
+router.get('/:id', async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        const exercise = await prisma.exercises.findUnique({
+            where: { id, clinic_id: req.clinicId }
+        });
+        if (!exercise) return res.status(404).json({ error: 'Exercise not found' });
+        res.json(exercise);
+    } catch (error) {
+        next(error);
+    }
+});
+
+// POST /exercises - Tambah latihan baru ke pustaka
 router.post('/', async (req, res, next) => {
-    const { name, description, body_region, difficulty, thumbnail_url, gif_url, video_url } = req.body;
+    const data = req.body;
     try {
         const exercise = await prisma.exercises.create({
             data: {
                 id: uuidv4(),
-                name,
-                description,
-                body_region,
-                difficulty,
-                thumbnail_url,
-                gif_url,
-                video_url,
-                clinic_id: req.clinicId
+                ...data,
+                clinic_id: req.clinicId,
+                created_by: req.userId
             }
         });
         res.status(201).json(exercise);
@@ -46,33 +51,29 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-// PUT /exercises/:id - Memperbarui latihan
+// PUT /exercises/:id - Update data latihan
 router.put('/:id', async (req, res, next) => {
     const { id } = req.params;
     const data = req.body;
     try {
-        const exercise = await prisma.exercises.update({
-            where: {
-                id: id,
-                clinic_id: req.clinicId
-            },
+        const updated = await prisma.exercises.update({
+            where: { id, clinic_id: req.clinicId },
             data
         });
-        res.json(exercise);
+        res.json(updated);
     } catch (error) {
         next(error);
     }
 });
 
-// DELETE /exercises/:id - Menghapus latihan
+// DELETE /exercises/:id - Hapus latihan
 router.delete('/:id', async (req, res, next) => {
     const { id } = req.params;
     try {
+        // Opsional: Cek apakah latihan sedang digunakan di program manapun
+        // Untuk saat ini kita izinkan penghapusan langsung
         await prisma.exercises.delete({
-            where: {
-                id: id,
-                clinic_id: req.clinicId
-            }
+            where: { id, clinic_id: req.clinicId }
         });
         res.json({ message: 'Exercise deleted successfully' });
     } catch (error) {

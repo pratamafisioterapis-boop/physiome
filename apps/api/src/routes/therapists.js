@@ -49,6 +49,41 @@ router.get('/', async (req, res, next) => {
     }
 });
 
+// GET /therapists/:id - Ambil detail satu terapis
+router.get('/:id', async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        const therapist = await prisma.therapists.findUnique({
+            where: { id, clinic_id: req.clinicId },
+            include: {
+                user: {
+                    select: {
+                        fullName: true,
+                        email: true,
+                        phone: true,
+                        role: true,
+                        created_at: true
+                    }
+                }
+            }
+        });
+
+        if (!therapist) {
+            return res.status(404).json({ error: 'Therapist not found' });
+        }
+
+        res.json({
+            ...therapist,
+            fullName: therapist.user.fullName,
+            email: therapist.user.email,
+            phone: therapist.user.phone,
+            role: therapist.user.role
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
 // POST /therapists - Buat User & Profil Terapis sekaligus
 router.post('/', async (req, res, next) => {
     const { fullName, email, password, phone, specialization, licenseNumber } = req.body || {};
@@ -106,7 +141,7 @@ router.put('/:id', async (req, res, next) => {
         const result = await prisma.$transaction(async (tx) => {
             // 1. Cari data terapis untuk mendapatkan userId
             const therapist = await tx.therapists.findUnique({
-                where: { id },
+                where: { id, clinic_id: req.clinicId },
                 select: { userId: true }
             });
 
@@ -143,6 +178,33 @@ router.put('/:id', async (req, res, next) => {
         if (error.message === 'Therapist not found') {
             return res.status(404).json({ error: 'Therapist not found' });
         }
+        next(error);
+    }
+});
+
+// DELETE /therapists/:id - Hapus Terapis & User akunnya
+router.delete('/:id', async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        await prisma.$transaction(async (tx) => {
+            // 1. Cari data terapis untuk mendapatkan userId
+            const therapist = await tx.therapists.findUnique({
+                where: { id, clinic_id: req.clinicId },
+                select: { userId: true }
+            });
+
+            if (!therapist) {
+                throw new Error('Therapist not found');
+            }
+
+            // 2. Hapus profil terapis dan user secara berurutan
+            await tx.therapists.delete({ where: { id } });
+            await tx.users.delete({ where: { id: therapist.userId } });
+        });
+
+        res.json({ message: 'Therapist and user account deleted successfully' });
+    } catch (error) {
+        if (error.message === 'Therapist not found') return res.status(404).json({ error: error.message });
         next(error);
     }
 });
