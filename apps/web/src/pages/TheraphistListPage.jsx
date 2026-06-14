@@ -150,7 +150,7 @@ const TherapistListPage = () => {
                 </div>
               ) : (
                 <Table 
-                  headers={['Therapist', 'Role', 'Contact', 'Status', 'Actions']}
+                  headers={['Therapist', 'Specialization', 'Contact', 'Status', 'Actions']}
                   page={page}
                   totalPages={totalPages}
                   onPageChange={setPage}
@@ -176,10 +176,10 @@ const TherapistListPage = () => {
                   {paginatedTherapists.map((therapist) => (
                     <tr key={therapist.id} className="hidden md:table-row border-b border-border/50">
                       <td className="py-3 px-4">
-                        <div className="font-medium text-foreground">{therapist.fullName || therapist.name}</div>
+                        <div className="font-medium text-foreground">{therapist.fullName}</div>
                         <div className="text-xs text-muted-foreground">{therapist.email}</div>
                       </td>
-                      <td className="py-3 px-4 capitalize">{therapist.role}</td>
+                      <td className="py-3 px-4">{therapist.specialization || '-'}</td>
                       <td className="py-3 px-4">
                         <div className="text-sm">{therapist.phone}</div>
                       </td>

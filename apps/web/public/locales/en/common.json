@@ -1,4 +1,3 @@
-
 {
   "nav": {
     "home": "Home",
@@ -7,7 +6,7 @@
     "pricing": "Pricing",
     "about": "About",
     "login": "Login",
-    "signup": "Start Free",
+    "signup": "Get Started Free",
     "dashboard": "Dashboard",
     "patients": "Patients",
     "appointments": "Appointments",
@@ -37,7 +36,8 @@
     "clinicSettings": "Clinic Settings",
     "helpSupport": "Help & Support",
     "therapists": "Therapists",
-    "exerciseEcosystem": "Exercise Ecosystem"
+    "exerciseEcosystem": "Exercise Ecosystem",
+    "soapNotes": "SOAP Notes"
   },
   "common": {
     "welcome": "Welcome",
@@ -46,7 +46,21 @@
     "cancel": "Cancel",
     "loading": "Loading...",
     "success": "Success",
-    "error": "Error"
+    "error": "Error",
+    "loggedOut": "Logged out successfully",
+    "backToPatients": "Back to Patients",
+    "yearsOld": "years old",
+    "added": "Added",
+    "editProfile": "Edit Profile",
+    "personalInformation": "Personal Information",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "dob": "Date of Birth",
+    "occupation": "Occupation",
+    "address": "Home Address",
+    "medicalInformation": "Medical Information",
+    "mainComplaint": "Main Complaint",
+    "diagnosis": "Diagnosis / Notes"
   },
   "exercises": {
     "sets": "Sets",

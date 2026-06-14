@@ -1,269 +1,200 @@
 import express from 'express';
-import bcrypt from 'bcrypt'; // Untuk hashing password
-import jwt from 'jsonwebtoken'; // Untuk JSON Web Tokens
-import { v4 as uuidv4 } from 'uuid'; // Untuk menghasilkan UUID
-import prisma from '../utils/prismaClient.js'; // Mengganti PocketBase client dengan Prisma
-import logger from '../utils/logger.js';
-import { jwtAuth } from '../middleware/jwt-auth.js'; // Middleware autentikasi JWT
- 
+import prisma from '../utils/prismaClient.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
+import { jwtAuth } from '../middleware/jwt-auth.js';
+
 const router = express.Router();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_jwt_key'; // Pastikan ini ada di .env Anda
-const BCRYPT_SALT_ROUNDS = 10; // Jumlah salt rounds untuk bcrypt
+/**
+ * POST /auth/register
+ * Logika Pendaftaran: 
+ * 1. Jika ada inviteCode: Bergabung ke klinik yang ada sebagai 'therapist'.
+ * 2. Jika tidak ada: Membuat Klinik Baru + User sebagai 'admin'.
+ */
+router.post('/register', async (req, res, next) => {
+    const { clinicName, fullName, email, password, inviteCode } = req.body;
 
-// Endpoint Login
-// POST /auth/login
-router.post('/login', async (req, res, next) => {
-  const { email, password } = req.body;
+    try {
+        // Cek apakah email sudah terdaftar
+        const existingUser = await prisma.users.findUnique({ where: { email } });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Email is already registered' });
+        }
 
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required' });
-  }
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-  try {
-    const user = await prisma.users.findUnique({
-      where: { email },
-      select: { id: true, email: true, password: true, role: true, fullName: true, clinic_id: true }
-    });
+        // Menjalankan transaksi database
+        const result = await prisma.$transaction(async (tx) => {
+            let clinicId = null;
+            let userRole = 'admin';
+            let inviteId = null;
 
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+            // 1. Cek Invite Code jika ada
+            if (inviteCode) {
+                const codeData = await tx.invite_codes.findUnique({
+                    where: { code: inviteCode, is_active: true }
+                });
+
+                if (!codeData || (codeData.expires_at && new Date() > codeData.expires_at)) {
+                    throw new Error('Invalid or expired invite code');
+                }
+
+                // Ambil clinic_id dari siapa yang membuat invite code ini (atau sesuaikan skema Anda)
+                // Karena skema invite_codes tidak punya clinic_id langsung, kita asumsikan 
+                // invite code terkait dengan role therapist untuk bergabung ke klinik.
+                // Untuk demo ini, kita cari user yang buat code tersebut.
+                const inviter = await tx.users.findFirst({
+                    where: { invite_code_id: codeData.id }
+                });
+                
+                clinicId = inviter?.clinic_id;
+                userRole = codeData.role || 'therapist';
+                inviteId = codeData.id;
+            } else {
+                // Buat Klinik Baru jika tidak ada invite code
+                const newClinic = await tx.clinics.create({
+                    data: {
+                        id: uuidv4(),
+                        name: clinicName || `${fullName}'s Clinic`,
+                    }
+                });
+                clinicId = newClinic.id;
+            }
+
+            // 2. Buat User (Role: admin)
+            const user = await tx.users.create({
+                data: {
+                    id: uuidv4(),
+                    email,
+                    password: hashedPassword,
+                    fullName,
+                    role: userRole,
+                    clinic_id: clinicId,
+                    invite_code_id: inviteId
+                }
+            });
+
+            // Jika bergabung lewat invite, tandai kode sudah terpakai
+            if (inviteId) {
+                await tx.invite_codes.update({
+                    where: { id: inviteId },
+                    data: { used_by: user.id, is_active: false }
+                });
+            }
+
+            // Jika pendaftar baru (admin), update pencipta klinik
+            if (!inviteCode) {
+                await tx.clinics.update({
+                    where: { id: clinicId },
+                    data: { created_by: user.id }
+                });
+            }
+
+            return { user, clinicId };
+        });
+
+        // Generate JWT Token
+        const token = jwt.sign(
+            { 
+                userId: result.user.id, 
+                userRole: result.user.role, 
+                clinicId: result.clinicId 
+            },
+            process.env.JWT_SECRET || 'fallback-secret',
+            { expiresIn: '24h' }
+        );
+
+        res.status(201).json({
+            message: 'Registration successful',
+            token,
+            user: {
+                id: result.user.id,
+                fullName: result.user.fullName,
+                role: result.user.role,
+                clinicId: result.clinicId
+            }
+        });
+    } catch (error) {
+        next(error);
     }
-
-    // Verifikasi password
-    // Mendukung transisi: cek bcrypt, jika gagal cek plain text (untuk data demo)
-    const isPasswordValid = user.password.startsWith('$2b$') 
-      ? await bcrypt.compare(password, user.password)
-      : password === user.password;
-      
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    // Buat JWT Token
-    const token = jwt.sign(
-      { userId: user.id, userRole: user.role, clinicId: user.clinic_id },
-      JWT_SECRET,
-      { expiresIn: '7d' } // Token berlaku 7 hari untuk pengembangan
-    );
-
-    // Hapus password dari objek user sebelum dikirim ke frontend
-    const { password: _, ...userWithoutPassword } = user;
-
-    res.json({
-      token,
-      user: userWithoutPassword
-    });
-  } catch (error) {
-    logger.error('Login error:', error);
-    next(error); // Teruskan error ke error middleware
-  }
 });
 
-// Endpoint Get Current User (Protected)
-// GET /auth/me
-router.get('/me', jwtAuth, async (req, res, next) => {
-  try {
-    // req.userId diset oleh middleware jwtAuth
-    const user = await prisma.users.findUnique({
-      where: { id: req.userId },
-      select: { id: true, email: true, role: true, fullName: true, clinic_id: true }
-    });
-
-    if (!user) return res.status(404).json({ error: 'User not found' });
-
-    res.json(user);
-  } catch (error) {
-    logger.error('Error fetching current user:', error);
-    next(error);
-  }
-});
-
-// Endpoint Update User Profile (Protected)
-// PATCH /auth/update-profile
+// PATCH /auth/update-profile - Digunakan saat onboarding untuk melengkapi data profil & klinik
 router.patch('/update-profile', jwtAuth, async (req, res, next) => {
-  const data = req.body;
-  try {
-    const updatedUser = await prisma.users.update({
-      where: { id: req.userId },
-      data: data,
-      select: { id: true, email: true, role: true, fullName: true, clinic_id: true }
-    });
-    res.json(updatedUser);
-  } catch (error) {
-    logger.error('Error updating user profile:', error);
-    next(error);
-  }
+    const { fullName, specialization, licenseNumber, phone, address, city } = req.body;
+
+    try {
+        await prisma.$transaction(async (tx) => {
+            // 1. Update nama lengkap User
+            if (fullName) {
+                await tx.users.update({
+                    where: { id: req.userId },
+                    data: { fullName }
+                });
+            }
+
+            // 2. Buat atau Update profil profesional Terapis
+            if (specialization || licenseNumber) {
+                const user = await tx.users.findUnique({
+                    where: { id: req.userId },
+                    select: { clinic_id: true }
+                });
+
+                await tx.therapists.upsert({
+                    where: { userId: req.userId },
+                    update: {
+                        specialization,
+                        licenseNumber
+                    },
+                    create: {
+                        id: uuidv4(),
+                        userId: req.userId,
+                        clinic_id: user.clinic_id,
+                        specialization,
+                        licenseNumber,
+                        status: 'Active'
+                    }
+                });
+            }
+
+            // 3. Update informasi Klinik (hanya jika user adalah admin)
+            if (req.userRole === 'admin' && (phone || address || city)) {
+                const user = await tx.users.findUnique({
+                    where: { id: req.userId },
+                    select: { clinic_id: true }
+                });
+
+                if (user?.clinic_id) {
+                    await tx.clinics.update({
+                        where: { id: user.clinic_id },
+                        data: { phone, address, city }
+                    });
+                }
+            }
+        });
+
+        res.json({ message: 'Profile updated successfully' });
+    } catch (error) {
+        next(error);
+    }
 });
 
-// Endpoint Validate Invite Code
-// POST /auth/validate-invite-code
-router.post('/validate-invite-code', async (req, res) => {
-  const { code } = req.body;
-
-  if (!code) {
-    return res.status(400).json({ error: 'code is required' });
-  }
-
-  // Query invite_codes collection for code (case-insensitive)
-  const inviteCode = await prisma.invite_codes.findFirst({
-    where: { code: code.toLowerCase() }
-  });
-
-  // Check if code exists
-  if (!inviteCode) {
-    return res.status(400).json({ error: 'Code is invalid' });
-  }
-
-  // Check if code is active
-  if (!inviteCode.is_active) {
-    return res.status(400).json({ error: 'Code is invalid' });
-  }
-
-  // Check if code is expired (expires_at is null or in future)
-  if (inviteCode.expires_at) {
-    const expiryDate = new Date(inviteCode.expires_at); // Pastikan expires_at adalah string tanggal yang valid
-    if (expiryDate < new Date()) {
-      return res.status(400).json({ error: 'Code is expired' });
+// Endpoint /auth/me untuk sinkronisasi login state
+router.get('/me', jwtAuth, async (req, res, next) => {
+    try {
+        const user = await prisma.users.findUnique({
+            where: { id: req.userId },
+            select: { id: true, fullName: true, role: true, clinic_id: true, email: true }
+        });
+        
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        
+        res.json(user);
+    } catch (error) {
+        next(error);
     }
-  }
-
-  // Check if code is unused (used_by is null)
-  if (inviteCode.used_by) {
-    return res.status(400).json({ error: 'Code is already used' });
-  }
-
-  // All checks passed
-  res.json({
-    valid: true,
-    role: inviteCode.role,
-    message: 'Code is valid',
-  });
-});
-
-// Endpoint Register New User
-// POST /auth/register
-router.post('/register', async (req, res) => {
-  const { email, password, fullName, inviteCode } = req.body;
-
-  if (!email || !password || !fullName) {
-    return res.status(400).json({ error: 'email, password, and fullName are required' });
-  }
-
-  // Check if user already exists
-  const existingUser = await prisma.users.findUnique({
-    where: { email }
-  });
-
-  if (existingUser) {
-    return res.status(400).json({ error: 'Email is already registered' });
-  }
-
-  let role = 'therapist'; // Default role
-  
-  // Hash password
-  const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
-  
-  // If inviteCode provided, validate it
-  if (inviteCode) {
-    const inviteCodeRecord = await prisma.invite_codes.findFirst({
-      where: { code: inviteCode.toLowerCase() }
-    });
-
-    // Validate code
-    if (!inviteCodeRecord) {
-      return res.status(400).json({ error: 'Invalid or expired invite code' });
-    }
-
-    if (!inviteCodeRecord.is_active) {
-      return res.status(400).json({ error: 'Invalid or expired invite code' });
-    }
-
-    if (inviteCodeRecord.expires_at) {
-      const expiryDate = new Date(inviteCodeRecord.expires_at); // Pastikan expires_at adalah string tanggal yang valid
-      if (expiryDate < new Date()) {
-        return res.status(400).json({ error: 'Invalid or expired invite code' });
-      }
-    }
-
-    if (inviteCodeRecord.used_by) {
-      return res.status(400).json({ error: 'Invalid or expired invite code' });
-    }
-
-    // Extract role from validated code
-    role = inviteCodeRecord.role;
-
-    const userId = uuidv4();
-
-    const newUser = await prisma.users.create({
-      data: {
-        id: userId,
-        email,
-        password: hashedPassword,
-        fullName: fullName,
-        role,
-        invite_code_id: inviteCodeRecord.id,
-      },
-      select: { id: true, email: true, role: true }
-    });
-
-    // Update the invite_code record: set used_by = newUser.id, is_active = false
-    await prisma.invite_codes.update({
-      where: { id: inviteCodeRecord.id },
-      data: { used_by: newUser.id, is_active: false }
-    });
-
-    const token = jwt.sign(
-      { userId: newUser.id, userRole: newUser.role, clinicId: newUser.clinic_id }, // Sertakan clinic_id
-      JWT_SECRET, // Gunakan JWT_SECRET yang sama
-      { expiresIn: '7d' } // Token berlaku 7 hari untuk pengembangan
-    );
-
-    logger.info(`User registered with invite code: ${newUser.id}`);
-
-    res.json({
-      success: true,
-      token,
-      user: {
-        id: newUser.id,
-        email: newUser.email,
-        role: newUser.role,
-      },
-    });
-  } else {
-    // No invite code provided, create user with default role
-    const userId = uuidv4();
-
-    const newUser = await prisma.users.create({
-      data: {
-        id: userId,
-        email,
-        password: hashedPassword, // Simpan password yang sudah di-hash
-        fullName: fullName,
-        // passwordConfirm tidak diperlukan di Prisma
-        role,
-      },
-      select: { id: true, email: true, role: true }
-    });
-
-    const token = jwt.sign(
-      { userId: newUser.id, userRole: newUser.role, clinicId: newUser.clinic_id }, // Sertakan clinic_id
-      JWT_SECRET, // Gunakan JWT_SECRET yang sama
-      { expiresIn: '7d' } // Token berlaku 7 hari untuk pengembangan
-    );
-
-    logger.info(`User registered without invite code: ${newUser.id}`);
-
-    res.json({
-      success: true,
-      token,
-      user: {
-        id: newUser.id,
-        email: newUser.email,
-        role: newUser.role,
-      },
-    });
-  }
 });
 
 export default router;

@@ -37,7 +37,8 @@
     "clinicSettings": "Pengaturan Klinik",
     "helpSupport": "Bantuan & Dukungan",
     "therapists": "Terapis",
-    "exerciseEcosystem": "Ekosistem Latihan"
+    "exerciseEcosystem": "Ekosistem Latihan",
+    "soapNotes": "Catatan SOAP"
   },
   "common": {
     "welcome": "Selamat Datang",
@@ -46,7 +47,21 @@
     "cancel": "Batal",
     "loading": "Memuat...",
     "success": "Sukses",
-    "error": "Kesalahan"
+    "error": "Kesalahan",
+    "loggedOut": "Berhasil keluar",
+    "backToPatients": "Kembali ke Pasien",
+    "yearsOld": "tahun",
+    "added": "Ditambahkan",
+    "editProfile": "Edit Profil",
+    "personalInformation": "Informasi Pribadi",
+    "email": "Alamat Email",
+    "phone": "Nomor Telepon",
+    "dob": "Tanggal Lahir",
+    "occupation": "Pekerjaan",
+    "address": "Alamat Rumah",
+    "medicalInformation": "Informasi Medis",
+    "mainComplaint": "Keluhan Utama",
+    "diagnosis": "Diagnosis / Catatan"
   },
   "exercises": {
     "sets": "Set",

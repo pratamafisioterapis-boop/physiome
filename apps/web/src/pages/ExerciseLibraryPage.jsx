@@ -1,36 +1,45 @@
 
-import React, { useState, useEffect } from 'react';
-import { Search, Filter, Play, Star, Plus, Dumbbell } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Search, Filter, Play, Plus, Dumbbell, Edit2, Trash2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import pb from '@/lib/pocketbaseClient.js';
+import apiServerClient from '@/lib/apiServerClient.js';
+import { useAuth } from '@/contexts/AuthContext.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
 import Header from '@/components/Header.jsx';
+import AddExerciseModal from '@/components/exercises/AddExerciseModal.jsx';
+import EditExerciseModal from '@/components/exercises/EditExerciseModal.jsx';
+import DeleteExerciseConfirmation from '@/components/exercises/DeleteExerciseConfirmation.jsx';
 
 export default function ExerciseLibraryPage() {
+  const { currentUser } = useAuth();
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editingExercise, setEditingExercise] = useState(null);
+  const [deletingExercise, setDeletingExercise] = useState(null);
+
+  const fetchExercises = useCallback(async () => {
+    if (!currentUser) return;
+    try {
+      const data = await apiServerClient.fetch('/exercises');
+      // Memastikan data adalah array, atau mengambil dari properti data jika dibungkus
+      setExercises(Array.isArray(data) ? data : data.data || []);
+    } catch (error) {
+      console.error("Error fetching exercises:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentUser]);
+
   useEffect(() => {
-    const fetchExercises = async () => {
-      try {
-        const records = await pb.collection('exercises').getFullList({
-          sort: '-created',
-          $autoCancel: false
-        });
-        setExercises(records);
-      } catch (error) {
-        console.error("Error fetching exercises:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchExercises();
-  }, []);
+  }, [fetchExercises]);
 
   const filtered = exercises.filter(e => 
     e.name?.toLowerCase().includes(search.toLowerCase()) || 
@@ -58,7 +67,7 @@ export default function ExerciseLibraryPage() {
               <Button variant="outline" className="rounded-full">
                 <Filter className="w-4 h-4 mr-2" /> Filters
               </Button>
-              <Button className="rounded-full shadow-glow-primary">
+              <Button className="rounded-full shadow-glow-primary" onClick={() => setIsAddOpen(true)}>
                 <Plus className="w-4 h-4 mr-2" /> Add Exercise
               </Button>
             </div>
@@ -90,9 +99,14 @@ export default function ExerciseLibraryPage() {
                       </div>
                     )}
                     <div className="absolute top-3 right-3">
-                      <button className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-accent-blue hover:bg-white transition-colors">
-                        <Star className="w-4 h-4" />
-                      </button>
+                      <div className="flex gap-2">
+                        <button onClick={() => setEditingExercise(ex)} className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-white transition-colors">
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => setDeletingExercise(ex)} className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-white transition-colors">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                   <CardContent className="p-5">
@@ -118,6 +132,31 @@ export default function ExerciseLibraryPage() {
 
         </main>
       </div>
+
+      {/* Modal Components */}
+      <AddExerciseModal 
+        isOpen={isAddOpen} 
+        onClose={() => setIsAddOpen(false)} 
+        onSuccess={fetchExercises} 
+      />
+      
+      {editingExercise && (
+        <EditExerciseModal 
+          isOpen={!!editingExercise} 
+          onClose={() => setEditingExercise(null)} 
+          onSuccess={fetchExercises} 
+          exercise={editingExercise} 
+        />
+      )}
+      
+      {deletingExercise && (
+        <DeleteExerciseConfirmation 
+          isOpen={!!deletingExercise} 
+          onClose={() => setDeletingExercise(null)} 
+          onSuccess={fetchExercises} 
+          exercise={deletingExercise} 
+        />
+      )}
     </div>
   );
 }

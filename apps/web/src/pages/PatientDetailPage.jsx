@@ -5,15 +5,16 @@ import Header from '@/components/Header.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
 import Button from '@/components/Button.jsx';
 import { ArrowLeft, Edit2, Trash2, Calendar, FileText, Activity, User } from 'lucide-react';
-import pb from '@/lib/pocketbaseClient';
 import apiServerClient from '@/lib/apiServerClient.js';
 import { Helmet } from 'react-helmet';
+import { useTranslation } from 'react-i18next';
 import EditPatientModal from '@/components/patients/EditPatientModal.jsx';
 import DeletePatientConfirmation from '@/components/patients/DeletePatientConfirmation.jsx';
 
 const PatientDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const [patient, setPatient] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,7 +65,7 @@ const PatientDetailPage = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col md:flex-row">
         <Sidebar />
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 ml-0 md:ml-64 flex flex-col">
           <Header />
           <div className="p-8">
             <div className="max-w-4xl mx-auto space-y-8 animate-pulse">
@@ -83,13 +84,13 @@ const PatientDetailPage = () => {
   return (
     <>
       <Helmet>
-        <title>{patient.full_name} - Patient Details | Physiome</title>
+        <title>{patient.name} - {t('nav.patients')} | Physiome</title>
       </Helmet>
       
       <div className="min-h-screen bg-background flex flex-col md:flex-row">
         <Sidebar />
         
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 ml-0 md:ml-64 flex flex-col min-w-0">
           <Header />
           
           <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
@@ -102,24 +103,24 @@ const PatientDetailPage = () => {
                   className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  Back to Patients
+                  {t('common.backToPatients') || 'Back to Patients'}
                 </button>
                 
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <h1 className="text-3xl font-bold text-foreground">{patient.full_name}</h1>
+                      <h1 className="text-3xl font-bold text-foreground">{patient.name}</h1>
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusBadgeColors[patient.status]}`}>
                         {patient.status}
                       </span>
                     </div>
                     <p className="text-muted-foreground">
-                      {patient.gender} • {calculateAge(patient.date_of_birth)} years old • Added {formatDate(patient.created)}
+                      {patient.gender} • {calculateAge(patient.birth_date)} {t('common.yearsOld') || 'years old'} • {t('common.added') || 'Added'} {formatDate(patient.created_at)}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <Button variant="outline" onClick={() => setIsEditOpen(true)} className="gap-2">
-                      <Edit2 className="w-4 h-4" /> Edit Profile
+                      <Edit2 className="w-4 h-4" /> {t('common.editProfile') || 'Edit Profile'}
                     </Button>
                     <Button variant="outline" onClick={() => setIsDeleteOpen(true)} className="text-destructive border-border hover:bg-destructive/10">
                       <Trash2 className="w-4 h-4" />
@@ -136,28 +137,28 @@ const PatientDetailPage = () => {
                     <div className="p-5 border-b border-border bg-muted/30">
                       <h2 className="font-semibold text-foreground flex items-center gap-2">
                         <User className="w-5 h-5 text-primary" />
-                        Personal Information
+                        {t('common.personalInformation') || 'Personal Information'}
                       </h2>
                     </div>
                     <div className="p-5 space-y-4">
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground">Email Address</p>
+                        <p className="text-sm font-medium text-muted-foreground">{t('common.email')}</p>
                         <p className="text-foreground mt-0.5">{patient.email}</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground">Phone Number</p>
+                        <p className="text-sm font-medium text-muted-foreground">{t('common.phone')}</p>
                         <p className="text-foreground mt-0.5">{patient.phone}</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground">Date of Birth</p>
-                        <p className="text-foreground mt-0.5">{formatDate(patient.date_of_birth)}</p>
+                        <p className="text-sm font-medium text-muted-foreground">{t('common.dob')}</p>
+                        <p className="text-foreground mt-0.5">{formatDate(patient.birth_date)}</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground">Occupation</p>
+                        <p className="text-sm font-medium text-muted-foreground">{t('common.occupation')}</p>
                         <p className="text-foreground mt-0.5">{patient.occupation || 'Not specified'}</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground">Home Address</p>
+                        <p className="text-sm font-medium text-muted-foreground">{t('common.address')}</p>
                         <p className="text-foreground mt-0.5">{patient.address || 'Not provided'}</p>
                       </div>
                     </div>
@@ -170,18 +171,18 @@ const PatientDetailPage = () => {
                     <div className="p-5 border-b border-border bg-muted/30">
                       <h2 className="font-semibold text-foreground flex items-center gap-2">
                         <Activity className="w-5 h-5 text-primary" />
-                        Medical Information
+                        {t('common.medicalInformation') || 'Medical Information'}
                       </h2>
                     </div>
                     <div className="p-5 space-y-6">
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground mb-1.5">Main Complaint</p>
+                        <p className="text-sm font-medium text-muted-foreground mb-1.5">{t('common.mainComplaint') || 'Main Complaint'}</p>
                         <div className="bg-muted/50 p-4 rounded-xl border border-border">
                           <p className="text-foreground whitespace-pre-wrap">{patient.main_complaint}</p>
                         </div>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground mb-1.5">Diagnosis / Notes</p>
+                        <p className="text-sm font-medium text-muted-foreground mb-1.5">{t('common.diagnosis') || 'Diagnosis / Notes'}</p>
                         {patient.diagnosis ? (
                           <div className="bg-muted/50 p-4 rounded-xl border border-border">
                             <p className="text-foreground whitespace-pre-wrap">{patient.diagnosis}</p>
@@ -198,7 +199,7 @@ const PatientDetailPage = () => {
                     <div className="p-5 border-b border-border flex items-center justify-between bg-muted/30">
                       <h2 className="font-semibold text-foreground flex items-center gap-2">
                         <Calendar className="w-5 h-5 text-primary" />
-                        Recent Appointments
+                        {t('nav.appointments')}
                       </h2>
                       <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/10">View All</Button>
                     </div>
@@ -215,7 +216,7 @@ const PatientDetailPage = () => {
                     <div className="p-5 border-b border-border flex items-center justify-between bg-muted/30">
                       <h2 className="font-semibold text-foreground flex items-center gap-2">
                         <FileText className="w-5 h-5 text-primary" />
-                        SOAP Notes
+                        {t('nav.soapNotes')}
                       </h2>
                       <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/10">Add Note</Button>
                     </div>

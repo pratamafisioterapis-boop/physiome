@@ -3,26 +3,28 @@ import React, { useState, useEffect } from 'react';
 import { FileVideo, MoreVertical, Edit2, Trash2, Play, Plus } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import pb from '@/lib/pocketbaseClient.js';
+import apiServerClient from '@/lib/apiServerClient.js';
+import { useAuth } from '@/contexts/AuthContext.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
 import Header from '@/components/Header.jsx';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import VideoUploadComponent from '@/components/VideoUploadComponent.jsx';
+import Modal from '@/components/Modal.jsx';
 import { toast } from 'sonner';
 
 export default function MyVideosPage() {
+  const { currentUser } = useAuth();
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
+  const [playingVideo, setPlayingVideo] = useState(null);
 
   const fetchVideos = async () => {
+    if (!currentUser) return;
     setLoading(true);
     try {
-      const records = await pb.collection('videos').getFullList({
-        sort: '-created',
-        $autoCancel: false
-      });
-      setVideos(records);
+      const data = await apiServerClient.fetch('/videos');
+      setVideos(Array.isArray(data) ? data : data.data || []);
     } catch (error) {
       console.error("Error fetching videos:", error);
       toast.error("Failed to load videos");
@@ -33,7 +35,7 @@ export default function MyVideosPage() {
 
   useEffect(() => {
     fetchVideos();
-  }, []);
+  }, [currentUser]);
 
   const handleUploadSuccess = (newVideo) => {
     toast.success("Video added to your library");
@@ -44,7 +46,7 @@ export default function MyVideosPage() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this video?")) {
       try {
-        await pb.collection('videos').delete(id, { $autoCancel: false });
+        await apiServerClient.fetch(`/videos/${id}`, { method: 'DELETE' });
         toast.success("Video deleted successfully");
         setVideos(videos.filter(v => v.id !== id));
       } catch (error) {
@@ -89,13 +91,18 @@ export default function MyVideosPage() {
               {videos.map(v => (
                 <Card key={v.id} className="border-border shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group flex flex-col">
                   <div className="relative aspect-video bg-secondary/10 flex items-center justify-center overflow-hidden">
-                    {v.thumbnail ? (
-                      <img src={pb.files.getUrl(v, v.thumbnail)} alt={v.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    {v.thumbnail_url ? (
+                      <img src={v.thumbnail_url} alt={v.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     ) : (
                       <FileVideo className="w-12 h-12 text-muted-foreground/30" />
                     )}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <Button size="icon" variant="secondary" className="rounded-full w-12 h-12 shadow-lg scale-90 group-hover:scale-100 transition-transform duration-300">
+                      <Button 
+                        size="icon" 
+                        variant="secondary" 
+                        className="rounded-full w-12 h-12 shadow-lg scale-90 group-hover:scale-100 transition-transform duration-300"
+                        onClick={() => setPlayingVideo(v)}
+                      >
                         <Play className="w-6 h-6 ml-1 text-foreground" />
                       </Button>
                     </div>
@@ -148,6 +155,24 @@ export default function MyVideosPage() {
 
         </main>
       </div>
+
+      {/* Video Player Modal */}
+      {playingVideo && (
+        <Modal
+          isOpen={!!playingVideo}
+          onClose={() => setPlayingVideo(null)}
+          title={playingVideo.name}
+        >
+          <div className="aspect-video w-full bg-black rounded-lg overflow-hidden flex items-center justify-center">
+            <video 
+              src={playingVideo.video_url} 
+              controls 
+              autoPlay 
+              className="w-full h-full"
+            />
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

@@ -2,94 +2,87 @@ import express from 'express';
 import prisma from '../utils/prismaClient.js';
 import { jwtAuth } from '../middleware/jwt-auth.js';
 import { v4 as uuidv4 } from 'uuid';
+import bcrypt from 'bcrypt'; // Pastikan sudah install bcrypt
 
 const router = express.Router();
 router.use(jwtAuth);
 
-// GET /therapists - Ambil semua user dengan role therapist di klinik yang sama
+// GET /therapists - Ambil daftar terapis (Join dengan tabel users)
 router.get('/', async (req, res, next) => {
     try {
-        const therapists = await prisma.users.findMany({
+        const therapists = await prisma.therapists.findMany({
             where: {
-                clinic_id: req.clinicId,
-                role: 'therapist'
+                clinic_id: req.clinicId
             },
-            select: {
-                id: true,
-                fullName: true,
-                email: true,
-                role: true,
-                created_at: true
+            include: {
+                user: {
+                    select: {
+                        fullName: true,
+                        email: true,
+                        role: true
+                    }
+                }
+            },
+            orderBy: {
+                created_at: 'desc'
             }
         });
-        res.json(therapists);
+
+        // Transformasi data agar sesuai dengan kebutuhan frontend
+        const formattedData = therapists.map(t => ({
+            id: t.id,
+            userId: t.userId,
+            fullName: t.user.fullName,
+            email: t.user.email,
+            role: t.user.role,
+            specialization: t.specialization,
+            status: t.status,
+            created_at: t.created_at
+        }));
+
+        res.json(formattedData);
     } catch (error) {
         next(error);
     }
 });
 
-// POST /therapists - Tambah terapis baru (sebagai user)
+// POST /therapists - Buat User & Profil Terapis sekaligus
 router.post('/', async (req, res, next) => {
-    const { fullName, email, password, clinic_id } = req.body;
-    try {
-        const user = await prisma.users.create({
-            data: {
-                id: uuidv4(),
-                fullName,
-                email,
-                password, // Pastikan di-hash di production!
-                role: 'therapist',
-                clinic_id: clinic_id || req.clinicId
-            }
-        });
-        res.status(201).json(user);
-    } catch (error) {
-        next(error);
-    }
-});
+    const { fullName, email, password, specialization, licenseNumber } = req.body;
 
-// PUT /therapists/:id - Update data terapis
-router.put('/:id', async (req, res, next) => {
-    const { id } = req.params;
-    const { fullName, email } = req.body;
     try {
-        const user = await prisma.users.update({
-            where: { 
-                id: id,
-                clinic_id: req.clinicId,
-                role: 'therapist'
-            },
-            data: {
-                fullName,
-                email
-            }
-        });
-        res.json(user);
-    } catch (error) {
-        next(error);
-    }
-});
-
-// DELETE /therapists/:id - Hapus terapis
-router.delete('/:id', async (req, res, next) => {
-    const { id } = req.params;
-    try {
-        const result = await prisma.users.delete({
-            where: {
-                id: id,
-                clinic_id: req.clinicId,
-                role: 'therapist'
-            }
-        });
-        
-        if (!result) {
-            return res.status(404).json({
-                message: 'Therapist not found'
+        const result = await prisma.$transaction(async (tx) => {
+            // 1. Buat User Account
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const newUser = await tx.users.create({
+                data: {
+                    id: uuidv4(),
+                    email,
+                    password: hashedPassword,
+                    fullName,
+                    role: 'therapist',
+                    clinic_id: req.clinicId
+                }
             });
-        }
 
-        return res.status(200).json({
-            message: 'Therapist deleted successfully'
+            // 2. Buat Therapist Profile
+            const newTherapist = await tx.therapists.create({
+                data: {
+                    id: uuidv4(),
+                    userId: newUser.id,
+                    specialization,
+                    licenseNumber,
+                    clinic_id: req.clinicId,
+                    status: 'Active'
+                }
+            });
+
+            return { newUser, newTherapist };
+        });
+
+        res.status(201).json({
+            message: 'Therapist and User created successfully',
+            data: result.newTherapist
         });
     } catch (error) {
         next(error);

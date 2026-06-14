@@ -219,6 +219,11 @@ const addTransformIndexHtml = {
 	transformIndexHtml(html) {
 		const tags = [
 			{
+				tag: 'base',
+				attrs: { href: '/' },
+				injectTo: 'head-prepend',
+			},
+			{
 				tag: 'script',
 				attrs: { type: 'module' },
 				children: configHorizonsRuntimeErrorHandler,
@@ -287,6 +292,7 @@ export default defineConfig({
 	optimizeDeps: {
 		include: allDeps,
 	},
+	base: '/',
 	customLogger: logger,
 	plugins: [
 		...(isDev ? [inlineEditPlugin(), editModeDevPlugin(), selectionModePlugin(), iframeRouteRestorationPlugin()] : []),
@@ -305,6 +311,21 @@ export default defineConfig({
 				target: 'http://localhost:3003',// Mengubah target proxy ke port backend yang sebenarnya
 				changeOrigin: true,
 				rewrite: (path) => path.replace(/^\/hcgi\/api/, ''),
+				// Konfigurasi tambahan untuk upload file besar
+				timeout: 0,
+				proxyTimeout: 0,
+				configure: (proxy, _options) => {
+					proxy.on('error', (err, _req, _res) => {
+						// Mencegah Vite crash saat backend menutup koneksi tiba-tiba (EPIPE)
+						if (err.code !== 'EPIPE' && err.code !== 'ECONNRESET') {
+							console.error('proxy error', err);
+						}
+					});
+				},
+			},
+			'/uploads': {
+				target: 'http://localhost:3003',
+				changeOrigin: true,
 			},
 		},
 		cors: true,

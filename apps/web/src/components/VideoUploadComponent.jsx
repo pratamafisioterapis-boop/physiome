@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import pb from '@/lib/pocketbaseClient.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 
 const VideoUploadComponent = ({ 
@@ -125,6 +124,23 @@ const VideoUploadComponent = ({
     setIsUploading(true);
     setUploadProgress(0);
 
+    // Ambil token secara konsisten. 
+    // Cek di tab Application -> Local Storage, pastikan key mana yang berisi JWT.
+    let token = localStorage.getItem('token') || 
+                localStorage.getItem('accessToken') || 
+                localStorage.getItem('auth_token');
+
+    // Membersihkan token dari tanda kutip jika tersimpan sebagai JSON string
+    if (token && (token.startsWith('"') || token.startsWith("'"))) {
+      token = token.slice(1, -1);
+    }
+
+    if (!token || token === 'null' || token === 'undefined') {
+      toast.error('Session expired. Please login again.');
+      setIsUploading(false);
+      return;
+    }
+
     const uploadData = new FormData();
     uploadData.append('video_file', selectedFile);
     uploadData.append('name', formData.name.trim());
@@ -156,7 +172,7 @@ const VideoUploadComponent = ({
       } else {
         try {
           const errorResponse = JSON.parse(xhr.responseText);
-          toast.error(`Upload failed: ${errorResponse.message || 'Unknown error'}`);
+          toast.error(`Upload failed (${xhr.status}): ${errorResponse.message || 'Unknown error'}`);
         } catch (e) {
           toast.error('Upload failed. Please try again.');
         }
@@ -175,8 +191,8 @@ const VideoUploadComponent = ({
       setUploadProgress(0);
     });
 
-    xhr.open('POST', `${pb.baseUrl}/api/collections/videos/records`, true);
-    xhr.setRequestHeader('Authorization', pb.authStore.token);
+    xhr.open('POST', '/hcgi/api/videos', true);
+    xhr.setRequestHeader('Authorization', `Bearer ${token?.trim()}`);
     xhr.send(uploadData);
   };
 

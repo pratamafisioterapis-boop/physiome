@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
-import Table from '@/components/Table.jsx';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import Button from '@/components/Button.jsx';
 import Input from '@/components/Input.jsx';
 import Select from '@/components/Select.jsx';
-import { Plus, Search, Eye, Edit2, Trash2, Users } from 'lucide-react';
+import { Plus, Search, Eye, Edit2, Trash2, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import apiServerClient from '@/lib/apiServerClient.js';
 import { Helmet } from 'react-helmet';
@@ -146,62 +146,106 @@ const PatientListPage = () => {
                   ))}
                 </div>
               ) : (
-                <Table 
-                  headers={['Patient', 'Date of Birth', 'Contact', 'Status', 'Actions']}
-                  page={page}
-                  totalPages={totalPages}
-                  onPageChange={setPage}
-                  isEmpty={paginatedPatients.length === 0}
-                  emptyMessage={
-                    <div className="flex flex-col items-center justify-center py-12">
-                      <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                        <Users className="w-8 h-8 text-muted-foreground" />
-                      </div>
-                      <p className="text-lg font-medium text-foreground">No patients found</p>
-                      <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto text-center">
-                        {search || statusFilter ? "Try adjusting your filters or search query." : "Get started by adding your first patient."}
-                      </p>
-                      {!(search || statusFilter) && (
-                        <Button variant="outline" onClick={() => setIsAddOpen(true)} className="mt-6">
-                          Add Patient
-                        </Button>
-                      )}
-                    </div>
-                  }
-                >
-                  {/* HANYA TR untuk tabel desktop */}
-                  {paginatedPatients.map((patient) => (
-                    <tr key={patient.id} className="hidden md:table-row border-b border-border/50">
-                      <td className="py-3 px-4">
-                        <div className="font-medium text-foreground">{patient.name}</div>
-                        <div className="text-xs text-muted-foreground">{patient.gender}</div>
-                      </td>
-                      <td className="py-3 px-4">{formatDate(patient.birth_date)}</td>
-                      <td className="py-3 px-4">
-                        <div className="text-sm">{patient.phone}</div>
-                        <div className="text-xs text-muted-foreground">{patient.email}</div>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadgeColors[patient.status]}`}>
-                          {patient.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="sm" onClick={() => navigate(`/patients/${patient.id}`)} className="h-8 px-2">
-                            <Eye className="w-4 h-4" />
+                <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+                  <div className="hidden md:block">
+                    <Table>
+                      <TableHeader className="bg-muted/50">
+                        <TableRow>
+                          <TableHead className="font-semibold text-foreground">Patient</TableHead>
+                          <TableHead className="font-semibold text-foreground">Date of Birth</TableHead>
+                          <TableHead className="font-semibold text-foreground">Contact</TableHead>
+                          <TableHead className="font-semibold text-foreground">Status</TableHead>
+                          <TableHead className="text-right font-semibold text-foreground">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {paginatedPatients.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={5} className="text-center py-12">
+                              <div className="flex flex-col items-center justify-center">
+                                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+                                  <Users className="w-8 h-8 text-muted-foreground" />
+                                </div>
+                                <p className="text-lg font-medium text-foreground">No patients found</p>
+                                <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto text-center">
+                                  {search || statusFilter ? "Try adjusting your filters or search query." : "Get started by adding your first patient."}
+                                </p>
+                                {!(search || statusFilter) && (
+                                  <Button variant="outline" onClick={() => setIsAddOpen(true)} className="mt-6">
+                                    Add Patient
+                                  </Button>
+                                )}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          paginatedPatients.map((patient) => (
+                            <TableRow key={patient.id} className="hover:bg-muted/30">
+                              <TableCell>
+                                <div className="font-medium text-foreground">{patient.name}</div>
+                                <div className="text-xs text-muted-foreground capitalize">{patient.gender}</div>
+                              </TableCell>
+                              <TableCell>{formatDate(patient.birth_date)}</TableCell>
+                              <TableCell>
+                                <div className="text-sm">{patient.phone}</div>
+                                <div className="text-xs text-muted-foreground">{patient.email}</div>
+                              </TableCell>
+                              <TableCell>
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadgeColors[patient.status] || ''}`}>
+                                  {patient.status}
+                                </span>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex items-center justify-end gap-2">
+                                  <Button variant="ghost" size="sm" onClick={() => navigate(`/patients/${patient.id}`)} className="h-8 px-2">
+                                    <Eye className="w-4 h-4" />
+                                  </Button>
+                                  <Button variant="ghost" size="sm" onClick={() => setEditingPatient(patient)} className="h-8 px-2">
+                                    <Edit2 className="w-4 h-4" />
+                                  </Button>
+                                  <Button variant="ghost" size="sm" onClick={() => setDeletingPatient(patient)} className="h-8 px-2 text-destructive">
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Pagination Footer */}
+                  {totalPages > 1 && (
+                    <div className="px-4 py-3 flex items-center justify-between border-t border-border bg-muted/20">
+                      <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                          <p className="text-sm text-muted-foreground">
+                            Showing page <span className="font-medium text-foreground">{page}</span> of <span className="font-medium text-foreground">{totalPages}</span>
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage(prev => Math.max(prev - 1, 1))}
+                            disabled={page === 1}
+                          >
+                            <ChevronLeft className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="sm" onClick={() => setEditingPatient(patient)} className="h-8 px-2">
-                            <Edit2 className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => setDeletingPatient(patient)} className="h-8 px-2 text-destructive">
-                            <Trash2 className="w-4 h-4" />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={page === totalPages}
+                          >
+                            <ChevronRight className="w-4 h-4" />
                           </Button>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </Table>
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* Mobile Cards - Render SEPENUHNYA di luar komponen Table */}

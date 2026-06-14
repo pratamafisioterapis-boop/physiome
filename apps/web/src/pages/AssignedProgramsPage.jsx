@@ -5,21 +5,32 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import pb from '@/lib/pocketbaseClient.js';
+import apiServerClient from '@/lib/apiServerClient.js';
+import { useAuth } from '@/contexts/AuthContext.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
 import Header from '@/components/Header.jsx';
 import { toast } from 'sonner';
 
 export default function AssignedProgramsPage() {
+  const { currentUser } = useAuth();
   const [assignments, setAssignments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    pb.collection('assigned_programs').getFullList({
-      expand: 'patient_id,program_id',
-      sort: '-created',
-      $autoCancel: false
-    }).then(setAssignments).catch(() => toast.error("Failed to load assignments"));
-  }, []);
+    const fetchAssignments = async () => {
+      if (!currentUser) return;
+      try {
+        const data = await apiServerClient.fetch('/program-assignments');
+        setAssignments(Array.isArray(data) ? data : data.data || []);
+      } catch (error) {
+        console.error("Error fetching assignments:", error);
+        toast.error("Failed to load assignments");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAssignments();
+  }, [currentUser]);
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -48,13 +59,15 @@ export default function AssignedProgramsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {assignments.length === 0 ? (
+                {loading ? (
+                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground animate-pulse">Loading assignments...</TableCell></TableRow>
+                ) : assignments.length === 0 ? (
                   <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No assigned programs</TableCell></TableRow>
                 ) : assignments.map(a => (
                   <TableRow key={a.id} className="hover:bg-muted/30">
-                    <TableCell className="font-medium text-foreground">{a.expand?.patient_id?.full_name}</TableCell>
-                    <TableCell>{a.expand?.program_id?.name}</TableCell>
-                    <TableCell className="text-muted-foreground">{new Date(a.assigned_date).toLocaleDateString()}</TableCell>
+                    <TableCell className="font-medium text-foreground">{a.patients?.name || 'Unknown Patient'}</TableCell>
+                    <TableCell>{a.program_name}</TableCell>
+                    <TableCell className="text-muted-foreground">{new Date(a.created_at).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <Badge className={a.status === 'Active' ? 'bg-success/10 text-success' : 'bg-muted text-muted-foreground'}>
                         {a.status || 'Active'}

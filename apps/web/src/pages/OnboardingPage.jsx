@@ -24,9 +24,9 @@ const OnboardingPage = () => {
   });
   
   const [therapistData, setTherapistData] = useState({
-    name: '',
-    email: '',
-    phone: ''
+    name: currentUser?.fullName || '',
+    specialization: '',
+    licenseNumber: ''
   });
   
   const handleClinicChange = (e) => {
@@ -54,7 +54,6 @@ const OnboardingPage = () => {
   const validateStep2 = () => {
     const newErrors = {};
     if (!therapistData.name) newErrors.therapistName = 'Therapist name is required';
-    if (!therapistData.email) newErrors.therapistEmail = 'Email is required';
     return newErrors;
   };
   
@@ -83,25 +82,19 @@ const OnboardingPage = () => {
   const handleComplete = async () => {
     setIsLoading(true);
     try {
-      // 1. Create the clinic
-      const clinic = await apiServerClient.fetch('/clinics', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(clinicData)
-      });
-      
-      // 2. Update current user's profile with therapist info and clinic_id
+      // Update user profile, therapist details, and clinic contact info in one call
       await apiServerClient.fetch('/auth/update-profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fullName: therapistData.name,
-          clinic_id: clinic.id
+          specialization: therapistData.specialization,
+          licenseNumber: therapistData.licenseNumber,
+          phone: clinicData.phone,
+          address: clinicData.address,
+          city: clinicData.city
         })
       });
-      
-      // 3. Update state locally
-      await updateUserClinicId(clinic.id);
       
       navigate('/dashboard');
     } catch (error) {
@@ -200,33 +193,28 @@ const OnboardingPage = () => {
               
               {currentStep === 2 && (
                 <div className="space-y-4">
-                  <h2 className="text-lg font-semibold text-foreground mb-4">Create your first therapist</h2>
+                  <h2 className="text-lg font-semibold text-foreground mb-4">Professional Information</h2>
                   <Input
-                    label="Therapist name"
+                    label="Full Name"
                     name="name"
                     value={therapistData.name}
                     onChange={handleTherapistChange}
                     error={errors.therapistName}
-                    placeholder="Dr. Sarah Johnson"
                     required
                   />
                   <Input
-                    label="Email"
-                    name="email"
-                    type="email"
-                    value={therapistData.email}
+                    label="Specialization"
+                    name="specialization"
+                    value={therapistData.specialization}
                     onChange={handleTherapistChange}
-                    error={errors.therapistEmail}
-                    placeholder="sarah@example.com"
-                    required
+                    placeholder="e.g. Musculoskeletal Physiotherapy"
                   />
                   <Input
-                    label="Phone"
-                    name="phone"
-                    type="tel"
-                    value={therapistData.phone}
+                    label="License Number (STR)"
+                    name="licenseNumber"
+                    value={therapistData.licenseNumber}
                     onChange={handleTherapistChange}
-                    placeholder="+1 (555) 987-6543"
+                    placeholder="Your professional license number"
                   />
                 </div>
               )}
@@ -264,20 +252,22 @@ const OnboardingPage = () => {
                   </div>
                   
                   <div className="bg-muted rounded-lg p-4">
-                    <h3 className="font-semibold text-foreground mb-3">Therapist details</h3>
+                    <h3 className="font-semibold text-foreground mb-3">Professional details</h3>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Name:</span>
                         <span className="text-foreground font-medium">{therapistData.name}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Email:</span>
-                        <span className="text-foreground">{therapistData.email}</span>
-                      </div>
-                      {therapistData.phone && (
+                      {therapistData.specialization && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Phone:</span>
-                          <span className="text-foreground">{therapistData.phone}</span>
+                          <span className="text-muted-foreground">Specialization:</span>
+                          <span className="text-foreground">{therapistData.specialization}</span>
+                        </div>
+                      )}
+                      {therapistData.licenseNumber && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">License:</span>
+                          <span className="text-foreground">{therapistData.licenseNumber}</span>
                         </div>
                       )}
                     </div>

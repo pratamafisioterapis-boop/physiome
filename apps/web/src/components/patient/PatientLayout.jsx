@@ -7,7 +7,7 @@ import {
   Trophy, BookOpen, User, LogOut, Menu, X, Globe
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext.jsx';
-import { useLanguage } from '@/hooks/useLanguage.js';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils.js';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 
 const PatientLayout = () => {
   const { currentUser, logout } = useAuth();
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 

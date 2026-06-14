@@ -158,7 +158,7 @@ const SignupPage = () => {
                   placeholder="e.g. ABC123XYZ"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Leave blank to register as a Therapist.
+                  Enter an invite code if you were asked to join an existing clinic.
                 </p>
               </div>
               

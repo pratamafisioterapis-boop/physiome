@@ -1,0 +1,41 @@
+RINGKASAN TUGAS - GEMINI CODE ASSIST
+====================================
+
+Project: Physiome (Migrasi dari PocketBase ke Custom API & i18n Standard)
+Status: Completed
+
+Pekerjaan yang telah diselesaikan:
+
+1. Migrasi Arsitektur Data:
+   - Mengganti seluruh dependensi 'pocketbaseClient' dengan 'apiServerClient' di seluruh halaman utama (Patients, Exercises, Videos, Assigned Programs).
+   - Menyesuaikan fetch logic dari PocketBase SDK (collection().getList()) ke REST API standar (apiServerClient.fetch()).
+   - Sinkronisasi penamaan field database (contoh: 'full_name' menjadi 'name', 'created' menjadi 'created_at') sesuai dengan skema Prisma/MySQL.
+
+2. Fitur Video & Media:
+   - Implementasi upload video menggunakan XMLHttpRequest untuk mendukung pelacakan progres (progress bar) secara real-time.
+   - Integrasi 'fluent-ffmpeg' dan 'ffmpeg-static' di backend untuk pembuatan thumbnail otomatis (.png) pada detik pertama video yang diunggah.
+   - Penanganan pembersihan file fisik (unlink) saat data video dihapus dari database untuk efisiensi penyimpanan.
+   - Penyajian file statis melalui rute '/uploads' agar media dapat diputar di frontend.
+
+3. Sistem Translasi (i18n):
+   - Memperbaiki error "t is not a function" di berbagai layout (PatientLayout, LandingHeader) dengan mengalihkan useLanguage ke useTranslation (react-i18next).
+   - Melengkapi dan standarisasi file common.json untuk bahasa Indonesia (id) dan Inggris (en) guna mendukung multibahasa di seluruh antarmuka.
+
+4. Backend & Database:
+   - Pembuatan RESTful API endpoints lengkap menggunakan Express.js untuk Patients, Therapists, Exercises, Videos, Program Assignments, Appointments, Exercise Programs, SOAP Notes, Invoices, Payments, dan Patient Packages.
+   - Implementasi JWT Authentication (jwtAuth) pada setiap rute untuk memastikan keamanan data dan isolasi antar klinik.
+
+5. Infrastruktur & Proxy:
+   - Konfigurasi Vite Proxy untuk menangani upload file besar (500MB+) dan mencegah error EPIPE/Timeout pada socket.
+   - Penambahan tag <base href="/"> melalui Vite transform untuk memperbaiki masalah resolusi path asset pada rute bertingkat (deep routes).
+   - Penyesuaian konfigurasi Apache Reverse Proxy (LimitRequestBody & ProxyTimeout) untuk transfer data antar-server.
+
+6. UI/UX & Bug Fixes:
+   - Perbaikan Warning DOM Nesting pada komponen Table (tr cannot appear as child of div).
+   - Implementasi Pagination manual dan Client-side filtering pada daftar pasien.
+   - Perbaikan layout Sidebar yang konsisten (ml-64) di semua halaman detail untuk mencegah konten tertutup.
+
+---
+Dikerjakan oleh: Gemini Code Assist
+Tanggal: 13 Juni 2026
+Catatan: Sistem kini sepenuhnya mandiri dari PocketBase.

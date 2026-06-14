@@ -8,14 +8,16 @@ datasource db {
 }
 
 model clinics {
-  id         String    @id @db.VarChar(255)
+  id         String    @id @db.VarChar(191)
   name       String    @db.VarChar(255)
   phone      String?   @db.VarChar(50)
   address    String?   @db.Text
   city       String?   @db.VarChar(100)
-  created_by String?   @db.VarChar(255)
+  created_by String?   @db.VarChar(191)
   created_at DateTime? @default(now()) @db.Timestamp(0)
   updated_at DateTime? @default(now()) @db.Timestamp(0)
+  videos     videos[]
+  therapists therapists[]
 }
 
 model billing_settings {
@@ -48,7 +50,7 @@ model invite_codes {
   role                                     String    @db.VarChar(50)
   is_active                                Boolean?  @default(true)
   expires_at                               DateTime? @db.DateTime(0)
-  used_by                                  String?   @db.VarChar(255)
+  used_by                                  String?   @db.VarChar(191)
   created_at                               DateTime? @default(now()) @db.Timestamp(0)
   users_invite_codes_used_byTousers        users?    @relation("invite_codes_used_byTousers", fields: [used_by], references: [id], onUpdate: NoAction, map: "invite_codes_ibfk_1")
   users_users_invite_code_idToinvite_codes users[]   @relation("users_invite_code_idToinvite_codes")
@@ -57,15 +59,16 @@ model invite_codes {
 }
 
 model invoices {
-  id               String           @id @db.VarChar(255)
+  id               String           @id @db.VarChar(191)
   invoiceNumber    String           @unique(map: "invoiceNumber") @db.VarChar(100)
-  patientId        String           @db.VarChar(255)
-  therapistId      String?          @db.VarChar(255)
+  patientId        String           @db.VarChar(191)
+  therapistId      String?          @db.VarChar(191)
   invoiceDate      DateTime         @db.DateTime(0)
   dueDate          DateTime         @db.DateTime(0)
   totalAmount      Int
   amountPaid       Int?             @default(0)
   status           invoices_status? @default(Draft)
+  clinic_id        String?          @db.VarChar(191) 
   packageType      String?          @db.VarChar(100)
   emailSentDate    DateTime?        @db.DateTime(0)
   emailSentTo      String?          @db.VarChar(255)
@@ -78,9 +81,9 @@ model invoices {
 }
 
 model patient_packages {
-  id            String                   @id @db.VarChar(255)
-  patientId     String                   @db.VarChar(255)
-  packageId     String?                  @db.VarChar(255)
+  id            String                   @id @db.VarChar(191)
+  patientId     String                   @db.VarChar(191)
+  packageId     String?                  @db.VarChar(191)
   status        patient_packages_status? @default(Active)
   totalSessions Int?                     @default(0)
   sessionsUsed  Int?                     @default(0)
@@ -93,12 +96,12 @@ model patient_packages {
 }
 
 model patients {
-  id                  String                @id @db.VarChar(255)
+  id                  String                @id @db.VarChar(191)
   name                String                @db.VarChar(255)
   email               String?               @db.VarChar(255)
   phone               String?               @db.VarChar(50)
   status              patients_status?      @default(Active)
-  clinic_id           String?               @db.VarChar(255)
+  clinic_id           String?               @db.VarChar(191)
   birth_date          DateTime?             @db.Date
   gender              patients_gender?
   address             String?               @db.Text
@@ -117,8 +120,8 @@ model patients {
 
 model payments {
   id              String    @id @db.VarChar(255)
-  invoiceId       String    @db.VarChar(255)
-  patientId       String    @db.VarChar(255)
+  invoiceId       String    @db.VarChar(191)
+  patientId       String    @db.VarChar(191)
   paymentAmount   Int
   paymentDate     DateTime  @db.DateTime(0)
   paymentMethod   String?   @db.VarChar(50)
@@ -134,8 +137,8 @@ model payments {
 
 model soap_notes {
   id           Int       @id @default(autoincrement())
-  patient_id   String    @db.VarChar(255)
-  therapist_id String?   @db.VarChar(255)
+  patient_id   String    @db.VarChar(191)
+  therapist_id String?   @db.VarChar(191)
   subjective   String?   @db.Text
   objective    String?   @db.Text
   assessment   String?   @db.Text
@@ -158,26 +161,43 @@ model user_language_preferences {
 }
 
 model users {
-  id                                              String         @id @db.VarChar(255)
-  email                                           String         @unique(map: "email") @db.VarChar(255)
+  id                                              String         @id @db.VarChar(191)
+  email                                           String         @unique(map: "email") @db.VarChar(191)
   password                                        String         @db.VarChar(255)
   fullName                                        String         @db.VarChar(255)
   role                                            users_role?    @default(therapist)
-  invite_code_id                                  String?        @db.VarChar(255)
-  clinic_id                                       String?        @db.VarChar(255)
+  invite_code_id                                  String?        @db.VarChar(191)
+  clinic_id                                       String?        @db.VarChar(191)
   created_at                                      DateTime?      @default(now()) @db.Timestamp(0)
   updated_at                                      DateTime?      @default(now()) @db.Timestamp(0)
   invite_codes_invite_codes_used_byTousers        invite_codes[] @relation("invite_codes_used_byTousers")
   invite_codes_users_invite_code_idToinvite_codes invite_codes?  @relation("users_invite_code_idToinvite_codes", fields: [invite_code_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_invite")
+  therapist_profile                               therapists?
 
   @@index([invite_code_id], map: "fk_user_invite")
 }
 
+model therapists {
+  id             String    @id @db.VarChar(191)
+  userId         String    @unique @db.VarChar(191)
+  specialization String?   @db.VarChar(255)
+  licenseNumber  String?   @db.VarChar(100)
+  status         String?   @default("Active") @db.VarChar(50)
+  clinic_id      String    @db.VarChar(191)
+  created_at     DateTime? @default(now()) @db.Timestamp(0)
+  updated_at     DateTime? @default(now()) @db.Timestamp(0)
+
+  user           users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clinic         clinics   @relation(fields: [clinic_id], references: [id], onDelete: Cascade)
+
+  @@index([clinic_id], map: "therapists_clinic_id_fkey")
+}
+
 model appointments {
-  id           String               @id @db.VarChar(255)
-  patient_id   String               @db.VarChar(255)
-  therapist_id String?              @db.VarChar(255)
-  clinic_id    String?              @db.VarChar(255)
+  id           String               @id @db.VarChar(191)
+  patient_id   String               @db.VarChar(191)
+  therapist_id String?              @db.VarChar(191)
+  clinic_id    String?              @db.VarChar(191)
   date         DateTime             @db.Date
   time         String               @db.VarChar(10)
   duration     Int?                 @default(30)
@@ -191,15 +211,15 @@ model appointments {
 }
 
 model exercise_programs {
-  id                  String                    @id @db.VarChar(255)
+  id                  String                    @id @db.VarChar(191)
   name                String                    @db.VarChar(255)
   description         String?                   @db.Text
   clinical_goal       String?                   @db.Text
   body_region         String?                   @db.VarChar(100)
   expected_duration   String?                   @db.VarChar(50)
   exercises           Json?
-  created_by          String?                   @db.VarChar(255)
-  clinic_id           String?                   @db.VarChar(255)
+  created_by          String?                   @db.VarChar(191)
+  clinic_id           String?                   @db.VarChar(191)
   status              exercise_programs_status? @default(Active)
   ai_generated        Boolean?                  @default(false)
   ai_confidence_score Float?                    @db.Float
@@ -209,7 +229,7 @@ model exercise_programs {
 }
 
 model exercises {
-  id                String                @id @db.VarChar(255)
+  id                String                @id @db.VarChar(191)
   name              String                @db.VarChar(255)
   description       String?               @db.Text
   body_region       String?               @db.VarChar(100)
@@ -220,27 +240,42 @@ model exercises {
   instructions      String?               @db.Text
   contraindications String?               @db.Text
   progression_tips  String?               @db.Text
-  clinic_id         String?               @db.VarChar(255)
-  created_by        String?               @db.VarChar(255)
+  clinic_id         String?               @db.VarChar(191)
+  created_by        String?               @db.VarChar(191)
   created_at        DateTime?             @default(now()) @db.Timestamp(0)
   updated_at        DateTime?             @default(now()) @db.Timestamp(0)
 }
 
 model program_assignments {
-  id              String                      @id @db.VarChar(255)
-  program_id      String?                     @db.VarChar(255)
-  patient_id      String?                     @db.VarChar(255)
+  id              String                      @id @db.VarChar(191)
+  program_id      String?                     @db.VarChar(191)
+  patient_id      String?                     @db.VarChar(191)
   start_date      DateTime?                   @db.DateTime(0)
   end_date        DateTime?                   @db.DateTime(0)
   therapist_notes String?                     @db.Text
   status          program_assignments_status? @default(Active)
-  clinic_id       String?                     @db.VarChar(255)
+  clinic_id       String?                     @db.VarChar(191)
   adherence_rate  Int?                        @default(0)
   created_at      DateTime?                   @default(now()) @db.Timestamp(0)
   updated_at      DateTime?                   @default(now()) @db.Timestamp(0)
   patients        patients?                   @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "program_assignments_ibfk_1")
 
   @@index([patient_id], map: "patient_id")
+}
+
+model videos {
+  id            String    @id @db.VarChar(255)
+  name          String    @db.VarChar(200)
+  description   String?   @db.Text
+  thumbnail_url String?   @db.Text
+  video_url     String?   @db.Text
+  duration      Int?      @default(0)
+  clinic_id     String    @db.VarChar(255)
+  created_at    DateTime? @default(now()) @db.Timestamp(0)
+  updated_at    DateTime? @default(now()) @db.Timestamp(0)
+  clinics       clinics   @relation(fields: [clinic_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([clinic_id], map: "videos_clinic_id_fkey")
 }
 
 enum patient_packages_status {
