@@ -102,6 +102,7 @@ function App() {
             <Route path="/exercise-dashboard" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ExerciseDashboard /></RoleProtectedRoute>} />
             <Route path="/exercise-library" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ExerciseLibraryPage /></RoleProtectedRoute>} />
             <Route path="/my-videos" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><MyVideosPage /></RoleProtectedRoute>} />
+            <Route path="/exercise-programs" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ExerciseProgramsPage /></RoleProtectedRoute>} />
             <Route path="/program-builder" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ProgramBuilderPage /></RoleProtectedRoute>} />
             <Route path="/program-templates" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ProgramTemplatesPage /></RoleProtectedRoute>} />
             <Route path="/assigned-programs" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><AssignedProgramsPage /></RoleProtectedRoute>} />

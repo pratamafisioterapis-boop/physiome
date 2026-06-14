@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Filter, Play, Plus, Dumbbell, Edit2, Trash2 } from 'lucide-react';
+import { Search, Filter, Play, Plus, Dumbbell, Edit2, Trash2, Eye } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,8 @@ import Header from '@/components/Header.jsx';
 import AddExerciseModal from '@/components/exercises/AddExerciseModal.jsx';
 import EditExerciseModal from '@/components/exercises/EditExerciseModal.jsx';
 import DeleteExerciseConfirmation from '@/components/exercises/DeleteExerciseConfirmation.jsx';
+import Modal from '@/components/Modal.jsx';
+import VideoPlayerComponent from '@/components/exercises/VideoPlayerComponent.jsx';
 
 export default function ExerciseLibraryPage() {
   const { currentUser } = useAuth();
@@ -23,6 +25,7 @@ export default function ExerciseLibraryPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingExercise, setEditingExercise] = useState(null);
   const [deletingExercise, setDeletingExercise] = useState(null);
+  const [previewExercise, setPreviewExercise] = useState(null);
 
   const fetchExercises = useCallback(async () => {
     if (!currentUser) return;
@@ -89,7 +92,7 @@ export default function ExerciseLibraryPage() {
           ) : filtered.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filtered.map(ex => (
-                <Card key={ex.id} className="border-0 shadow-soft overflow-hidden group hover:shadow-soft-lg transition-all duration-300">
+                <Card key={ex.id} className="border-0 shadow-soft overflow-hidden group hover:shadow-soft-lg transition-all duration-300 flex flex-col">
                   <div className="relative h-48 bg-muted">
                     {ex.thumbnail_url || ex.gif_url ? (
                       <img src={ex.thumbnail_url || ex.gif_url} alt={ex.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -98,8 +101,24 @@ export default function ExerciseLibraryPage() {
                         <Play className="w-12 h-12 opacity-20" />
                       </div>
                     )}
+
+                    {/* Play Overlay */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <Button 
+                        size="icon" 
+                        variant="secondary" 
+                        className="rounded-full w-12 h-12 shadow-lg scale-90 group-hover:scale-100 transition-transform duration-300"
+                        onClick={() => setPreviewExercise(ex)}
+                      >
+                        <Play className="w-6 h-6 ml-1 text-foreground" />
+                      </Button>
+                    </div>
+
                     <div className="absolute top-3 right-3">
                       <div className="flex gap-2">
+                        <button onClick={() => setPreviewExercise(ex)} className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-white transition-colors" title="Preview">
+                          <Eye className="w-4 h-4" />
+                        </button>
                         <button onClick={() => setEditingExercise(ex)} className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-white transition-colors">
                           <Edit2 className="w-4 h-4" />
                         </button>
@@ -156,6 +175,33 @@ export default function ExerciseLibraryPage() {
           onSuccess={fetchExercises} 
           exercise={deletingExercise} 
         />
+      )}
+
+      {previewExercise && (
+        <Modal
+          isOpen={!!previewExercise}
+          onClose={() => setPreviewExercise(null)}
+          title={previewExercise.name}
+          size="xl"
+        >
+          <div className="space-y-6">
+            <VideoPlayerComponent 
+              videoUrl={previewExercise.video_url} 
+              thumbnailUrl={previewExercise.thumbnail_url} 
+              title={previewExercise.name} 
+            />
+            
+            {previewExercise.instructions && (
+              <div className="bg-muted/30 p-5 rounded-2xl border border-border/50">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+                  <Dumbbell className="w-4 h-4" />
+                  Instructions
+                </h4>
+                <p className="text-foreground leading-relaxed whitespace-pre-wrap">{previewExercise.instructions}</p>
+              </div>
+            )}
+          </div>
+        </Modal>
       )}
     </div>
   );

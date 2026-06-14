@@ -33,6 +33,7 @@ export const SidebarContent = () => {
         { name: t('nav.overview'), path: '/exercise-dashboard', icon: Activity, roles: ['admin', 'therapist'] },
         { name: t('nav.library'), path: '/exercise-library', icon: Dumbbell, roles: ['admin', 'therapist'] },
         { name: t('nav.myVideos'), path: '/my-videos', icon: Video, roles: ['admin', 'therapist'] },
+        { name: 'My Programs', path: '/exercise-programs', icon: ClipboardList, roles: ['admin', 'therapist'] },
         { name: t('nav.builder'), path: '/program-builder', icon: PlusSquare, roles: ['admin', 'therapist'] },
         { name: t('nav.templates'), path: '/program-templates', icon: Presentation, roles: ['admin', 'therapist'] },
         { name: t('nav.assigned'), path: '/assigned-programs', icon: ClipboardList, roles: ['admin', 'therapist'] },

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, Save, GripVertical, Plus } from 'lucide-react';
+import { Search, Save, GripVertical, Plus, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,9 +10,12 @@ import { useAuth } from '@/contexts/AuthContext.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
 import Header from '@/components/Header.jsx';
 import { toast } from 'sonner';
+import { useSearchParams } from 'react-router-dom';
 
 export default function ProgramBuilderPage() {
   const { currentUser } = useAuth();
+  const [searchParams] = useSearchParams();
+  const templateId = searchParams.get('template');
   const [exercises, setExercises] = useState([]);
   const [search, setSearch] = useState('');
   const [programName, setProgramName] = useState('');
@@ -34,15 +37,54 @@ export default function ProgramBuilderPage() {
     fetchExercises();
   }, [currentUser]);
 
+  // Load template data if templateId is present
+  useEffect(() => {
+    if (templateId) {
+      const fetchTemplate = async () => {
+        setIsLoading(true);
+        try {
+          const data = await apiServerClient.fetch(`/exercise-programs/${templateId}`);
+          setProgramName(data.name || '');
+          setProgramDesc(data.description || '');
+          
+          // Map exercises dari template ke format canvas
+          const exercisesFromTemplate = Array.isArray(data.exercises) ? data.exercises : [];
+          const items = exercisesFromTemplate.map(ex => ({
+            ...ex,
+            uniqueId: Math.random().toString(36).substr(2, 9),
+            sets: ex.sets || 3,
+            reps: ex.reps || 10,
+            holdTime: ex.holdTime || 0,
+            notes: ex.notes || ''
+          }));
+          setCanvasItems(items);
+        } catch (error) {
+          console.error('Error loading template:', error);
+          toast.error('Failed to load template data');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchTemplate();
+    }
+  }, [templateId]);
+
   const addToCanvas = (ex) => {
     const newItem = {
       ...ex,
       uniqueId: Math.random().toString(36).substr(2, 9),
       sets: 3,
       reps: 10,
-      holdTime: 0
+      holdTime: 0,
+      notes: ''
     };
     setCanvasItems([...canvasItems, newItem]);
+  };
+
+  const updateCanvasItem = (uniqueId, field, value) => {
+    setCanvasItems(prev => prev.map(item => 
+      item.uniqueId === uniqueId ? { ...item, [field]: value } : item
+    ));
   };
 
   const removeFromCanvas = (uniqueId) => {
@@ -54,12 +96,13 @@ export default function ProgramBuilderPage() {
     if(canvasItems.length === 0) return toast.error("Add at least one exercise.");
     
     try {
-      await apiServerClient.fetch('/programs', {
+      await apiServerClient.fetch('/exercise-programs', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: programName,
           description: programDesc,
-          exercises_list: canvasItems,
+          exercises: canvasItems,
           status: 'Active'
         })
       });
@@ -77,12 +120,12 @@ export default function ProgramBuilderPage() {
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
-      <div className="flex-1 ml-64 flex flex-col h-screen overflow-hidden">
+      <div className="flex-1 ml-0 md:ml-64 flex flex-col h-screen overflow-hidden">
         <Header title="Program Builder" />
         
         {/* Top Bar */}
-        <div className="bg-card border-b border-border p-4 flex items-center justify-between z-10 shadow-sm">
-          <div className="flex-1 flex gap-4 max-w-3xl">
+        <div className="bg-card border-b border-border p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 z-10 shadow-sm">
+          <div className="flex-1 flex flex-col sm:flex-row gap-4 max-w-3xl">
             <Input 
               placeholder="Program Name" 
               value={programName}
@@ -96,14 +139,14 @@ export default function ProgramBuilderPage() {
               className="bg-background border-border" 
             />
           </div>
-          <Button onClick={handleSave} className="shadow-glow-primary rounded-full px-8" disabled={isLoading}>
+          <Button onClick={handleSave} className="shadow-glow-primary rounded-full px-8 shrink-0" disabled={isLoading}>
             <Save className="w-4 h-4 mr-2" /> Save Program
           </Button>
         </div>
 
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
           {/* Library Sidebar (Left) */}
-          <div className="w-80 bg-muted/30 border-r border-border flex flex-col h-full overflow-hidden">
+          <div className="w-full lg:w-80 bg-muted/30 border-b lg:border-b-0 lg:border-r border-border flex flex-col h-2/5 lg:h-full overflow-hidden">
             <div className="p-4 border-b border-border/50 bg-card">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -132,8 +175,8 @@ export default function ProgramBuilderPage() {
           </div>
 
           {/* Canvas (Right) */}
-          <div className="flex-1 bg-background overflow-y-auto p-8">
-            <div className="max-w-3xl mx-auto">
+          <div className="flex-1 bg-background overflow-y-auto p-4 md:p-8">
+            <div className="max-w-3xl mx-auto pb-20 lg:pb-0">
               {canvasItems.length === 0 ? (
                 <div className="text-center py-24 border-2 border-dashed border-border rounded-2xl">
                   <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
@@ -157,20 +200,40 @@ export default function ProgramBuilderPage() {
                         <div className="grid grid-cols-3 gap-4 mb-4">
                           <div className="space-y-1">
                             <label className="text-xs font-semibold text-muted-foreground uppercase">Sets</label>
-                            <Input type="number" defaultValue={item.sets} className="h-9 bg-card" />
+                            <Input 
+                              type="number" 
+                              value={item.sets} 
+                              onChange={e => updateCanvasItem(item.uniqueId, 'sets', parseInt(e.target.value) || 0)}
+                              className="h-9 bg-card" 
+                            />
                           </div>
                           <div className="space-y-1">
                             <label className="text-xs font-semibold text-muted-foreground uppercase">Reps</label>
-                            <Input type="number" defaultValue={item.reps} className="h-9 bg-card" />
+                            <Input 
+                              type="number" 
+                              value={item.reps} 
+                              onChange={e => updateCanvasItem(item.uniqueId, 'reps', parseInt(e.target.value) || 0)}
+                              className="h-9 bg-card" 
+                            />
                           </div>
                           <div className="space-y-1">
                             <label className="text-xs font-semibold text-muted-foreground uppercase">Hold (sec)</label>
-                            <Input type="number" defaultValue={item.holdTime} className="h-9 bg-card" />
+                            <Input 
+                              type="number" 
+                              value={item.holdTime} 
+                              onChange={e => updateCanvasItem(item.uniqueId, 'holdTime', parseInt(e.target.value) || 0)}
+                              className="h-9 bg-card" 
+                            />
                           </div>
                         </div>
                         <div className="space-y-1">
                           <label className="text-xs font-semibold text-muted-foreground uppercase">Notes for Patient</label>
-                          <Textarea placeholder="Add specific instructions..." className="min-h-[60px] resize-none bg-card" />
+                          <Textarea 
+                            placeholder="Add specific instructions..." 
+                            value={item.notes}
+                            onChange={e => updateCanvasItem(item.uniqueId, 'notes', e.target.value)}
+                            className="min-h-[60px] resize-none bg-card" 
+                          />
                         </div>
                       </CardContent>
                     </Card>

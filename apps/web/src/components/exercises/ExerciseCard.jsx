@@ -5,10 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/hooks/useLanguage.js';
 import { getExerciseTranslation } from '@/utils/translationHelpers.js';
+import Modal from '@/components/Modal.jsx';
+import VideoPlayerComponent from './VideoPlayerComponent.jsx';
 
 const ExerciseCard = ({ exercise, onAdd, isBuilder = false, isAdded = false }) => {
   const { language, t } = useLanguage();
   const [translatedEx, setTranslatedEx] = useState(exercise);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   useEffect(() => {
     const loadTranslation = async () => {
@@ -31,6 +34,7 @@ const ExerciseCard = ({ exercise, onAdd, isBuilder = false, isAdded = false }) =
   }, [exercise, language]);
 
   return (
+    <>
     <Card className="overflow-hidden border-border shadow-sm hover:shadow-md transition-all duration-300 group">
       <div className="relative aspect-video bg-muted">
         {translatedEx.thumbnail_url ? (
@@ -46,7 +50,12 @@ const ExerciseCard = ({ exercise, onAdd, isBuilder = false, isAdded = false }) =
         )}
         
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <Button variant="secondary" size="icon" className="rounded-full w-12 h-12">
+          <Button 
+            variant="secondary" 
+            size="icon" 
+            className="rounded-full w-12 h-12"
+            onClick={() => setIsPreviewOpen(true)}
+          >
             <Play className="w-6 h-6 ml-1" />
           </Button>
         </div>
@@ -84,6 +93,32 @@ const ExerciseCard = ({ exercise, onAdd, isBuilder = false, isAdded = false }) =
         </div>
       </CardContent>
     </Card>
+
+    <Modal
+      isOpen={isPreviewOpen}
+      onClose={() => setIsPreviewOpen(false)}
+      title={translatedEx.name}
+      size="xl"
+    >
+      <div className="space-y-6">
+        <VideoPlayerComponent 
+          videoUrl={translatedEx.video_url} 
+          thumbnailUrl={translatedEx.thumbnail_url} 
+          title={translatedEx.name} 
+        />
+        
+        {translatedEx.instructions && (
+          <div className="bg-muted/30 p-5 rounded-2xl border border-border/50">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+              <Activity className="w-4 h-4" />
+              {t('exercises.instructions') || 'Instructions'}
+            </h4>
+            <p className="text-foreground leading-relaxed whitespace-pre-wrap">{translatedEx.instructions}</p>
+          </div>
+        )}
+      </div>
+    </Modal>
+    </>
   );
 };
 

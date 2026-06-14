@@ -329,9 +329,6 @@ export default defineConfig({
 			},
 		},
 		cors: true,
-		headers: {
-			'Cross-Origin-Embedder-Policy': 'credentialless',
-		},
 		allowedHosts: [
 			'physiome.ruangdata.online',
 		],

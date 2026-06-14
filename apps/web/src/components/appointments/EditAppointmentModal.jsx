@@ -6,7 +6,7 @@ import Input from '@/components/Input.jsx';
 import Select from '@/components/Select.jsx';
 import DatePicker from '@/components/DatePicker.jsx';
 import TextArea from '@/components/TextArea.jsx';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { toast } from 'sonner';
 
@@ -35,7 +35,7 @@ const EditAppointmentModal = ({ isOpen, onClose, onSuccess, appointment }) => {
       setFormData({
         patient_id: appointment.patient_id || '',
         therapist_id: appointment.therapist_id || '',
-        date: appointment.date ? appointment.date.split(' ')[0] : '',
+        date: appointment.date ? appointment.date.split('T')[0] : '',
         time: appointment.time || '',
         duration: appointment.duration?.toString() || '60',
         status: appointment.status || 'Scheduled',
@@ -48,11 +48,11 @@ const EditAppointmentModal = ({ isOpen, onClose, onSuccess, appointment }) => {
   const fetchDependencies = async () => {
     try {
       const [patientsRes, therapistsRes] = await Promise.all([
-        pb.collection('patients').getFullList({ filter: `clinic_id="${currentUser.clinic_id}"`, $autoCancel: false }),
-        pb.collection('therapists').getFullList({ filter: `clinic_id="${currentUser.clinic_id}"`, $autoCancel: false })
+        apiServerClient.fetch(`/patients`),
+        apiServerClient.fetch(`/therapists?clinic_id=${currentUser.clinic_id}`)
       ]);
-      setPatients(patientsRes.map(p => ({ label: p.full_name, value: p.id })));
-      setTherapists(therapistsRes.map(t => ({ label: t.name, value: t.id })));
+      setPatients(patientsRes.map(p => ({ label: p.name, value: p.id })));
+      setTherapists(therapistsRes.map(t => ({ label: t.fullName, value: t.id })));
     } catch (error) {
       console.error('Error fetching dependencies:', error);
     }
@@ -85,12 +85,10 @@ const EditAppointmentModal = ({ isOpen, onClose, onSuccess, appointment }) => {
 
     setIsLoading(true);
     try {
-      const existing = await pb.collection('appointments').getFullList({
-        filter: `therapist_id="${formData.therapist_id}" && date="${formData.date} 12:00:00.000Z" && time="${formData.time}" && id!="${appointment.id}" && status!="Cancelled"`,
-        $autoCancel: false
-      });
+      // Check availability
+      const existing = await apiServerClient.fetch(`/appointments?therapist_id=${formData.therapist_id}&date=${formData.date} 12:00:00.000Z&time=${formData.time}&status!=Cancelled`);
 
-      if (existing.length > 0) {
+      if (existing && existing.filter(a => a.id !== appointment.id).length > 0) {
         toast.error('Therapist is already booked at this time');
         setIsLoading(false);
         return;
@@ -102,7 +100,14 @@ const EditAppointmentModal = ({ isOpen, onClose, onSuccess, appointment }) => {
         duration: parseInt(formData.duration, 10)
       };
       
-      await pb.collection('appointments').update(appointment.id, dataToSubmit, { $autoCancel: false });
+      await apiServerClient.fetch(`/appointments/${appointment.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSubmit)
+      });
+
       toast.success('Appointment updated successfully');
       onSuccess();
       onClose();

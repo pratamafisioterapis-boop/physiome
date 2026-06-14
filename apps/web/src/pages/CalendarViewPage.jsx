@@ -6,7 +6,7 @@ import Sidebar from '@/components/Sidebar.jsx';
 import Button from '@/components/Button.jsx';
 import { ChevronLeft, ChevronRight, Plus, List } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext.jsx';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { Helmet } from 'react-helmet';
 import CreateAppointmentModal from '@/components/appointments/CreateAppointmentModal.jsx';
 import AppointmentCard from '@/components/appointments/AppointmentCard.jsx';
@@ -28,20 +28,9 @@ const CalendarViewPage = () => {
     if (!currentUser?.clinic_id) return;
     setIsLoading(true);
     try {
-      // Fetch a wide range for simplicity in this demo
-      const start = new Date(currentDate);
-      start.setDate(start.getDate() - 14);
-      const end = new Date(currentDate);
-      end.setDate(end.getDate() + 14);
-      
-      const startStr = start.toISOString().split('T')[0];
-      const endStr = end.toISOString().split('T')[0];
-
-      const records = await pb.collection('appointments').getFullList({
-        filter: `clinic_id = "${currentUser.clinic_id}" && date >= "${startStr}" && date <= "${endStr}"`,
-        expand: 'patient_id,therapist_id',
-        $autoCancel: false
-      });
+      // Mengambil daftar janji temu dari API kustom
+      // Filter klinik sudah ditangani di backend via JWT
+      const records = await apiServerClient.fetch('/appointments');
       setAppointments(records);
     } catch (error) {
       console.error('Error fetching appointments:', error);
@@ -120,7 +109,7 @@ const CalendarViewPage = () => {
       <div className="min-h-screen bg-background flex flex-col md:flex-row">
         <Sidebar />
         
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 ml-0 md:ml-64 flex flex-col min-w-0">
           <Header />
           
           <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">

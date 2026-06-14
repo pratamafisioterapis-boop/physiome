@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import ConfirmDialog from '@/components/ConfirmDialog.jsx';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { toast } from 'sonner';
 
 const DeleteAppointmentConfirmation = ({ isOpen, onClose, onSuccess, appointment }) => {
@@ -12,7 +12,7 @@ const DeleteAppointmentConfirmation = ({ isOpen, onClose, onSuccess, appointment
     
     setIsLoading(true);
     try {
-      await pb.collection('appointments').delete(appointment.id, { $autoCancel: false });
+      await apiServerClient.fetch(`/appointments/${appointment.id}`, { method: 'DELETE' });
       toast.success('Appointment deleted successfully');
       onSuccess();
       onClose();
@@ -24,7 +24,7 @@ const DeleteAppointmentConfirmation = ({ isOpen, onClose, onSuccess, appointment
     }
   };
 
-  const patientName = appointment?.expand?.patient_id?.full_name || 'Unknown Patient';
+  const patientName = appointment?.patients?.name || 'Unknown Patient';
   const date = appointment?.date ? new Date(appointment.date).toLocaleDateString() : '';
 
   return (

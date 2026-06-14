@@ -7,11 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import pb from '@/lib/pocketbaseClient';
-import { useAuth } from '@/contexts/AuthContext';
+import apiServerClient from '@/lib/apiServerClient.js';
 
 export default function ExerciseProgramModal({ isOpen, onClose, onSuccess, editProgram = null }) {
-  const { currentUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -21,6 +19,7 @@ export default function ExerciseProgramModal({ isOpen, onClose, onSuccess, editP
     expected_duration: '4 weeks',
     status: 'Active'
   });
+  const [exercises, setExercises] = useState(null);
 
   useEffect(() => {
     if (editProgram) {
@@ -32,6 +31,7 @@ export default function ExerciseProgramModal({ isOpen, onClose, onSuccess, editP
         expected_duration: editProgram.expected_duration || '4 weeks',
         status: editProgram.status || 'Active'
       });
+      setExercises(editProgram.exercises);
     } else {
       setFormData({
         name: '',
@@ -41,6 +41,7 @@ export default function ExerciseProgramModal({ isOpen, onClose, onSuccess, editP
         expected_duration: '4 weeks',
         status: 'Active'
       });
+      setExercises(null);
     }
   }, [editProgram, isOpen]);
 
@@ -48,19 +49,21 @@ export default function ExerciseProgramModal({ isOpen, onClose, onSuccess, editP
     e.preventDefault();
     setIsLoading(true);
     try {
-      const data = {
+      const url = editProgram ? `/exercise-programs/${editProgram.id}` : '/exercise-programs';
+      const method = editProgram ? 'PUT' : 'POST';
+      
+      const payload = {
         ...formData,
-        created_by: currentUser.id,
-        clinic_id: currentUser.clinic_id
+        exercises: exercises // Memastikan data latihan tidak hilang saat edit info dasar
       };
 
-      if (editProgram) {
-        await pb.collection('exercise_programs').update(editProgram.id, data, { $autoCancel: false });
-        toast.success('Program updated');
-      } else {
-        await pb.collection('exercise_programs').create(data, { $autoCancel: false });
-        toast.success('Program created');
-      }
+      await apiServerClient.fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      toast.success(editProgram ? 'Program updated' : 'Program created');
       onSuccess();
       onClose();
     } catch (error) {

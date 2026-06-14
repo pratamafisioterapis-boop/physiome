@@ -23,9 +23,9 @@ const AppointmentCard = ({ appointment, className, style }) => {
       )}
       style={style}
     >
-      <div className="font-semibold truncate">{appointment.expand?.patient_id?.full_name || 'Unknown Patient'}</div>
+      <div className="font-semibold truncate">{appointment.patients?.name || 'Unknown Patient'}</div>
       <div className="text-[10px] opacity-80 truncate">{appointment.time} ({appointment.duration}m)</div>
-      <div className="text-[10px] opacity-80 truncate">{appointment.expand?.therapist_id?.name || 'Unknown Therapist'}</div>
+      <div className="text-[10px] opacity-80 truncate">{appointment.therapists?.user?.fullName || 'Unknown Therapist'}</div>
     </div>
   );
 };

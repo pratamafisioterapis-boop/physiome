@@ -4,18 +4,25 @@ import Button from '@/components/Button.jsx';
 import Input from '@/components/Input.jsx';
 import Select from '@/components/Select.jsx';
 import TextArea from '@/components/TextArea.jsx';
+import VideoPlayerComponent from './VideoPlayerComponent.jsx';
+import VideoPickerModal from './VideoPickerModal.jsx';
 import apiServerClient from '@/lib/apiServerClient.js';
 import { toast } from 'sonner';
+import { Search } from 'lucide-react';
 
 const EditExerciseModal = ({ isOpen, onClose, onSuccess, exercise }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isVideoPickerOpen, setIsVideoPickerOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     body_region: '',
     difficulty: 'Beginner',
     thumbnail_url: '',
-    video_url: ''
+    video_url: '',
+    instructions: '',
+    contraindications: '',
+    progression_tips: ''
   });
 
   useEffect(() => {
@@ -26,13 +33,34 @@ const EditExerciseModal = ({ isOpen, onClose, onSuccess, exercise }) => {
         body_region: exercise.body_region || '',
         difficulty: exercise.difficulty || 'Beginner',
         thumbnail_url: exercise.thumbnail_url || '',
-        video_url: exercise.video_url || exercise.gif_url || ''
+        video_url: exercise.video_url || exercise.gif_url || '',
+        instructions: exercise.instructions || '',
+        contraindications: exercise.contraindications || '',
+        progression_tips: exercise.progression_tips || ''
       });
     }
   }, [isOpen, exercise]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => {
+      const newData = { ...prev, [name]: value };
+      
+      // Otomatis isi thumbnail jika video_url adalah link YouTube dan thumbnail masih kosong
+      if (name === 'video_url' && value) {
+        const isYouTube = value.includes('youtube.com') || value.includes('youtu.be');
+        if (isYouTube) {
+          const videoId = value.includes('v=') 
+            ? value.split('v=')[1]?.split('&')[0] 
+            : value.split('/').pop();
+          
+          if (videoId && !prev.thumbnail_url) {
+            newData.thumbnail_url = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+          }
+        }
+      }
+      return newData;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -41,6 +69,7 @@ const EditExerciseModal = ({ isOpen, onClose, onSuccess, exercise }) => {
     try {
       await apiServerClient.fetch(`/exercises/${exercise.id}`, {
         method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
       toast.success('Exercise updated successfully');
@@ -53,7 +82,18 @@ const EditExerciseModal = ({ isOpen, onClose, onSuccess, exercise }) => {
     }
   };
 
+  const handleVideoSelect = (video) => {
+    setFormData(prev => ({
+      ...prev,
+      video_url: video.video_url,
+      thumbnail_url: video.thumbnail_url || prev.thumbnail_url
+    }));
+    setIsVideoPickerOpen(false);
+    toast.info(`Selected video: ${video.name}`);
+  };
+
   return (
+    <>
     <Modal 
       isOpen={isOpen} 
       onClose={onClose} 
@@ -68,6 +108,27 @@ const EditExerciseModal = ({ isOpen, onClose, onSuccess, exercise }) => {
       <form className="space-y-4">
         <Input label="Name" name="name" value={formData.name} onChange={handleChange} required />
         <TextArea label="Description" name="description" value={formData.description} onChange={handleChange} />
+        <TextArea 
+          label="Instructions" 
+          name="instructions" 
+          value={formData.instructions} 
+          onChange={handleChange} 
+          placeholder="Step-by-step guide..."
+        />
+        <div className="grid grid-cols-2 gap-4">
+          <TextArea 
+            label="Contraindications" 
+            name="contraindications" 
+            value={formData.contraindications} 
+            onChange={handleChange} 
+          />
+          <TextArea 
+            label="Progression Tips" 
+            name="progression_tips" 
+            value={formData.progression_tips} 
+            onChange={handleChange} 
+          />
+        </div>
         <div className="grid grid-cols-2 gap-4">
           <Input label="Body Region" name="body_region" value={formData.body_region} onChange={handleChange} />
           <Select label="Difficulty" name="difficulty" value={formData.difficulty} onChange={handleChange} options={[
@@ -77,9 +138,47 @@ const EditExerciseModal = ({ isOpen, onClose, onSuccess, exercise }) => {
           ]} />
         </div>
         <Input label="Thumbnail URL" name="thumbnail_url" value={formData.thumbnail_url} onChange={handleChange} />
-        <Input label="Video/GIF URL" name="video_url" value={formData.video_url} onChange={handleChange} />
+        <div className="space-y-1.5">
+          <label className="block text-sm font-medium text-foreground">Video/GIF URL</label>
+          <div className="flex gap-2">
+            <Input
+              name="video_url"
+              value={formData.video_url}
+              onChange={handleChange}
+              placeholder="Paste link or browse library..."
+              className="flex-1"
+            />
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="shrink-0 h-10 border-dashed hover:border-primary hover:text-primary"
+              onClick={() => setIsVideoPickerOpen(true)}
+            >
+              <Search className="w-4 h-4 mr-2" /> Browse
+            </Button>
+          </div>
+        </div>
+        <p className="text-[10px] text-muted-foreground -mt-3">Supports YouTube embeds and direct MP4/MOV links.</p>
+
+        {formData.video_url && (
+          <div className="space-y-2 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Video Preview</label>
+            <VideoPlayerComponent 
+              videoUrl={formData.video_url} 
+              thumbnailUrl={formData.thumbnail_url} 
+              title={formData.name || 'Exercise Preview'} 
+            />
+          </div>
+        )}
       </form>
     </Modal>
+
+    <VideoPickerModal 
+      isOpen={isVideoPickerOpen}
+      onClose={() => setIsVideoPickerOpen(false)}
+      onSelect={handleVideoSelect}
+    />
+    </>
   );
 };
 

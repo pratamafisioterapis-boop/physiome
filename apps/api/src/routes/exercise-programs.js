@@ -6,73 +6,140 @@ import { v4 as uuidv4 } from 'uuid';
 const router = express.Router();
 router.use(jwtAuth);
 
-// GET /exercise-programs - Daftar program latihan klinik
+// GET /exercise-programs/templates - Ambil template global
+router.get('/templates', async (req, res, next) => {
+    try {
+        console.log("Fetching global templates...");
+        
+        const templates = await prisma.exercise_programs.findMany({
+            where: {
+                OR: [
+                    { clinic_id: null },
+                    { clinic_id: '' }
+                ],
+                status: 'Active'
+            },
+            orderBy: {
+                name: 'asc'
+            }
+        });
+
+        console.log(`Found ${templates.length} templates in database.`);
+
+        // Transformasi agar format exercise list konsisten jika disimpan sebagai JSON
+        const formatted = templates.map(t => ({
+            ...t,
+            exercisesCount: Array.isArray(t.exercises) ? t.exercises.length : 0
+        }));
+
+        res.json(formatted);
+    } catch (error) {
+        next(error);
+    }
+});
+
+// GET /exercise-programs - Ambil daftar program milik klinik saat ini
 router.get('/', async (req, res, next) => {
     try {
         const programs = await prisma.exercise_programs.findMany({
-            where: { clinic_id: req.clinicId },
-            orderBy: { updated_at: 'desc' }
+            where: {
+                clinic_id: req.clinicId
+            },
+            orderBy: {
+                created_at: 'desc'
+            }
         });
+
         res.json(programs);
     } catch (error) {
         next(error);
     }
 });
 
-// GET /exercise-programs/:id - Ambil detail program (untuk Builder/Assignment)
-router.get('/:id', async (req, res, next) => {
-    const { id } = req.params;
-    try {
-        const program = await prisma.exercise_programs.findUnique({
-            where: { id, clinic_id: req.clinicId }
-        });
-        if (!program) return res.status(404).json({ error: 'Program not found' });
-        res.json(program);
-    } catch (error) {
-        next(error);
-    }
-});
-
-// POST /exercise-programs - Simpan program baru (dari Builder)
+// POST /exercise-programs - Simpan program baru khusus untuk klinik saat ini
 router.post('/', async (req, res, next) => {
-    const { name, description, clinical_goal, body_region, exercises } = req.body;
+    const { name, description, exercises, status, clinical_goal, body_region, expected_duration } = req.body;
     try {
-        const program = await prisma.exercise_programs.create({
+        const newProgram = await prisma.exercise_programs.create({
             data: {
                 id: uuidv4(),
                 name,
                 description,
                 clinical_goal,
                 body_region,
-                exercises, // JSON field
-                clinic_id: req.clinicId,
-                created_by: req.userId,
-                status: 'Active'
+                expected_duration,
+                exercises, // Prisma otomatis menangani tipe Json
+                status: status || 'Active',
+                clinic_id: req.clinicId, // Otomatis terisi dari JWT token middleware
+                created_by: req.userId   // Otomatis terisi dari JWT token middleware
             }
         });
-        res.status(201).json(program);
+        res.status(201).json(newProgram);
     } catch (error) {
         next(error);
     }
 });
 
-// DELETE /exercise-programs/:id
+// GET /exercise-programs/:id - Ambil detail program/template
+router.get('/:id', async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        const program = await prisma.exercise_programs.findFirst({
+            where: {
+                id,
+                OR: [
+                    { clinic_id: req.clinicId },
+                    { clinic_id: null }
+                ]
+            }
+        });
+
+        if (!program) {
+            return res.status(404).json({ error: 'Program not found' });
+        }
+
+        // Parse exercises jika disimpan sebagai string di DB
+        if (program.exercises && typeof program.exercises === 'string') {
+            program.exercises = JSON.parse(program.exercises);
+        }
+
+        res.json(program);
+    } catch (error) {
+        next(error);
+    }
+});
+
+// PUT /exercise-programs/:id - Update program milik klinik
+router.put('/:id', async (req, res, next) => {
+    const { id } = req.params;
+    const { name, description, exercises, status, clinical_goal, body_region, expected_duration } = req.body;
+    try {
+        const updated = await prisma.exercise_programs.update({
+            where: { id, clinic_id: req.clinicId },
+            data: {
+                name,
+                description,
+                clinical_goal,
+                body_region,
+                expected_duration,
+                exercises,
+                status
+            }
+        });
+        res.json(updated);
+    } catch (error) {
+        next(error);
+    }
+});
+
+// DELETE /exercise-programs/:id - Hapus program milik klinik
 router.delete('/:id', async (req, res, next) => {
     const { id } = req.params;
     try {
-        // Cek apakah program sedang digunakan di program_assignments
-        const isUsed = await prisma.program_assignments.findFirst({
-            where: { program_id: id }
-        });
-
-        if (isUsed) {
-            return res.status(400).json({ error: 'Cannot delete program: It is currently assigned to patients.' });
-        }
-
         await prisma.exercise_programs.delete({
-            where: { id: id, clinic_id: req.clinicId }
+            where: { id, clinic_id: req.clinicId }
         });
-        res.json({ message: 'Program deleted' });
+        res.json({ message: 'Program deleted successfully' });
     } catch (error) {
         next(error);
     }

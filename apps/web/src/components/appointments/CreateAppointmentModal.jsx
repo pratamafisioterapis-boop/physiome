@@ -41,8 +41,8 @@ const CreateAppointmentModal = ({ isOpen, onClose, onSuccess, initialDate, initi
         apiServerClient.fetch(`/patients`),
         apiServerClient.fetch(`/therapists?clinic_id=${currentUser.clinic_id}`)
       ]);
-      setPatients(patientsRes.data.map(p => ({ label: p.name, value: p.id })));
-      setTherapists(therapistsRes.data.map(t => ({ label: t.name, value: t.id })));
+      setPatients(patientsRes.map(p => ({ label: p.name, value: p.id })));
+      setTherapists(therapistsRes.map(t => ({ label: t.fullName, value: t.id })));
     } catch (error) {
       console.error('Error fetching dependencies:', error);
       toast.error('Failed to load form data');
@@ -79,7 +79,7 @@ const CreateAppointmentModal = ({ isOpen, onClose, onSuccess, initialDate, initi
       // Check availability
       const existing = await apiServerClient.fetch(`/appointments?therapist_id=${formData.therapist_id}&date=${formData.date} 12:00:00.000Z&time=${formData.time}&status!=Cancelled`);
 
-      if (existing.data.length > 0) {
+      if (existing && existing.length > 0) {
         toast.error('Therapist is already booked at this time');
         setIsLoading(false);
         return;
@@ -98,10 +98,8 @@ const CreateAppointmentModal = ({ isOpen, onClose, onSuccess, initialDate, initi
         headers: {
           'Content-Type': 'application/json'
         }
-      }).then(res => {
-        if (res.ok) return res.json();
-        throw new Error('Failed to create appointment');
       });
+
       toast.success('Appointment created successfully');
       onSuccess();
       onClose();

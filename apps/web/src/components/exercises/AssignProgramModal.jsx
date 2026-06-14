@@ -7,13 +7,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import pb from '@/lib/pocketbaseClient';
+import { Search } from 'lucide-react';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function AssignProgramModal({ isOpen, onClose, programId }) {
   const { currentUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [patients, setPatients] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     patient_id: '',
     start_date: new Date().toISOString().split('T')[0],
@@ -25,10 +27,7 @@ export default function AssignProgramModal({ isOpen, onClose, programId }) {
     const fetchPatients = async () => {
       if (!currentUser?.clinic_id) return;
       try {
-        const records = await pb.collection('patients').getFullList({
-          filter: `clinic_id = "${currentUser.clinic_id}"`,
-          $autoCancel: false
-        });
+        const records = await apiServerClient.fetch('/patients');
         setPatients(records);
       } catch (error) {
         console.error('Error fetching patients:', error);
@@ -36,6 +35,10 @@ export default function AssignProgramModal({ isOpen, onClose, programId }) {
     };
     if (isOpen) fetchPatients();
   }, [currentUser, isOpen]);
+
+  const filteredPatients = patients.filter(p => 
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,15 +49,15 @@ export default function AssignProgramModal({ isOpen, onClose, programId }) {
     
     setIsLoading(true);
     try {
-      await pb.collection('program_assignments').create({
-        program_id: programId,
-        patient_id: formData.patient_id,
-        start_date: formData.start_date,
-        end_date: formData.end_date,
-        therapist_notes: formData.therapist_notes,
-        status: 'Active',
-        clinic_id: currentUser.clinic_id
-      }, { $autoCancel: false });
+      await apiServerClient.fetch('/program-assignments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          program_id: programId,
+          status: 'Active'
+        })
+      });
       
       toast.success('Program assigned successfully');
       onClose();
@@ -83,9 +86,25 @@ export default function AssignProgramModal({ isOpen, onClose, programId }) {
                 <SelectValue placeholder="Select patient" />
               </SelectTrigger>
               <SelectContent>
-                {patients.map(p => (
-                  <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>
-                ))}
+                <div className="flex items-center px-3 pb-2 pt-1 border-b sticky top-0 bg-popover z-10">
+                  <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                  <input
+                    placeholder="Search patient..."
+                    className="flex h-8 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.stopPropagation()} // Mencegah Select menutup saat mengetik spasi
+                  />
+                </div>
+                <div className="max-h-[200px] overflow-y-auto">
+                  {filteredPatients.length === 0 ? (
+                    <div className="py-6 text-center text-sm text-muted-foreground">No patient found.</div>
+                  ) : (
+                    filteredPatients.map(p => (
+                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                    ))
+                  )}
+                </div>
               </SelectContent>
             </Select>
           </div>

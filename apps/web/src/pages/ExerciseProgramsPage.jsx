@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/contexts/AuthContext';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -29,12 +29,9 @@ export default function ExerciseProgramsPage() {
     if (!currentUser?.clinic_id) return;
     setIsLoading(true);
     try {
-      const records = await pb.collection('exercise_programs').getList(1, 50, {
-        filter: `clinic_id = "${currentUser.clinic_id}"`,
-        sort: '-created',
-        $autoCancel: false
-      });
-      setPrograms(records.items);
+      const data = await apiServerClient.fetch('/exercise-programs');
+      const programData = Array.isArray(data) ? data : (data.data || []);
+      setPrograms(programData);
     } catch (error) {
       console.error('Error fetching programs:', error);
       toast.error('Failed to load programs');
@@ -50,7 +47,7 @@ export default function ExerciseProgramsPage() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this program?')) return;
     try {
-      await pb.collection('exercise_programs').delete(id, { $autoCancel: false });
+      await apiServerClient.fetch(`/exercise-programs/${id}`, { method: 'DELETE' });
       toast.success('Program deleted');
       fetchPrograms();
     } catch (error) {
@@ -87,7 +84,7 @@ export default function ExerciseProgramsPage() {
       <div className="min-h-screen bg-background flex flex-col md:flex-row">
         <Sidebar />
 
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 ml-0 md:ml-64 flex flex-col min-w-0">
           <Header />
 
           <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">

@@ -6,7 +6,7 @@ import Sidebar from '@/components/Sidebar.jsx';
 import Button from '@/components/Button.jsx';
 import StatusBadge from '@/components/appointments/StatusBadge.jsx';
 import { ArrowLeft, Edit2, Trash2, Calendar, Clock, User, Activity } from 'lucide-react';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { Helmet } from 'react-helmet';
 import EditAppointmentModal from '@/components/appointments/EditAppointmentModal.jsx';
 import DeleteAppointmentConfirmation from '@/components/appointments/DeleteAppointmentConfirmation.jsx';
@@ -25,10 +25,7 @@ const AppointmentDetailPage = () => {
   const fetchAppointment = async () => {
     setIsLoading(true);
     try {
-      const record = await pb.collection('appointments').getOne(id, { 
-        expand: 'patient_id,therapist_id',
-        $autoCancel: false 
-      });
+      const record = await apiServerClient.fetch(`/appointments/${id}`);
       setAppointment(record);
     } catch (error) {
       console.error('Error fetching appointment:', error);
@@ -44,7 +41,14 @@ const AppointmentDetailPage = () => {
 
   const handleStatusChange = async (newStatus) => {
     try {
-      await pb.collection('appointments').update(id, { status: newStatus }, { $autoCancel: false });
+      await apiServerClient.fetch(`/appointments/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          ...appointment,
+          status: newStatus 
+        })
+      });
       toast.success(`Status updated to ${newStatus}`);
       fetchAppointment();
     } catch (error) {
@@ -76,8 +80,8 @@ const AppointmentDetailPage = () => {
 
   if (!appointment) return null;
 
-  const patient = appointment.expand?.patient_id;
-  const therapist = appointment.expand?.therapist_id;
+  const patient = appointment.patients;
+  const therapist = appointment.therapists;
 
   return (
     <>
@@ -110,7 +114,7 @@ const AppointmentDetailPage = () => {
                       <StatusBadge status={appointment.status} className="text-sm px-3 py-1" />
                     </div>
                     <p className="text-muted-foreground">
-                      Created on {new Date(appointment.created).toLocaleDateString()}
+                      Created on {new Date(appointment.created_at).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -161,7 +165,7 @@ const AppointmentDetailPage = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Therapist</p>
-                      <p className="text-foreground mt-0.5">{therapist?.name || 'Unknown'}</p>
+                      <p className="text-foreground mt-0.5">{therapist?.user?.fullName || 'Unknown'}</p>
                     </div>
                   </div>
                 </div>
@@ -177,7 +181,7 @@ const AppointmentDetailPage = () => {
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Name</p>
                       <Link to={`/patients/${patient?.id}`} className="text-primary hover:underline font-medium mt-0.5 block">
-                        {patient?.full_name || 'Unknown'}
+                        {patient?.name || 'Unknown'}
                       </Link>
                     </div>
                     <div>
