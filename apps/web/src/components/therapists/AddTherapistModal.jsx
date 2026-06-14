@@ -14,6 +14,8 @@ const AddTherapistModal = ({ isOpen, onClose, onSuccess }) => {
     email: '',
     phone: '',
     password: '',
+    specialization: '',
+    licenseNumber: '',
   });
 
   const handleChange = (e) => {
@@ -26,6 +28,7 @@ const AddTherapistModal = ({ isOpen, onClose, onSuccess }) => {
     try {
       await apiServerClient.fetch('/therapists', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
           clinic_id: currentUser.clinic_id,
@@ -35,7 +38,14 @@ const AddTherapistModal = ({ isOpen, onClose, onSuccess }) => {
       toast.success('Therapist added successfully');
       onSuccess();
       onClose();
-      setFormData({ fullName: '', email: '', phone: '', password: '' });
+      setFormData({ 
+        fullName: '', 
+        email: '', 
+        phone: '', 
+        password: '',
+        specialization: '',
+        licenseNumber: '',
+      });
     } catch (error) {
       toast.error(error.message || 'Failed to add therapist');
     } finally {
@@ -86,6 +96,20 @@ const AddTherapistModal = ({ isOpen, onClose, onSuccess }) => {
           value={formData.password}
           onChange={handleChange}
           required
+        />
+        <Input
+          label="Specialization"
+          name="specialization"
+          value={formData.specialization}
+          onChange={handleChange}
+          placeholder="e.g. Musculoskeletal Physiotherapy"
+        />
+        <Input
+          label="License Number (STR)"
+          name="licenseNumber"
+          value={formData.licenseNumber}
+          onChange={handleChange}
+          placeholder="e.g. STR-123456"
         />
       </form>
     </Modal>

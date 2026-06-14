@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     fullName VARCHAR(255) NOT NULL,
+    phone VARCHAR(50),
     role ENUM('admin', 'therapist', 'patient') DEFAULT 'therapist',
     invite_code_id VARCHAR(255),
     clinic_id VARCHAR(255), -- Menambahkan kolom clinic_id

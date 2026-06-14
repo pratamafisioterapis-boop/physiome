@@ -19,6 +19,7 @@ router.get('/', async (req, res, next) => {
                     select: {
                         fullName: true,
                         email: true,
+                        phone: true,
                         role: true
                     }
                 }
@@ -34,8 +35,10 @@ router.get('/', async (req, res, next) => {
             userId: t.userId,
             fullName: t.user.fullName,
             email: t.user.email,
+            phone: t.user.phone,
             role: t.user.role,
             specialization: t.specialization,
+            licenseNumber: t.licenseNumber,
             status: t.status,
             created_at: t.created_at
         }));
@@ -48,7 +51,11 @@ router.get('/', async (req, res, next) => {
 
 // POST /therapists - Buat User & Profil Terapis sekaligus
 router.post('/', async (req, res, next) => {
-    const { fullName, email, password, specialization, licenseNumber } = req.body;
+    const { fullName, email, password, phone, specialization, licenseNumber } = req.body || {};
+
+    if (!fullName || !email || !password) {
+        return res.status(400).json({ message: 'Full name, email, and password are required' });
+    }
 
     try {
         const result = await prisma.$transaction(async (tx) => {
@@ -60,6 +67,7 @@ router.post('/', async (req, res, next) => {
                     email,
                     password: hashedPassword,
                     fullName,
+                    phone,
                     role: 'therapist',
                     clinic_id: req.clinicId
                 }
@@ -85,6 +93,56 @@ router.post('/', async (req, res, next) => {
             data: result.newTherapist
         });
     } catch (error) {
+        next(error);
+    }
+});
+
+// PUT /therapists/:id - Update User & Profil Terapis
+router.put('/:id', async (req, res, next) => {
+    const { id } = req.params;
+    const { fullName, email, phone, specialization, licenseNumber, status, password } = req.body || {};
+
+    try {
+        const result = await prisma.$transaction(async (tx) => {
+            // 1. Cari data terapis untuk mendapatkan userId
+            const therapist = await tx.therapists.findUnique({
+                where: { id },
+                select: { userId: true }
+            });
+
+            if (!therapist) {
+                throw new Error('Therapist not found');
+            }
+
+            // 2. Update data User (Nama, Email, HP)
+            const userUpdateData = { fullName, email, phone };
+            
+            if (password && password.trim() !== '') {
+                userUpdateData.password = await bcrypt.hash(password, 10);
+            }
+
+            await tx.users.update({
+                where: { id: therapist.userId },
+                data: userUpdateData
+            });
+
+            // 3. Update data Profil Terapis (Spesialisasi, STR, Status)
+            const updatedTherapist = await tx.therapists.update({
+                where: { id },
+                data: { specialization, licenseNumber, status }
+            });
+
+            return updatedTherapist;
+        });
+
+        res.json({
+            message: 'Therapist updated successfully',
+            data: result
+        });
+    } catch (error) {
+        if (error.message === 'Therapist not found') {
+            return res.status(404).json({ error: 'Therapist not found' });
+        }
         next(error);
     }
 });

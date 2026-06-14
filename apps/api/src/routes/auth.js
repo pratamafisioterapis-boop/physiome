@@ -113,7 +113,56 @@ router.post('/register', async (req, res, next) => {
                 id: result.user.id,
                 fullName: result.user.fullName,
                 role: result.user.role,
-                clinicId: result.clinicId
+                clinic_id: result.clinicId
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * POST /auth/login
+ * Menangani autentikasi pengguna
+ */
+router.post('/login', async (req, res, next) => {
+    const { email, password } = req.body;
+
+    try {
+        // 1. Cari user berdasarkan email
+        const user = await prisma.users.findUnique({
+            where: { email }
+        });
+
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // 2. Bandingkan password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // 3. Generate JWT Token (samakan dengan logika register)
+        const token = jwt.sign(
+            { 
+                userId: user.id, 
+                userRole: user.role, 
+                clinicId: user.clinic_id 
+            },
+            process.env.JWT_SECRET || 'fallback-secret',
+            { expiresIn: '24h' }
+        );
+
+        res.json({
+            message: 'Login successful',
+            token,
+            user: {
+                id: user.id,
+                fullName: user.fullName,
+                role: user.role,
+                clinic_id: user.clinic_id
             }
         });
     } catch (error) {

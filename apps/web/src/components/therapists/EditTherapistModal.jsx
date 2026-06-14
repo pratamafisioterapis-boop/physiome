@@ -11,6 +11,9 @@ const EditTherapistModal = ({ isOpen, onClose, onSuccess, therapist }) => {
     fullName: '',
     email: '',
     phone: '',
+    specialization: '',
+    licenseNumber: '',
+    password: '',
   });
 
   useEffect(() => {
@@ -19,6 +22,9 @@ const EditTherapistModal = ({ isOpen, onClose, onSuccess, therapist }) => {
         fullName: therapist.fullName || therapist.name || '',
         email: therapist.email || '',
         phone: therapist.phone || '',
+        specialization: therapist.specialization || '',
+        licenseNumber: therapist.licenseNumber || '',
+        password: '', // Selalu kosong saat modal dibuka
       });
     }
   }, [isOpen, therapist]);
@@ -33,6 +39,7 @@ const EditTherapistModal = ({ isOpen, onClose, onSuccess, therapist }) => {
     try {
       await apiServerClient.fetch(`/therapists/${therapist.id}`, {
         method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
       toast.success('Therapist updated successfully');
@@ -72,6 +79,35 @@ const EditTherapistModal = ({ isOpen, onClose, onSuccess, therapist }) => {
           value={formData.email}
           onChange={handleChange}
           required
+        />
+        <Input
+          label="Phone Number"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          placeholder="e.g. +62812345678"
+        />
+        <Input
+          label="Specialization"
+          name="specialization"
+          value={formData.specialization}
+          onChange={handleChange}
+          placeholder="e.g. Pediatric Physiotherapy"
+        />
+        <Input
+          label="License Number (STR)"
+          name="licenseNumber"
+          value={formData.licenseNumber}
+          onChange={handleChange}
+          placeholder="e.g. STR-987654"
+        />
+        <Input
+          label="New Password (leave blank to keep current)"
+          name="password"
+          type="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="Enter new password"
         />
       </form>
     </Modal>

@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { Loader2 } from 'lucide-react';
 
 const Button = ({ 
   children, 
@@ -8,6 +9,7 @@ const Button = ({
   size = 'md',
   className,
   disabled,
+  isLoading,
   type = 'button',
   onClick,
   ...props 
@@ -32,11 +34,18 @@ const Button = ({
     <button
       type={type}
       className={cn(baseStyles, variants[variant], sizes[size], className)}
-      disabled={disabled}
+      disabled={disabled || isLoading}
       onClick={onClick}
       {...props}
     >
-      {children}
+      {isLoading ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          {children}
+        </>
+      ) : (
+        children
+      )}
     </button>
   );
 };
