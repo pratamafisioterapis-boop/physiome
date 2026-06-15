@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import VideoPlayerComponent from '@/components/exercises/VideoPlayerComponent.jsx';
 import FullscreenTimerMode from '@/components/timer/FullscreenTimerMode.jsx';
 import SessionDataTracker from '@/components/timer/SessionDataTracker.jsx';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { toast } from 'sonner';
 
 const PatientExerciseViewPage = () => {
@@ -16,7 +16,6 @@ const PatientExerciseViewPage = () => {
   
   const [assignment, setAssignment] = useState(null);
   const [exercises, setExercises] = useState([]);
-  const [timerConfigs, setTimerConfigs] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -27,64 +26,54 @@ const PatientExerciseViewPage = () => {
   useEffect(() => {
     const fetchProgramDetails = async () => {
       try {
-        const record = await pb.collection('program_assignments').getOne(assignmentId, {
-          expand: 'program_id',
-          $autoCancel: false
-        });
-        setAssignment(record);
-        
-        const programExercises = record.expand?.program_id?.exercises || [];
-        if (programExercises.length > 0) {
-          const exerciseIds = programExercises.map(e => e.exercise_id || e.exerciseId);
-          const exerciseRecords = await pb.collection('exercises').getFullList({
-            filter: exerciseIds.map(id => `id="${id}"`).join(' || '),
-            $autoCancel: false
-          });
-          
-          const combined = programExercises.map(pe => {
-            const details = exerciseRecords.find(e => e.id === (pe.exercise_id || pe.exerciseId));
-            return { ...pe, details };
-          }).filter(e => e.details); 
-          
-          setExercises(combined);
-
-          // Fetch timer configs for these exercises
-          const configs = await pb.collection('recovery_timer_configs').getFullList({
-            filter: exerciseIds.map(id => `exercise_id="${id}"`).join(' || '),
-            $autoCancel: false
-          });
-          
-          const configMap = {};
-          configs.forEach(c => configMap[c.exercise_id] = c);
-          setTimerConfigs(configMap);
-        }
+        const data = await apiServerClient.fetch(`/program-assignments/${assignmentId}`);
+        setAssignment(data);
+        setExercises(data.exercises || []);
       } catch (error) {
+        console.error(error);
         toast.error('Failed to load program details');
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     fetchProgramDetails();
   }, [assignmentId]);
 
   if (isLoading) return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>;
-  if (!assignment || exercises.length === 0) return <div className="p-8 text-center"><p>Program not found</p><Button onClick={()=>navigate('/patient/programs')}>Back</Button></div>;
+  if (!assignment || exercises.length === 0) return <div className="p-8 text-center"><p>Program not found or no exercises.</p><Button onClick={()=>navigate('/patient/programs')}>Back</Button></div>;
 
   const currentExercise = exercises[currentIndex];
-  const videoUrl = currentExercise.details.video_url ? pb.files.getUrl(currentExercise.details, currentExercise.details.video_url) : null;
-  const config = timerConfigs[currentExercise.details.id] || {
-    prepare_time: 5, work_time: 30, rest_time: 15, cycles: 1, sets: 3, rest_between_sets: 30, hold_duration: 0, repetitions: 10, permission_mode: 'Therapist Controlled'
-  };
+  const videoUrl = currentExercise.details.video_url;
+  const config = {
+    sets: Number(currentExercise.sets ?? 1),
+    repetitions: Number(
+      currentExercise.repetitions ??
+      currentExercise.reps ??
+      0
+    ),
 
+    prepare_time: Number(currentExercise.prepare_time ?? 5),
+    work_time: Number(currentExercise.work_time ?? 0),
+    hold_duration: Number(currentExercise.hold_duration ?? 0),
+
+    cycles: Number(currentExercise.cycles ?? 1),
+    rest_time: Number(currentExercise.rest_time ?? 0),
+    rest_between_sets: Number(
+      currentExercise.rest_between_sets ?? 10
+    ),
+
+    permission_mode:
+      currentExercise.permission_mode ?? 'Patient Controlled'
+  };
   const handleTimerComplete = () => {
     setTimerActive(false);
     if (currentIndex < exercises.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
-      setSessionStats({
+      setSessionStats({ // Ini adalah mock data, perlu diimplementasikan secara nyata
         exercisesCompleted: exercises.length,
-        setsCompleted: exercises.reduce((acc, curr) => acc + (timerConfigs[curr.details.id]?.sets || 3), 0),
+        setsCompleted: exercises.reduce((acc, curr) => acc + (curr.sets || 3), 0), // Menggunakan curr.sets langsung
         painBefore: 3, // Mock, would capture at start
         durationSeconds: 1500, // Mock, would calculate real time
         adherenceRate: 100,

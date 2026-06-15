@@ -7,7 +7,7 @@ import {
   ArrowRight, CheckCircle2, Users, Calendar, FileText, Dumbbell, 
   BrainCircuit, Activity, CreditCard, Video, Zap, BarChart3, Smartphone,
   MessageSquare, Bell, Shield, ArrowUpRight, Star
-} from 'lucide-react';
+} from 'lucide-react'; // Pastikan semua ikon diimpor
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import LandingHeader from '@/components/landing/LandingHeader.jsx';

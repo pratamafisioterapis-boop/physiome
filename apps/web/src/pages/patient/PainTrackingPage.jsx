@@ -4,10 +4,10 @@ import { Helmet } from 'react-helmet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from '@/components/ui/textarea'; // Pastikan Textarea diimpor
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import pb from '@/lib/pocketbaseClient.js';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 
 const PainTrackingPage = () => {
@@ -21,13 +21,15 @@ const PainTrackingPage = () => {
     if (!location) return toast.error("Please select a pain location.");
     setIsSubmitting(true);
     try {
-      await pb.collection('pain_logs').create({
-        patient_id: currentUser.id,
-        pain_level: painLevel,
-        location: location,
-        notes: notes,
-        timestamp: new Date().toISOString()
-      }, { $autoCancel: false });
+      await apiServerClient.fetch('/pain-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pain_level: painLevel,
+          location: location,
+          notes: notes
+        })
+      });
       toast.success("Pain log saved successfully.");
       setNotes('');
     } catch (error) {

@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { Video, Calendar, Clock, User, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-
+// Pastikan semua komponen UI yang digunakan diimpor
 const TelehealthPage = () => {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">

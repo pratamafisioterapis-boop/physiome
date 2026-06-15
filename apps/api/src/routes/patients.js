@@ -66,9 +66,10 @@ router.post('/', async (req, res, next) => {
 
         const result = await prisma.$transaction(async (tx) => {
             // 2. Buat record Pasien
+            const patientID = uuidv4();
             const patient = await tx.patients.create({
                 data: {
-                    id: uuidv4(),
+                    id: patientID,
                     name,
                     email,
                     phone,
@@ -87,9 +88,10 @@ router.post('/', async (req, res, next) => {
                 if (!existingUser) {
                     // Gunakan nomor telepon sebagai password awal atau default password
                     const hashedPassword = await bcrypt.hash(phone || 'Patient123!', 10);
-                    await tx.users.create({
+                    const userID = uuidv4();
+                    const createUser =await tx.users.create({
                         data: {
-                            id: uuidv4(),
+                            id: userID,
                             email,
                             password: hashedPassword,
                             fullName: name,
@@ -98,6 +100,14 @@ router.post('/', async (req, res, next) => {
                             clinic_id: req.clinicId
                         }
                     });
+
+                    if (createUser) {
+                        // Update pasien dengan user_id yang baru dibuat
+                        await tx.patients.update({
+                            where: { id: patientID },
+                            data: { userId: userID }
+                        });
+                    }
                 }
             }
 

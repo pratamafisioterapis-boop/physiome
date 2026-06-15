@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
 import { CheckCircle2, Save, Activity } from 'lucide-react';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { toast } from 'sonner';
 
@@ -18,20 +18,22 @@ const SessionDataTracker = ({ sessionData, programId, onComplete }) => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await pb.collection('session_data').create({
-        patient_id: currentUser.id,
-        program_id: programId,
-        clinic_id: currentUser.clinic_id,
-        session_date: new Date().toISOString(),
-        exercises_completed: sessionData.exercisesCompleted,
-        sets_completed: sessionData.setsCompleted,
-        pain_before: sessionData.painBefore || 0,
-        pain_after: painAfter,
-        duration: sessionData.durationSeconds,
-        adherence_rate: sessionData.adherenceRate,
-        completion_percentage: sessionData.completionPercentage,
-        notes: notes
-      }, { $autoCancel: false });
+      await apiServerClient.fetch('/exercise-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patient_id: currentUser.id,
+          program_id: programId,
+          exercises_completed: sessionData.exercisesCompleted,
+          sets_completed: sessionData.setsCompleted,
+          pain_before: sessionData.painBefore || 0,
+          pain_after: painAfter,
+          duration: sessionData.durationSeconds,
+          adherence_rate: sessionData.adherenceRate,
+          completion_percentage: sessionData.completionPercentage,
+          notes: notes
+        })
+      });
 
       toast.success('Session saved successfully!');
       onComplete();

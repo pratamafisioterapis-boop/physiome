@@ -261,6 +261,35 @@ CREATE TABLE IF NOT EXISTS appointments (
 );
 
 
+-- Tabel Exercise Logs (Hasil Latihan Pasien)
+CREATE TABLE IF NOT EXISTS exercise_logs (
+    id VARCHAR(191) PRIMARY KEY,
+    patient_id VARCHAR(191) NOT NULL,
+    program_id VARCHAR(191) NOT NULL,
+    clinic_id VARCHAR(191) NOT NULL,
+    session_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    exercises_completed INT DEFAULT 0,
+    sets_completed INT DEFAULT 0,
+    pain_before INT DEFAULT 0,
+    pain_after INT DEFAULT 0,
+    duration_seconds INT DEFAULT 0,
+    adherence_rate INT DEFAULT 0,
+    completion_percentage INT DEFAULT 0,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabel Pain Logs (Riwayat Nyeri)
+CREATE TABLE IF NOT EXISTS pain_logs (
+    id VARCHAR(191) PRIMARY KEY,
+    patient_id VARCHAR(191) NOT NULL,
+    clinic_id VARCHAR(191) NOT NULL,
+    pain_level INT NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Index untuk performa pencarian
 CREATE INDEX idx_ai_messages_user ON integrated_ai_messages(userId);
 CREATE INDEX idx_soap_notes_patient ON soap_notes(patient_id);
@@ -292,9 +321,9 @@ INSERT INTO exercises (id, name, description, body_region, difficulty, category,
 
 -- Insert Program Templates (Menyertakan kolom exercises dengan array JSON kosong atau contoh)
 INSERT INTO exercise_programs (id, name, description, clinical_goal, body_region, expected_duration, status, clinic_id, exercises) VALUES 
-('tmpl-001', 'Neck Pain Relief', 'Gentle mobility and isometric strengthening for cervical spine.', 'Improve neck mobility', 'Neck', '4 weeks', 'Active', NULL, '[{"name": "Chin Tucks", "sets": 3, "reps": 10, "holdTime": 5, "video_url": "https://www.youtube.com/watch?v=0hX0U4A-kM0", "notes": "Gently tuck your chin towards your neck, maintaining upright posture."}, {"name": "Upper Trapezius Stretch", "sets": 2, "reps": 1, "holdTime": 30, "video_url": "https://www.youtube.com/watch?v=nxD-vS0Yp30", "notes": "Gently pull your head to one side until a stretch is felt."}, {"name": "Isometric Neck Side Bending", "sets": 3, "reps": 10, "holdTime": 5, "video_url": "https://www.youtube.com/watch?v=vVj_p_hO6kI", "notes": "Press your hand against the side of your head while resisting the movement."}]'),
-('tmpl-002', 'Low Back Stabilization', 'Core engagement and lumbar stabilization protocol.', 'Core stability', 'Lower Back', '6 weeks', 'Active', NULL, '[{"name": "Pelvic Tilts", "sets": 3, "reps": 15, "holdTime": 0, "video_url": "https://www.youtube.com/watch?v=5rT8Y6L0o_4", "notes": "Flatten your lower back against the floor by tightening your stomach muscles."}, {"name": "Bridging", "sets": 3, "reps": 10, "holdTime": 5, "video_url": "https://www.youtube.com/watch?v=wPM8icPu6H8", "notes": "Lift your hips off the floor while keeping your back straight."}, {"name": "Bird Dog", "sets": 3, "reps": 10, "holdTime": 5, "video_url": "https://www.youtube.com/watch?v=I6Bv3S_Msh8", "notes": "Extend opposite arm and leg while maintaining a stable core."}]'),
-('tmpl-003', 'Frozen Shoulder (Phase 1)', 'Passive and active-assisted ROM for adhesive capsulitis.', 'Increase ROM', 'Shoulder', '4 weeks', 'Active', NULL, '[{"name": "Pendulum Exercises", "sets": 3, "reps": 1, "holdTime": 60, "video_url": "https://www.youtube.com/watch?v=3M_p_K_3S4U", "notes": "Lean forward and let your arm hang loosely. Gently swing it in circles."}, {"name": "Passive Shoulder Flexion", "sets": 3, "reps": 10, "holdTime": 0, "video_url": "https://www.youtube.com/watch?v=AIsQO_Xf-wY", "notes": "Use a table to slide your arm forward while sitting."}, {"name": "Shoulder External Rotation", "sets": 3, "reps": 10, "holdTime": 0, "video_url": "https://www.youtube.com/watch?v=55Yq_67d26A", "notes": "Use a stick to gently push your hand outwards."}]'),
-('tmpl-004', 'ACL Post-Op (Weeks 1-4)', 'Early phase ACL reconstruction protocol.', 'Post-op recovery', 'Knee', '4 weeks', 'Active', NULL, '[{"name": "Quad Sets", "sets": 3, "reps": 10, "holdTime": 5, "video_url": "https://www.youtube.com/watch?v=vV7Yp6B4C4A", "notes": "Squeeze your thigh muscle hard."}, {"name": "Heel Slides", "sets": 3, "reps": 15, "holdTime": 0, "video_url": "https://www.youtube.com/watch?v=Xz2L7Vw5-7M", "notes": "Slowly slide your heel towards your buttock."}, {"name": "Straight Leg Raises", "sets": 3, "reps": 10, "holdTime": 0, "video_url": "https://www.youtube.com/watch?v=0_uW_E5o1xM", "notes": "Keep your knee straight and lift your leg off the bed."}]'),
-('tmpl-005', 'Stroke Rehab (Upper Limb)', 'Neuro-rehabilitation focusing on upper extremity function.', 'Functional recovery', 'Neurological', '8 weeks', 'Active', NULL, '[{"name": "Table Top Reach", "sets": 3, "reps": 10, "holdTime": 0, "video_url": "https://www.youtube.com/watch?v=hBf6p_vK2w4", "notes": "Slide your affected hand forward across a table."}, {"name": "Hand Squeeze", "sets": 3, "reps": 15, "holdTime": 3, "video_url": "https://www.youtube.com/watch?v=H7Z8S5e2hE0", "notes": "Squeeze a stress ball or soft sponge."}, {"name": "Wrist Extensions", "sets": 3, "reps": 12, "holdTime": 0, "video_url": "https://www.youtube.com/watch?v=r088_r0iUxE", "notes": "Lift the back of your hand towards the ceiling."}]'),
-('tmpl-006', 'Knee Osteoarthritis', 'Quad strengthening and joint offloading strategies.', 'Pain management', 'Knee', '6 weeks', 'Active', NULL, '[{"name": "Wall Squats", "sets": 3, "reps": 10, "holdTime": 5, "video_url": "https://www.youtube.com/watch?v=XvHovkFpYdI", "notes": "Lean against a wall and slide down into a partial squat."}, {"name": "Terminal Knee Extension", "sets": 3, "reps": 15, "holdTime": 5, "video_url": "https://www.youtube.com/watch?v=LqU70zUuLp4", "notes": "Fully straighten your knee against a resistance band."}, {"name": "Clamshells", "sets": 3, "reps": 12, "holdTime": 0, "video_url": "https://www.youtube.com/watch?v=r_G_7X1a-sQ", "notes": "Lie on your side and lift your top knee while keeping feet together."}]');
+('tmpl-001', 'Neck Pain Relief', 'Gentle mobility and isometric strengthening for cervical spine.', 'Improve neck mobility', 'Neck', '4 weeks', 'Active', NULL, '[{"id": "ex-001", "name": "Chin Tucks", "sets": 3, "reps": 10, "holdTime": 5, "video_url": "https://www.youtube.com/watch?v=0hX0U4A-kM0", "notes": "Gently tuck your chin towards your neck, maintaining upright posture."}]'),
+('tmpl-002', 'Low Back Stabilization', 'Core engagement and lumbar stabilization protocol.', 'Core stability', 'Lower Back', '6 weeks', 'Active', NULL, '[{"id": "ex-004", "name": "Bridging", "sets": 3, "reps": 10, "holdTime": 5, "video_url": "https://www.youtube.com/watch?v=wPM8icPu6H8", "notes": "Lift your hips off the floor while keeping your back straight."}]'),
+('tmpl-003', 'Frozen Shoulder (Phase 1)', 'Passive and active-assisted ROM for adhesive capsulitis.', 'Increase ROM', 'Shoulder', '4 weeks', 'Active', NULL, '[{"id": "ex-002", "name": "Scapular Retraction", "sets": 3, "reps": 10, "holdTime": 5, "video_url": "https://www.youtube.com/watch?v=W0X8M2TqMkk", "notes": "Squeeze your shoulder blades."}]'),
+('tmpl-004', 'ACL Post-Op (Weeks 1-4)', 'Early phase ACL reconstruction protocol.', 'Post-op recovery', 'Knee', '4 weeks', 'Active', NULL, '[{"id": "ex-005", "name": "Heel Slides", "sets": 3, "reps": 15, "holdTime": 0, "video_url": "https://www.youtube.com/watch?v=vV7Yp6B4C4A", "notes": "Slowly slide your heel towards your buttock."}]'),
+('tmpl-005', 'Stroke Rehab (Upper Limb)', 'Neuro-rehabilitation focusing on upper extremity function.', 'Functional recovery', 'Neurological', '8 weeks', 'Active', NULL, '[{"id": "ex-001", "name": "Chin Tucks", "sets": 3, "reps": 10, "holdTime": 5, "video_url": "https://www.youtube.com/watch?v=0hX0U4A-kM0", "notes": "Gently tuck your chin."}]'),
+('tmpl-006', 'Knee Osteoarthritis', 'Quad strengthening and joint offloading strategies.', 'Pain management', 'Knee', '6 weeks', 'Active', NULL, '[{"id": "ex-005", "name": "Heel Slides", "sets": 3, "reps": 15, "holdTime": 0, "video_url": "https://www.youtube.com/watch?v=vV7Yp6B4C4A", "notes": "Heel slides for knee mobility."}]');

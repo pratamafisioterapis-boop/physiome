@@ -13,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Pastikan useNavigate diimpor
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--destructive))'];
 

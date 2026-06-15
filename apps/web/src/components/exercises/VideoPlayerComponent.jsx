@@ -47,7 +47,7 @@ const VideoPlayerComponent = ({ videoUrl, thumbnailUrl, title = 'Exercise Video'
             src={`https://www.youtube.com/embed/${videoId}`}
             title={title}
             frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             referrerPolicy="strict-origin-when-cross-origin"
           />

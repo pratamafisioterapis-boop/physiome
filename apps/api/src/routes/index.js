@@ -15,6 +15,8 @@ import exercisesRouter from './exercises.js';
 import videosRouter from './videos.js';
 import programAssignmentsRouter from './program-assignments.js';
 import soapNotesRouter from './soap-notes.js';
+import exerciseLogsRouter from './exercise-logs.js';
+import painLogsRouter from './pain-logs.js';
 
 const router = Router();
 
@@ -38,6 +40,8 @@ export default () => {
     router.use('/videos', videosRouter);
     router.use('/program-assignments', programAssignmentsRouter);
     router.use('/soap-notes', soapNotesRouter);
+    router.use('/exercise-logs', exerciseLogsRouter);
+    router.use('/pain-logs', painLogsRouter);
     router.use('/user-preferences/language', languageRouter);
 
     return router;

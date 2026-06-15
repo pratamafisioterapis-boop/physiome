@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import pb from '@/lib/pocketbaseClient.js';
 import { User, Settings, Bell, Shield, HelpCircle, LogOut, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/Button.jsx'; // Menggunakan Button kustom
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const PatientProfilePage = () => {
@@ -30,10 +30,10 @@ const PatientProfilePage = () => {
         <Avatar className="w-24 h-24 mb-4 border-4 border-background shadow-md">
           <AvatarImage src={currentUser?.avatar ? pb.files.getUrl(currentUser, currentUser.avatar) : ''} />
           <AvatarFallback className="text-2xl bg-primary/10 text-primary">
-            {currentUser?.full_name?.charAt(0) || 'P'}
+            {currentUser?.fullName?.charAt(0) || 'P'}
           </AvatarFallback>
         </Avatar>
-        <h2 className="text-xl font-bold">{currentUser?.full_name || 'Patient Name'}</h2>
+        <h2 className="text-xl font-bold">{currentUser?.fullName || 'Patient Name'}</h2>
         <p className="text-muted-foreground text-sm">{currentUser?.email}</p>
         <Button variant="outline" size="sm" className="mt-4 rounded-full px-6">Edit Profile</Button>
       </div>

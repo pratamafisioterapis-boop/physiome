@@ -137,6 +137,7 @@ function App() {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<PatientDashboardPage />} />
               <Route path="programs" element={<MyExerciseProgramsPage />} />
+              <Route path="programs/:assignmentId" element={<PatientExerciseViewPage />} />
               <Route path="videos" element={<ExerciseVideosPage />} />
               <Route path="recovery" element={<RecoveryProgressPage />} />
               <Route path="pain-tracking" element={<PainTrackingPage />} />

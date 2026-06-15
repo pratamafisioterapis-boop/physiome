@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import HoldMode from './HoldMode.jsx';
 import RepetitionMode from './RepetitionMode.jsx';
 
+
 const STAGES = {
   PREPARE: 'PREPARE',
   WORK: 'WORK',

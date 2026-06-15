@@ -12,7 +12,7 @@ const PatientDashboardPage = () => {
       <Helmet><title>Dashboard | Physiome</title></Helmet>
       
       <header className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold text-foreground tracking-tight">Welcome back, {currentUser?.full_name?.split(' ')[0] || 'Patient'}</h1>
+        <h1 className="text-3xl font-bold text-foreground tracking-tight">Welcome back, {currentUser?.fullName?.split(' ')[0] || 'Patient'}</h1>
         <p className="text-muted-foreground text-lg">Your personalized recovery plan is ready.</p>
       </header>
 

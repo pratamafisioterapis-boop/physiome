@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Sparkles, Trash2, Brain, AlertTriangle } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext.jsx';
+import { useAuth } from '@/contexts/AuthContext.jsx'; // Pastikan useAuth diimpor
 import { useIntegratedAi } from '@/hooks/use-integrated-ai.jsx';
 import pb from '@/lib/pocketbaseClient';
 import { toast } from 'sonner';

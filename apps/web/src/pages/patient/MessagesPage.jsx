@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { Send, Image as ImageIcon, MoreVertical } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'; // Pastikan Button diimpor
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const mockMessages = [
