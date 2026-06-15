@@ -22,7 +22,7 @@ router.get('/exercise-overview', async (req, res, next) => {
         const recentAssignments = await prisma.program_assignments.findMany({
             where: { clinic_id: req.clinicId },
             include: {
-                patients: { select: { name: true } }
+                patient: { select: { name: true } }
             },
             take: 5,
             orderBy: { created_at: 'desc' }

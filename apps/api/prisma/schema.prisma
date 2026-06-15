@@ -74,7 +74,7 @@ model invoices {
   emailSentTo      String?          @db.VarChar(255)
   reminderSentDate DateTime?        @db.DateTime(0)
   created_at       DateTime?        @default(now()) @db.Timestamp(0)
-  patients         patients         @relation(fields: [patientId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "invoices_ibfk_1")
+  patient          patients         @relation(fields: [patientId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "invoices_ibfk_1")
   payments         payments[]
 
   @@index([patientId], map: "idx_invoices_patient")
@@ -90,7 +90,7 @@ model patient_packages {
   expiryDate    DateTime?                @db.DateTime(0)
   renewalCount  Int?                     @default(0)
   created_at    DateTime?                @default(now()) @db.Timestamp(0)
-  patients      patients                 @relation(fields: [patientId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "patient_packages_ibfk_1")
+  patient       patients                 @relation(fields: [patientId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "patient_packages_ibfk_1")
 
   @@index([patientId], map: "patientId")
 }
@@ -128,8 +128,8 @@ model payments {
   referenceNumber String?   @db.VarChar(100)
   notes           String?   @db.Text
   created_at      DateTime? @default(now()) @db.Timestamp(0)
-  invoices        invoices  @relation(fields: [invoiceId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payments_ibfk_1")
-  patients        patients  @relation(fields: [patientId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payments_ibfk_2")
+  invoice         invoices  @relation(fields: [invoiceId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payments_ibfk_1")
+  patient         patients  @relation(fields: [patientId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payments_ibfk_2")
 
   @@index([invoiceId], map: "idx_payments_invoice")
   @@index([patientId], map: "patientId")
@@ -145,7 +145,7 @@ model soap_notes {
   plan         String?   @db.Text
   created_at   DateTime? @default(now()) @db.Timestamp(0)
   updated_at   DateTime? @default(now()) @db.Timestamp(0)
-  patients     patients  @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "soap_notes_ibfk_1")
+  patient      patients  @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "soap_notes_ibfk_1")
 
   @@index([patient_id], map: "idx_soap_notes_patient")
 }
@@ -207,8 +207,8 @@ model appointments {
   notes        String?              @db.Text
   created_at   DateTime?            @default(now()) @db.Timestamp(0)
   updated_at   DateTime?            @default(now()) @db.Timestamp(0)
-  patients     patients             @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "appointments_ibfk_1")
-  therapists   therapists?          @relation(fields: [therapist_id], references: [id], onDelete: SetNull)
+  patient      patients             @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "appointments_ibfk_1")
+  therapist    therapists?          @relation(fields: [therapist_id], references: [id], onDelete: SetNull)
 
   @@index([patient_id], map: "patient_id")
 }
@@ -261,7 +261,7 @@ model program_assignments {
   adherence_rate  Int?                        @default(0)
   created_at      DateTime?                   @default(now()) @db.Timestamp(0)
   updated_at      DateTime?                   @default(now()) @db.Timestamp(0)
-  patients        patients?                   @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "program_assignments_ibfk_1")
+  patient         patients?                   @relation(fields: [patient_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "program_assignments_ibfk_1")
 
   @@index([patient_id], map: "patient_id")
 }
@@ -276,7 +276,7 @@ model videos {
   clinic_id     String    @db.VarChar(255)
   created_at    DateTime? @default(now()) @db.Timestamp(0)
   updated_at    DateTime? @default(now()) @db.Timestamp(0)
-  clinics       clinics   @relation(fields: [clinic_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  clinic        clinics   @relation(fields: [clinic_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([clinic_id], map: "videos_clinic_id_fkey")
 }

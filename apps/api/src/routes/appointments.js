@@ -14,13 +14,13 @@ router.get('/', async (req, res, next) => {
                 clinic_id: req.clinicId
             },
             include: {
-                patients: {
+                patient: {
                     select: {
                         id: true,
                         name: true
                     }
                 },
-                therapists: {
+                therapist: {
                     include: {
                         user: {
                             select: {
@@ -50,8 +50,8 @@ router.get('/:id', async (req, res, next) => {
                 clinic_id: req.clinicId 
             },
             include: {
-                patients: true,
-                therapists: {
+                patient: true,
+                therapist: {
                     include: {
                         user: {
                             select: {

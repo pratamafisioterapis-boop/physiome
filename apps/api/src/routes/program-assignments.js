@@ -12,7 +12,7 @@ router.get('/', async (req, res, next) => {
         const assignments = await prisma.program_assignments.findMany({
             where: { clinic_id: req.clinicId },
             include: {
-                patients: { select: { name: true, email: true } }
+                patient: { select: { name: true, email: true } }
             },
             orderBy: { created_at: 'desc' }
         });
