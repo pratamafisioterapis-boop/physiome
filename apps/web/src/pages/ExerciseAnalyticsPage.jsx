@@ -1,11 +1,13 @@
 
 import React from 'react';
-import { Download, BarChart2 } from 'lucide-react';
+import { Download, BarChart2, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Sidebar from '@/components/Sidebar.jsx';
 import Header from '@/components/Header.jsx';
+import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet';
 
 const mockTopExercises = [
   { name: 'Bridging', assigned: 120 },
@@ -16,24 +18,30 @@ const mockTopExercises = [
 ];
 
 export default function ExerciseAnalyticsPage() {
+  const { t } = useTranslation();
+
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+      <Helmet>
+        <title>{t('nav.analytics')} - Physiome</title>
+      </Helmet>
+
       <Sidebar />
-      <div className="flex-1 ml-64 flex flex-col">
-        <Header title="Exercise Analytics" />
-        <main className="flex-1 p-8">
+      <div className="flex-1 ml-0 md:ml-64 flex flex-col min-w-0">
+        <Header />
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
           
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">Clinic Performance</h2>
-              <p className="text-muted-foreground">Aggregated insights across all patients and programs.</p>
+              <h1 className="text-3xl font-bold text-foreground tracking-tight">{t('nav.analytics')}</h1>
+              <p className="text-muted-foreground mt-1">Aggregated insights across all patients and programs.</p>
             </div>
-            <Button variant="outline" className="rounded-full">
+            <Button variant="outline" className="rounded-full shrink-0">
               <Download className="w-4 h-4 mr-2" /> Export Report
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
             <Card className="border-0 shadow-soft">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2"><BarChart2 className="w-5 h-5 text-primary" /> Most Assigned Exercises</CardTitle>

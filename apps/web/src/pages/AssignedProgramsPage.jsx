@@ -33,20 +33,21 @@ export default function AssignedProgramsPage() {
   }, [currentUser]);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col md:flex-row">
       <Sidebar />
-      <div className="flex-1 ml-64 flex flex-col">
+      <div className="flex-1 ml-0 md:ml-64 flex flex-col min-w-0">
         <Header title="Assigned Programs" />
-        <main className="flex-1 p-8">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
           
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold text-foreground">Active Assignments</h2>
-            <Button variant="outline" className="rounded-full">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <h2 className="text-3xl font-bold text-foreground tracking-tight">Active Assignments</h2>
+            <Button variant="outline" className="rounded-full shrink-0">
               <Smartphone className="w-4 h-4 mr-2" /> Patient App Preview
             </Button>
           </div>
 
-          <Card className="border-0 shadow-soft overflow-hidden">
+          <Card className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+            <div className="hidden md:block">
             <Table>
               <TableHeader className="bg-muted/50">
                 <TableRow>
@@ -65,7 +66,7 @@ export default function AssignedProgramsPage() {
                   <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No assigned programs</TableCell></TableRow>
                 ) : assignments.map(a => (
                   <TableRow key={a.id} className="hover:bg-muted/30">
-                    <TableCell className="font-medium text-foreground">{a.patients?.name || 'Unknown Patient'}</TableCell>
+                    <TableCell className="font-medium text-foreground">{a.patient?.name || 'Unknown Patient'}</TableCell>
                     <TableCell>{a.program_name}</TableCell>
                     <TableCell className="text-muted-foreground">{new Date(a.created_at).toLocaleDateString()}</TableCell>
                     <TableCell>
@@ -90,8 +91,39 @@ export default function AssignedProgramsPage() {
                 ))}
               </TableBody>
             </Table>
+            </div>
           </Card>
 
+          {/* Mobile Cards View */}
+          {!loading && assignments.length > 0 && (
+            <div className="md:hidden space-y-4 mt-6">
+              {assignments.map(a => (
+                <div key={`mobile-${a.id}`} className="flex flex-col p-4 bg-card border border-border rounded-xl shadow-sm">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 className="font-medium text-foreground">{a.patient?.name || 'Unknown Patient'}</h3>
+                      <p className="text-xs text-primary font-medium">{a.program_name}</p>
+                    </div>
+                    <Badge className={a.status === 'Active' ? 'bg-success/10 text-success' : 'bg-muted text-muted-foreground'}>
+                      {a.status || 'Active'}
+                    </Badge>
+                  </div>
+                  <div className="space-y-2 mb-4">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Adherence</span>
+                      <span className="font-medium text-foreground">{a.adherence_rate || 0}%</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-1.5">
+                      <div className="bg-primary h-1.5 rounded-full" style={{ width: `${a.adherence_rate || 0}%` }} />
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" className="w-full text-primary border-primary/20 hover:bg-primary/5">
+                    <Eye className="w-4 h-4 mr-2" /> View Details
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
         </main>
       </div>
     </div>

@@ -5,7 +5,7 @@ import apiServerClient from '@/lib/apiServerClient.js';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { Badge, badgeVariants } from '@/components/ui/badge';
 import { Plus, Search, Edit2, Trash2, Dumbbell, UserPlus } from 'lucide-react';
 import ExerciseProgramModal from '@/components/exercises/ExerciseProgramModal.jsx';
 import AssignProgramModal from '@/components/exercises/AssignProgramModal.jsx';
@@ -119,7 +119,8 @@ export default function ExerciseProgramsPage() {
               </div>
 
               <div className="bg-card rounded-xl border border-border overflow-hidden">
-                <Table>
+                <div className="hidden md:block">
+                  <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
@@ -216,6 +217,50 @@ export default function ExerciseProgramsPage() {
                     )}
                   </TableBody>
                 </Table>
+                </div>
+
+                {/* Mobile Cards View */}
+                {!isLoading && filteredPrograms.length > 0 && (
+                  <div className="md:hidden space-y-4 p-4">
+                    {filteredPrograms.map((prog) => (
+                      <div key={`mobile-${prog.id}`} className="flex flex-col p-4 bg-card border border-border rounded-xl shadow-sm">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <h3 className="font-medium text-foreground">{prog.name}</h3>
+                            <p className="text-xs text-muted-foreground">{prog.clinical_goal}</p>
+                          </div>
+                          <Badge
+                            className={
+                              prog.status === 'Active'
+                                ? 'bg-success/10 text-success'
+                                : 'bg-muted text-muted-foreground'
+                            }
+                          >
+                            {prog.status || 'Draft'}
+                          </Badge>
+                        </div>
+                        <div className="text-sm text-muted-foreground mb-4">
+                          <p>Region: {prog.body_region || '-'}</p>
+                          <p>Duration: {prog.expected_duration || '-'}</p>
+                        </div>
+                        <div className="flex items-center gap-2 pt-3 border-t border-border">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 text-xs"
+                            onClick={() => openAssignModal(prog.id)}
+                          >
+                            <UserPlus className="w-4 h-4 mr-1" /> Assign
+                          </Button>
+                          <Button variant="outline" size="sm" className="flex-1 text-xs" onClick={() => openEditModal(prog)}>Edit</Button>
+                          <Button variant="outline" size="sm" className="px-3 text-destructive border-border hover:bg-destructive/10" onClick={() => handleDelete(prog.id)}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
             </div>

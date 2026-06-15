@@ -303,8 +303,9 @@ export default defineConfig({
 		allow: ['0.0.0.0', '::', 'localhost', 'physiome.ruangdata.online'],
 		port: 3001,
 		hmr: {
-			host: 'localhost',
-			clientPort: 3001,
+			host: 'physiome.ruangdata.online',
+			protocol: 'wss',
+			clientPort: 443,
 		},
 		proxy: {
 			'/hcgi/api': {

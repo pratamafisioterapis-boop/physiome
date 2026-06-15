@@ -56,8 +56,8 @@ const AppointmentListPage = () => {
   }, [search, statusFilter]);
 
   const filteredAppointments = appointments.filter(a => {
-    const patientName = a.patients?.name?.toLowerCase() || '';
-    const therapistName = a.therapists?.user?.fullName?.toLowerCase() || '';
+    const patientName = a.patient?.name?.toLowerCase() || '';
+    const therapistName = a.therapist?.user?.fullName?.toLowerCase() || '';
     const searchLower = search.toLowerCase();
     
     const matchesSearch = search === '' || patientName.includes(searchLower) || therapistName.includes(searchLower);
@@ -94,14 +94,14 @@ const AppointmentListPage = () => {
                   <h1 className="text-3xl font-bold text-foreground tracking-tight">Appointments</h1>
                   <p className="text-muted-foreground mt-1">Manage clinic schedule and bookings.</p>
                 </div>
-                <div className="flex gap-3 shrink-0">
-                  <Button variant="outline" onClick={() => navigate('/appointments/calendar')} className="gap-2">
+                <div className="flex flex-col sm:flex-row gap-3 shrink-0 w-full sm:w-auto">
+                  <Button variant="outline" onClick={() => navigate('/appointments/calendar')} className="gap-2 w-full sm:w-auto">
                     <CalendarIcon className="w-4 h-4" />
-                    Calendar View
+                    {t('common.calendarView') || 'Calendar View'}
                   </Button>
-                  <Button onClick={() => setIsCreateOpen(true)} className="gap-2">
+                  <Button onClick={() => setIsCreateOpen(true)} className="gap-2 w-full sm:w-auto">
                     <Plus className="w-4 h-4" />
-                    Create Appointment
+                    {t('common.createAppointment') || 'Create Appointment'}
                   </Button>
                 </div>
               </div>
@@ -175,10 +175,10 @@ const AppointmentListPage = () => {
                           paginatedAppointments.map((apt) => (
                             <TableRow key={apt.id} className="hover:bg-muted/30">
                               <TableCell className="font-medium text-foreground">
-                                {apt.patients?.name || 'Unknown'}
+                                {apt.patient?.name || 'Unknown'}
                               </TableCell>
                               <TableCell className="text-muted-foreground">
-                                {apt.therapists?.user?.fullName || 'Unassigned'}
+                                {apt.therapist?.user?.fullName || 'Unassigned'}
                               </TableCell>
                               <TableCell>
                                 <div className="text-sm font-medium">{formatDate(apt.date)}</div>
@@ -246,8 +246,8 @@ const AppointmentListPage = () => {
                     <div key={`mobile-${apt.id}`} className="flex flex-col p-4 bg-card border border-border rounded-xl shadow-sm">
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <h3 className="font-medium text-foreground">{apt.patients?.name}</h3>
-                          <p className="text-xs text-muted-foreground">{apt.therapists?.user?.fullName || 'Unassigned'}</p>
+                          <h3 className="font-medium text-foreground">{apt.patient?.name}</h3>
+                          <p className="text-xs text-muted-foreground">{apt.therapist?.user?.fullName || 'Unassigned'}</p>
                         </div>
                         <StatusBadge status={apt.status} />
                       </div>

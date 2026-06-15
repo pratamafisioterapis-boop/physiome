@@ -1,10 +1,13 @@
 
-import React from 'react';
-import { TrendingUp, Activity, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { TrendingUp, Activity, CheckCircle, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import Sidebar from '@/components/Sidebar.jsx';
 import Header from '@/components/Header.jsx';
+import { Button } from '@/components/ui/button';
+import { Helmet } from 'react-helmet';
+import { useTranslation } from 'react-i18next';
 
 const mockPainData = [
   { day: 'Mon', score: 6 }, { day: 'Tue', score: 5 }, { day: 'Wed', score: 5 },
@@ -16,13 +19,29 @@ const mockAdherence = [
 ];
 
 export default function PatientProgressPage() {
+  const { t } = useTranslation();
+
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+      <Helmet>
+        <title>{t('nav.patientProgress')} - Physiome</title>
+      </Helmet>
+
       <Sidebar />
-      <div className="flex-1 ml-64 flex flex-col">
-        <Header title="Patient Progress Tracking" />
-        <main className="flex-1 p-8">
+      <div className="flex-1 ml-0 md:ml-64 flex flex-col min-w-0">
+        <Header />
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
           
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground tracking-tight">{t('nav.patientProgress')}</h1>
+              <p className="text-muted-foreground mt-1">Track clinical outcomes and adherence rates across the clinic.</p>
+            </div>
+            <Button variant="outline" className="rounded-full shrink-0">
+              <Download className="w-4 h-4 mr-2" /> Export Report
+            </Button>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card className="border-0 shadow-soft">
               <CardContent className="p-6 flex items-center gap-4">
