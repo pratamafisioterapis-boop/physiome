@@ -12,13 +12,15 @@ import AssignProgramModal from '@/components/exercises/AssignProgramModal.jsx';
 import { toast } from 'sonner';
 import Header from '@/components/Header.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
+import { useNavigate } from 'react-router-dom';
 
 export default function ExerciseProgramsPage() {
   const { currentUser } = useAuth();
   const [programs, setPrograms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  
+  const navigate = useNavigate();
+
   const [isProgramModalOpen, setIsProgramModalOpen] = useState(false);
   const [editingProgram, setEditingProgram] = useState(null);
   
@@ -100,7 +102,7 @@ export default function ExerciseProgramsPage() {
                   </p>
                 </div>
 
-                <Button onClick={openCreateModal}>
+                <Button onClick={() => navigate('/program-builder')} className="flex items-center">
                   <Plus className="w-4 h-4 mr-2" />
                   Create Program
                 </Button>
@@ -147,7 +149,7 @@ export default function ExerciseProgramsPage() {
                           <div className="flex flex-col items-center justify-center text-muted-foreground">
                             <Dumbbell className="w-12 h-12 mb-4 opacity-20" />
                             <p>No programs found.</p>
-                            <Button variant="link" onClick={openCreateModal}>
+                            <Button variant="link" onClick={() => navigate('/program-builder')}>
                               Create your first program
                             </Button>
                           </div>
@@ -197,7 +199,7 @@ export default function ExerciseProgramsPage() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => openEditModal(prog)}
+                                onClick={() => navigate(`/program-builder?program=${prog.id}`)}
                               >
                                 <Edit2 className="w-4 h-4" />
                               </Button>
@@ -252,7 +254,7 @@ export default function ExerciseProgramsPage() {
                           >
                             <UserPlus className="w-4 h-4 mr-1" /> Assign
                           </Button>
-                          <Button variant="outline" size="sm" className="flex-1 text-xs" onClick={() => openEditModal(prog)}>Edit</Button>
+                          <Button variant="outline" size="sm" className="flex-1 text-xs" onClick={() => navigate(`/program-builder?program=${prog.id}`)}>Edit</Button>
                           <Button variant="outline" size="sm" className="px-3 text-destructive border-border hover:bg-destructive/10" onClick={() => handleDelete(prog.id)}>
                             <Trash2 className="w-4 h-4" />
                           </Button>

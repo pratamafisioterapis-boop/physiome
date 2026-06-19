@@ -127,6 +127,7 @@ export default function ExerciseProgramModal({ isOpen, onClose, onSuccess, editP
                   <SelectValue placeholder="Select duration" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="1 week">1 week</SelectItem>
                   <SelectItem value="2 weeks">2 weeks</SelectItem>
                   <SelectItem value="4 weeks">4 weeks</SelectItem>
                   <SelectItem value="6 weeks">6 weeks</SelectItem>

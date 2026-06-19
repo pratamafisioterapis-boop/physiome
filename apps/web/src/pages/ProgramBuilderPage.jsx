@@ -10,16 +10,26 @@ import { useAuth } from '@/contexts/AuthContext.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
 import Header from '@/components/Header.jsx';
 import { toast } from 'sonner';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+
 
 export default function ProgramBuilderPage() {
+
+  const navigate = useNavigate();
+  // const Select = SelectPrimitive.Root
   const { currentUser } = useAuth();
   const [searchParams] = useSearchParams();
   const templateId = searchParams.get('template');
+  const programId = searchParams.get('program');
   const [exercises, setExercises] = useState([]);
   const [search, setSearch] = useState('');
   const [programName, setProgramName] = useState('');
   const [programDesc, setProgramDesc] = useState('');
+  const [clinicalGoal, setClinicalGoal] = useState('');
+  const [bodyRegion, setBodyRegion] = useState('');
+  const [expectedDuration, setExpectedDuration] = useState('');
   const [canvasItems, setCanvasItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -39,14 +49,16 @@ export default function ProgramBuilderPage() {
 
   // Load template data if templateId is present
   useEffect(() => {
-    if (templateId) {
+    if (templateId || programId) {
       const fetchTemplate = async () => {
         setIsLoading(true);
         try {
-          const data = await apiServerClient.fetch(`/exercise-programs/${templateId}`);
+          const data = await apiServerClient.fetch(`/exercise-programs/${templateId || programId}`);
           setProgramName(data.name || '');
           setProgramDesc(data.description || '');
-          
+          setClinicalGoal(data.clinical_goal || '');
+          setBodyRegion(data.body_region || '');
+          setExpectedDuration(data.expected_duration || '');
           // Map exercises dari template ke format canvas
           const exercisesFromTemplate = Array.isArray(data.exercises) ? data.exercises : [];
           const items = exercisesFromTemplate.map(ex => ({
@@ -67,7 +79,7 @@ export default function ProgramBuilderPage() {
       };
       fetchTemplate();
     }
-  }, [templateId]);
+  }, [templateId, programId]);
 
   const addToCanvas = (ex) => {
     const newItem = {
@@ -100,8 +112,12 @@ export default function ProgramBuilderPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          id: programId, // Sertakan ID untuk update
           name: programName,
           description: programDesc,
+          clinical_goal: clinicalGoal,
+          body_region: bodyRegion,
+          expected_duration: expectedDuration,
           exercises: canvasItems,
           status: 'Active'
         })
@@ -109,7 +125,42 @@ export default function ProgramBuilderPage() {
       toast.success("Program saved successfully.");
       setProgramName('');
       setProgramDesc('');
+      setClinicalGoal('');
+      setBodyRegion('');
+      setExpectedDuration('');
       setCanvasItems([]);
+      navigate('/exercise-programs');
+    } catch(e) {
+      toast.error(e.message);
+    }
+  };
+
+  const handleEdit = async () => {
+    if(!programName) return toast.error("Please name the program.");
+    if(canvasItems.length === 0) return toast.error("Add at least one exercise.");
+    
+    try {
+      await apiServerClient.fetch(`/exercise-programs/${programId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: programName,
+          description: programDesc,
+          clinical_goal: clinicalGoal,
+          body_region: bodyRegion,
+          expected_duration: expectedDuration,
+          exercises: canvasItems,
+          status: 'Active'
+        })
+      });
+      toast.success("Program updated successfully.");
+      setProgramName('');
+      setProgramDesc('');
+      setClinicalGoal('');
+      setBodyRegion('');
+      setExpectedDuration('');
+      setCanvasItems([]);
+      navigate('/exercise-programs');
     } catch(e) {
       toast.error(e.message);
     }
@@ -125,7 +176,7 @@ export default function ProgramBuilderPage() {
         
         {/* Top Bar */}
         <div className="bg-card border-b border-border p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 z-10 shadow-sm">
-          <div className="flex-1 flex flex-col sm:flex-row gap-4 max-w-3xl">
+          <div className="flex-1 flex flex-col sm:flex-row gap-4 max-w-full">
             <Input 
               placeholder="Program Name" 
               value={programName}
@@ -138,9 +189,47 @@ export default function ProgramBuilderPage() {
               onChange={e => setProgramDesc(e.target.value)}
               className="bg-background border-border" 
             />
+            <Input 
+              placeholder="Clinical Goal" 
+              value={clinicalGoal}
+              onChange={e => setClinicalGoal(e.target.value)}
+              className="bg-background border-border"
+              required
+            />
+            <Select  
+              value={bodyRegion}
+              onValueChange={value => setBodyRegion(value)}
+              className="bg-background border-border"
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select region" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Neck">Neck</SelectItem>
+                <SelectItem value="Shoulder">Shoulder</SelectItem>
+                <SelectItem value="Lower Back">Lower Back</SelectItem>
+                <SelectItem value="Knee">Knee</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select 
+              value={expectedDuration}
+              onValueChange={value => setExpectedDuration(value)}
+              className="bg-background border-border"
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select duration" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1 Week">1 Week</SelectItem>
+                <SelectItem value="2 weeks">2 weeks</SelectItem>
+                <SelectItem value="4 weeks">4 weeks</SelectItem>
+                <SelectItem value="6 weeks">6 weeks</SelectItem>
+                <SelectItem value="8 weeks">8 weeks</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <Button onClick={handleSave} className="shadow-glow-primary rounded-full px-8 shrink-0" disabled={isLoading}>
-            <Save className="w-4 h-4 mr-2" /> Save Program
+          <Button onClick={programId ? handleEdit : handleSave} className="shadow-glow-primary rounded-full px-8 shrink-0" disabled={isLoading}>
+            <Save className="w-4 h-4 mr-2" /> {programId ? 'Update Program' : 'Save Program'}
           </Button>
         </div>
 
