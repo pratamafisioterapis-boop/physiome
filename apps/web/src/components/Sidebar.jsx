@@ -3,7 +3,8 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, Calendar, Settings, LogOut, 
-  Activity, Video, Dumbbell, ClipboardList, TrendingUp, BarChart3, Presentation, PlusSquare
+  Activity, Video, Dumbbell, ClipboardList, TrendingUp, BarChart3, Presentation, PlusSquare,
+  Building2, User
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { cn } from '@/lib/utils.js';
@@ -17,6 +18,81 @@ export const SidebarContent = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const role = currentUser?.role || 'therapist';
+  
+  // Super Admin gets only their own menu
+  if (role === 'super_admin') {
+    const superAdminMenuGroups = [
+      {
+        title: t('nav.superAdmin') || 'Super Admin',
+        items: [
+          { name: 'Super Admin Console', path: '/super-admin', icon: LayoutDashboard, roles: ['super_admin'] },
+          { name: 'Clinics', path: '/super-admin/clinics', icon: Building2, roles: ['super_admin'] },
+          { name: 'Users', path: '/super-admin/users', icon: User, roles: ['super_admin'] },
+          { name: 'Payment Settings', path: '/super-admin/payment-settings', icon: Settings, roles: ['super_admin'] },
+        ]
+      }
+    ];
+    
+    return (
+      <div className="flex flex-col h-full">
+        <ScrollArea className="flex-1 py-4 px-4">
+          <div className="space-y-8">
+            {superAdminMenuGroups.map((group, idx) => (
+              <div key={idx}>
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">
+                  {group.title}
+                </h4>
+                <div className="space-y-1">
+                  {group.items.map((item) => (
+                    <NavLink
+                      key={item.name}
+                      to={item.path}
+                      end
+                      className={({ isActive }) => cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border",
+                        isActive 
+                          ? "bg-blue-50 text-blue-700 border-blue-300 shadow-sm" 
+                          : "text-muted-foreground hover:bg-gray-50 hover:text-foreground border-transparent"
+                      )}
+                    >
+                      <item.icon className="w-4 h-4" />
+                      {item.name}
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+
+        <div className="p-4 border-t border-border mt-auto">
+          <div className="flex items-center gap-3 mb-4 px-2">
+            <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary font-medium">
+              {currentUser?.fullName?.charAt(0) || 'A'}
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-sm font-semibold truncate text-foreground">{currentUser?.fullName || 'Super Admin'}</p>
+              <p className="text-xs text-muted-foreground truncate capitalize">super_admin</p>
+            </div>
+          </div>
+          <Button 
+            variant="outline" 
+            className="w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10 border-transparent"
+            onClick={() => {
+              logout();
+              toast.success('Logged out successfully');
+              navigate('/login');
+            }}
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            {t('nav.logout')}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Regular admin/therapist menu
   const menuGroups = [
     {
       title: t('common.general') || 'General',
@@ -67,11 +143,12 @@ export const SidebarContent = () => {
                     <NavLink
                       key={item.name}
                       to={item.path}
+                      end
                       className={({ isActive }) => cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200",
+                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border",
                         isActive 
-                          ? "bg-primary/10 text-primary" 
-                          : "text-muted-foreground hover:bg-secondary/5 hover:text-foreground"
+                          ? "bg-blue-50 text-blue-700 border-blue-300 shadow-sm" 
+                          : "text-muted-foreground hover:bg-gray-50 hover:text-foreground border-transparent"
                       )}
                     >
                       <item.icon className="w-4 h-4" />

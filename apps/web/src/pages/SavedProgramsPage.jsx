@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Presentation, Clock, Dumbbell, ArrowRight, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/Button.jsx';
+import Button from '@/components/Button.jsx';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import Sidebar from '@/components/Sidebar.jsx';

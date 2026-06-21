@@ -21,9 +21,14 @@ model clinics {
 }
 
 model billing_settings {
-  id             Int     @id @default(autoincrement())
-  currentCounter Int?    @default(1)
-  lastDateKey    String? @db.VarChar(10)
+  id                    Int     @id @default(autoincrement())
+  currentCounter        Int?    @default(1)
+  lastDateKey           String? @db.VarChar(10)
+  bank_name             String? @db.VarChar(255)
+  account_name          String? @db.VarChar(255)
+  account_number        String? @db.VarChar(100)
+  transfer_instructions String? @db.Text
+  updated_at            DateTime? @default(now()) @db.Timestamp(0)
 }
 
 model integrated_ai_images {
@@ -316,10 +321,24 @@ enum patient_packages_status {
   Completed
 }
 
+// users_role enum extended below (includes super_admin)
+
 enum users_role {
   admin
   therapist
   patient
+  super_admin
+}
+
+model clinic_subscriptions {
+  id             String   @id
+  clinic_id      String   @unique
+  status         String   @db.VarChar(50)
+  plan           String?  @db.VarChar(100)
+  payment_method String?  @db.VarChar(50)
+  started_at     DateTime?
+  ended_at       DateTime?
+  created_at     DateTime? @default(now()) @db.Timestamp(0)
 }
 
 enum patients_status {

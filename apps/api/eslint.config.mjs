@@ -3,7 +3,7 @@ import importPlugin from 'eslint-plugin-import';
 import globals from 'globals';
 
 export default [
-	{ ignores: ['node_modules/**'] },
+	{ ignores: ['node_modules/**', 'src/generated/**', 'src/**/generated/**'] },
 	js.configs.recommended,
 	{
 		files: ['**/*.js'],
@@ -19,6 +19,7 @@ export default [
 			'import/resolver': {
 				node: { extensions: ['.js'] },
 			},
+			'import/core-modules': ['uuid'],
 		},
 		rules: {
 			...importPlugin.flatConfigs.recommended.rules,

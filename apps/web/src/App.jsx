@@ -6,6 +6,10 @@ import { LanguageProvider } from '@/contexts/LanguageContext.jsx';
 import ScrollToTop from '@/components/ScrollToTop.jsx';
 import ProtectedRoute from '@/components/ProtectedRoute.jsx';
 import RoleProtectedRoute from '@/components/RoleProtectedRoute.jsx';
+import SuperAdminDashboard from '@/pages/SuperAdminDashboard.jsx';
+import SuperAdminPaymentSettings from '@/pages/SuperAdminPaymentSettings.jsx';
+import SuperAdminClinics from '@/pages/SuperAdminClinics.jsx';
+import SuperAdminUsers from '@/pages/SuperAdminUsers.jsx';
 import LandingPage from '@/pages/LandingPage.jsx';
 import LoginPage from '@/pages/LoginPage.jsx';
 import SignupPage from '@/pages/SignupPage.jsx';
@@ -152,6 +156,10 @@ function App() {
               <Route path="education" element={<div className="p-8 text-center">Education Center Coming Soon</div>} />
             </Route>
             
+            <Route path="/super-admin" element={<RoleProtectedRoute allowedRoles={['super_admin']}><SuperAdminDashboard /></RoleProtectedRoute>} />
+            <Route path="/super-admin/payment-settings" element={<RoleProtectedRoute allowedRoles={['super_admin']}><SuperAdminPaymentSettings /></RoleProtectedRoute>} />
+            <Route path="/super-admin/clinics" element={<RoleProtectedRoute allowedRoles={['super_admin']}><SuperAdminClinics /></RoleProtectedRoute>} />
+            <Route path="/super-admin/users" element={<RoleProtectedRoute allowedRoles={['super_admin']}><SuperAdminUsers /></RoleProtectedRoute>} />
             <Route path="*" element={<div className="min-h-screen flex flex-col items-center justify-center bg-background"><h1 className="text-4xl font-bold mb-2">404</h1><a href="/" className="text-primary hover:underline">Back to home</a></div>} />
           </Routes>
           <Toaster position="top-right" theme="system" closeButton richColors />

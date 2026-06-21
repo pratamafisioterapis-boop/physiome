@@ -14,7 +14,7 @@ const router = express.Router();
  * 2. Jika tidak ada: Membuat Klinik Baru + User sebagai 'admin'.
  */
 router.post('/register', async (req, res, next) => {
-    const { clinicName, fullName, email, password, inviteCode } = req.body;
+    const { clinicName, fullName, email, password, inviteCode, packagePlan, paymentMethod } = req.body;
 
     try {
         // Cek apakah email sudah terdaftar
@@ -89,6 +89,18 @@ router.post('/register', async (req, res, next) => {
                 await tx.clinics.update({
                     where: { id: clinicId },
                     data: { created_by: user.id }
+                });
+
+                await tx.clinic_subscriptions.create({
+                    data: {
+                        id: uuidv4(),
+                        clinic_id: clinicId,
+                        status: packagePlan === 'demo-14' ? 'active' : 'pending',
+                        plan: packagePlan || 'demo-14',
+                        payment_method: paymentMethod || 'transfer',
+                        started_at: new Date(),
+                        ended_at: packagePlan === 'demo-14' ? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) : null,
+                    }
                 });
             }
 

@@ -55,17 +55,20 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-  const signup = async (clinicName, fullName, email, password, inviteCode) => {
+  const signup = async (clinicName, fullName, email, password, inviteCode, packagePlan, paymentMethod) => {
     try {
       // Use the backend registration endpoint to handle invite code validation and user creation
       const { token, user } = await apiServerClient.fetch('/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
+          clinicName,
           email, 
           password, 
           fullName, 
-          inviteCode: inviteCode || undefined 
+          inviteCode: inviteCode || undefined,
+          packagePlan: packagePlan || 'demo-14',
+          paymentMethod: paymentMethod || 'transfer'
         })
       });
 

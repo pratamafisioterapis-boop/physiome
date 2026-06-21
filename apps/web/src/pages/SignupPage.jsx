@@ -17,7 +17,9 @@ const SignupPage = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    inviteCode: ''
+    inviteCode: '',
+    packagePlan: 'demo-14',
+    paymentMethod: 'transfer'
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -55,11 +57,13 @@ const SignupPage = () => {
     setIsLoading(true);
     try {
       await signup(
-        formData.clinicName, 
-        formData.fullName, 
-        formData.email, 
+        formData.clinicName,
+        formData.fullName,
+        formData.email,
         formData.password,
-        formData.inviteCode
+        formData.inviteCode,
+        formData.packagePlan,
+        formData.paymentMethod
       );
       toast.success('Account created successfully!');
       navigate('/onboarding', { state: { clinicName: formData.clinicName } });
@@ -161,13 +165,47 @@ const SignupPage = () => {
                   Enter an invite code if you were asked to join an existing clinic.
                 </p>
               </div>
-              
+
+              <div className="space-y-3">
+                <div>
+                  <label htmlFor="packagePlan" className="block text-sm font-medium text-foreground mb-2">Choose plan</label>
+                  <select
+                    id="packagePlan"
+                    name="packagePlan"
+                    value={formData.packagePlan}
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary/10"
+                  >
+                    <option value="demo-14">Demo 14 Hari (Gratis)</option>
+                    <option value="monthly">Bulanan</option>
+                    <option value="quarterly">3 Bulan</option>
+                    <option value="yearly">Tahunan</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="paymentMethod" className="block text-sm font-medium text-foreground mb-2">Metode pembayaran</label>
+                  <select
+                    id="paymentMethod"
+                    name="paymentMethod"
+                    value={formData.paymentMethod}
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary/10"
+                  >
+                    <option value="transfer">Transfer Bank</option>
+                  </select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Untuk paket berbayar, silakan lakukan transfer sesuai instruksi pada halaman pengaturan pembayaran Super Admin.
+                  </p>
+                </div>
+              </div>
+
               {errors.submit && (
                 <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
                   <p className="text-sm text-destructive">{errors.submit}</p>
                 </div>
               )}
-              
+
               <Button
                 type="submit"
                 variant="primary"
