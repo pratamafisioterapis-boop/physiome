@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Sidebar from '@/components/Sidebar.jsx';
+import Header from '@/components/Header.jsx';
 import apiServerClient from '@/lib/apiServerClient.js';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
@@ -71,13 +72,14 @@ export default function SuperAdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+    <div className="flex min-h-screen bg-background">
       <Helmet>
         <title>Super Admin | Physiome</title>
       </Helmet>
 
       <Sidebar />
       <div className="flex-1 ml-0 md:ml-64 flex flex-col min-w-0">
+        <Header />
         <div className="p-6 md:p-8">
           <div className="mb-6">
             <h1 className="text-3xl font-bold tracking-tight">Super Admin Console</h1>

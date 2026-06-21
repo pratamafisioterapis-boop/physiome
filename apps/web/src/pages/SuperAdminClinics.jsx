@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar.jsx';
+import Header from '@/components/Header.jsx';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -142,12 +143,15 @@ export default function SuperAdminClinics() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen bg-background md:ml-64">
+      <div className="flex min-h-screen bg-background">
         <Sidebar />
-        <div className="flex-1 flex items-center justify-center w-full">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-            <p className="mt-4 text-muted-foreground">Loading clinics...</p>
+        <div className="flex-1 ml-0 md:ml-64 flex flex-col min-w-0">
+          <Header />
+          <div className="flex-1 flex items-center justify-center w-full p-8">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              <p className="mt-4 text-muted-foreground">Loading clinics...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -155,9 +159,10 @@ export default function SuperAdminClinics() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background md:ml-64">
+    <div className="flex min-h-screen bg-background">
       <Sidebar />
-      <div className="flex-1 overflow-auto w-full">
+      <div className="flex-1 ml-0 md:ml-64 flex flex-col min-w-0">
+        <Header />
         <div className="p-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-2">Clinics Management</h1>
