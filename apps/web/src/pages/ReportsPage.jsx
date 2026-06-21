@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Pastikan Select diimpor
+import Select from '@/components/Select.jsx';
 import { BarChart3, Download, Mail, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import Header from '@/components/Header.jsx';
@@ -12,6 +12,8 @@ import Sidebar from '@/components/Sidebar.jsx';
 export default function ReportsPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [reportGenerated, setReportGenerated] = useState(false);
+  const [reportType, setReportType] = useState('progress');
+  const [patientId, setPatientId] = useState('all');
 
   const handleGenerate = (e) => {
     e.preventDefault();
@@ -55,42 +57,32 @@ export default function ReportsPage() {
                   </h2>
 
                   <form onSubmit={handleGenerate} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>Report Type</Label>
-                      <Select defaultValue="progress">
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="progress">
-                            Patient Progress Report
-                          </SelectItem>
-                          <SelectItem value="treatment">
-                            Treatment Summary
-                          </SelectItem>
-                          <SelectItem value="outcomes">
-                            Outcome Measures
-                          </SelectItem>
-                          <SelectItem value="discharge">
-                            Discharge Summary
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Patient</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select patient" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Patients</SelectItem>
-                          <SelectItem value="1">Maya Chen</SelectItem>
-                          <SelectItem value="2">Raj Patel</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                     <div className="space-y-2">
+                       <Label>Report Type</Label>
+                       <Select 
+                         value={reportType}
+                         onValueChange={setReportType}
+                         options={[
+                           { label: "Patient Progress Report", value: "progress" },
+                           { label: "Treatment Summary", value: "treatment" },
+                           { label: "Outcome Measures", value: "outcomes" },
+                           { label: "Discharge Summary", value: "discharge" }
+                         ]}
+                       />
+                     </div>
+ 
+                     <div className="space-y-2">
+                       <Label>Patient</Label>
+                       <Select
+                         value={patientId}
+                         onValueChange={setPatientId}
+                         options={[
+                           { label: "All Patients", value: "all" },
+                           { label: "Maya Chen", value: "1" },
+                           { label: "Raj Patel", value: "2" }
+                         ]}
+                       />
+                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">

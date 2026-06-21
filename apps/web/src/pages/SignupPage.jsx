@@ -5,6 +5,8 @@ import { useAuth } from '@/contexts/AuthContext.jsx';
 import Button from '@/components/Button.jsx';
 import Input from '@/components/Input.jsx';
 import { Helmet } from 'react-helmet';
+import Select from '@/components/Select.jsx';
+
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -167,33 +169,33 @@ const SignupPage = () => {
               </div>
 
               <div className="space-y-3">
-                <div>
-                  <label htmlFor="packagePlan" className="block text-sm font-medium text-foreground mb-2">Choose plan</label>
-                  <select
-                    id="packagePlan"
-                    name="packagePlan"
-                    value={formData.packagePlan}
-                    onChange={handleChange}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary/10"
-                  >
-                    <option value="demo-14">Demo 14 Hari (Gratis)</option>
-                    <option value="monthly">Bulanan</option>
-                    <option value="quarterly">3 Bulan</option>
-                    <option value="yearly">Tahunan</option>
-                  </select>
-                </div>
+                <Select
+                  label="Choose plan"
+                  id="packagePlan"
+                  name="packagePlan"
+                  value={formData.packagePlan}
+                  onChange={handleChange}
+                  options={[
+                    { label: 'Demo 14 Hari (Gratis)', value: 'demo-14' },
+                    { label: 'Bulanan', value: 'monthly' },
+                    { label: '3 Bulan', value: 'quarterly' },
+                    { label: 'Tahunan', value: 'yearly' }
+                  ]}
+                  isSearchable={false}
+                />
 
                 <div>
-                  <label htmlFor="paymentMethod" className="block text-sm font-medium text-foreground mb-2">Metode pembayaran</label>
-                  <select
+                  <Select
+                    label="Metode pembayaran"
                     id="paymentMethod"
                     name="paymentMethod"
                     value={formData.paymentMethod}
                     onChange={handleChange}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary/10"
-                  >
-                    <option value="transfer">Transfer Bank</option>
-                  </select>
+                    options={[
+                      { label: 'Transfer Bank', value: 'transfer' }
+                    ]}
+                    isSearchable={false}
+                  />
                   <p className="text-xs text-muted-foreground mt-1">
                     Untuk paket berbayar, silakan lakukan transfer sesuai instruksi pada halaman pengaturan pembayaran Super Admin.
                   </p>

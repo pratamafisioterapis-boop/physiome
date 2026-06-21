@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext.jsx';
 import { useLanguage } from '@/hooks/useLanguage.js';
 import pb from '@/lib/pocketbaseClient.js';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Select from '@/components/Select.jsx';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner'; // Pastikan toast diimpor
 import { Globe, Save, Loader2 } from 'lucide-react';
@@ -101,35 +101,41 @@ const PatientLanguageSettingsPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium">App Interface Language</label>
-                <Select value={prefs.preferred_language} onValueChange={v => setPrefs({...prefs, preferred_language: v, app_language: v})}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="id">Bahasa Indonesia</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Select 
+                  value={prefs.preferred_language} 
+                  onValueChange={v => setPrefs({...prefs, preferred_language: v, app_language: v})}
+                  options={[
+                    { label: 'English', value: 'en' },
+                    { label: 'Bahasa Indonesia', value: 'id' }
+                  ]}
+                  isSearchable={false}
+                />
               </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Exercise Instructions Language</label>
-                <Select value={prefs.exercise_language} onValueChange={v => setPrefs({...prefs, exercise_language: v})}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="id">Bahasa Indonesia</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Select 
+                  value={prefs.exercise_language} 
+                  onValueChange={v => setPrefs({...prefs, exercise_language: v})}
+                  options={[
+                    { label: 'English', value: 'en' },
+                    { label: 'Bahasa Indonesia', value: 'id' }
+                  ]}
+                  isSearchable={false}
+                />
               </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Notifications & Reminders</label>
-                <Select value={prefs.reminder_language} onValueChange={v => setPrefs({...prefs, reminder_language: v})}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="id">Bahasa Indonesia</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Select 
+                  value={prefs.reminder_language} 
+                  onValueChange={v => setPrefs({...prefs, reminder_language: v})}
+                  options={[
+                    { label: 'English', value: 'en' },
+                    { label: 'Bahasa Indonesia', value: 'id' }
+                  ]}
+                  isSearchable={false}
+                />
               </div>
             </div>
 

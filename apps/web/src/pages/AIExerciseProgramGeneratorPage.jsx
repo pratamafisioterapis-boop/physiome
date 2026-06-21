@@ -9,7 +9,7 @@ import AssignToProgramModal from '@/components/ai/AssignToProgramModal.jsx';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Select from '@/components/Select.jsx';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Sparkles, Trash2, Brain, AlertTriangle } from 'lucide-react';
@@ -246,28 +246,28 @@ const AIExerciseProgramGeneratorPage = () => {
                       </div>
                       <div className="space-y-2">
                         <Label>Body Region *</Label>
-                        <Select value={formState.bodyRegion} onValueChange={v => setFormState({...formState, bodyRegion: v})}>
-                          <SelectTrigger><SelectValue placeholder="Select region" /></SelectTrigger>
-                          <SelectContent>
-                            {['Neck', 'Shoulder', 'Elbow', 'Wrist', 'Upper Back', 'Lower Back', 'Hip', 'Knee', 'Ankle'].map(r => (
-                              <SelectItem key={r} value={r}>{r}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Select 
+                          value={formState.bodyRegion} 
+                          onValueChange={v => setFormState({...formState, bodyRegion: v})}
+                          placeholder="Select region"
+                          options={['Neck', 'Shoulder', 'Elbow', 'Wrist', 'Upper Back', 'Lower Back', 'Hip', 'Knee', 'Ankle'].map(r => ({ label: r, value: r }))}
+                        />
                       </div>
                     </div>
 
                     <div className="space-y-2">
                       <Label>Recovery Stage *</Label>
-                      <Select value={formState.recoveryStage} onValueChange={v => setFormState({...formState, recoveryStage: v})}>
-                        <SelectTrigger><SelectValue placeholder="Select stage" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Acute (0-7 days)">Acute (0-7 days)</SelectItem>
-                          <SelectItem value="Subacute (1-6 weeks)">Subacute (1-6 weeks)</SelectItem>
-                          <SelectItem value="Chronic (>6 weeks)">Chronic (&gt;6 weeks)</SelectItem>
-                          <SelectItem value="Return to Sport/Function">Return to Sport/Function</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Select 
+                        value={formState.recoveryStage} 
+                        onValueChange={v => setFormState({...formState, recoveryStage: v})}
+                        placeholder="Select stage"
+                        options={[
+                          { label: "Acute (0-7 days)", value: "Acute (0-7 days)" },
+                          { label: "Subacute (1-6 weeks)", value: "Subacute (1-6 weeks)" },
+                          { label: "Chronic (>6 weeks)", value: "Chronic (>6 weeks)" },
+                          { label: "Return to Sport/Function", value: "Return to Sport/Function" }
+                        ]}
+                      />
                     </div>
 
                     <div className="space-y-2">

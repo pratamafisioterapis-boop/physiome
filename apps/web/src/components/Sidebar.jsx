@@ -30,6 +30,14 @@ export const SidebarContent = () => {
           { name: 'Users', path: '/super-admin/users', icon: User, roles: ['super_admin'] },
           { name: 'Payment Settings', path: '/super-admin/payment-settings', icon: Settings, roles: ['super_admin'] },
         ]
+      },
+      {
+        title: t('nav.exerciseEcosystem') || 'Exercise Ecosystem',
+        items: [
+          { name: t('nav.library') || 'Exercise Library', path: '/exercise-library', icon: Dumbbell, roles: ['super_admin'] },
+          { name: t('nav.templates') || 'Program Templates', path: '/program-templates', icon: Presentation, roles: ['super_admin'] },
+          { name: t('nav.builder') || 'Program Builder', path: '/program-builder', icon: PlusSquare, roles: ['super_admin'] },
+        ]
       }
     ];
     
@@ -107,11 +115,11 @@ export const SidebarContent = () => {
       title: t('nav.exerciseEcosystem') || 'Exercise Ecosystem',
       items: [
         { name: t('nav.overview'), path: '/exercise-dashboard', icon: Activity, roles: ['admin', 'therapist'] },
-        { name: t('nav.library'), path: '/exercise-library', icon: Dumbbell, roles: ['admin', 'therapist'] },
+        { name: t('nav.library'), path: '/exercise-library', icon: Dumbbell, roles: ['super_admin','admin', 'therapist'] },
         { name: t('nav.myVideos'), path: '/my-videos', icon: Video, roles: ['admin', 'therapist'] },
         { name: 'My Programs', path: '/exercise-programs', icon: ClipboardList, roles: ['admin', 'therapist'] },
-        { name: t('nav.builder'), path: '/program-builder', icon: PlusSquare, roles: ['admin', 'therapist'] },
-        { name: t('nav.templates'), path: '/program-templates', icon: Presentation, roles: ['admin', 'therapist'] },
+        { name: t('nav.builder'), path: '/program-builder', icon: PlusSquare, roles: ['super_admin', 'admin', 'therapist'] },
+        { name: t('nav.templates'), path: '/program-templates', icon: Presentation, roles: ['super_admin','admin', 'therapist'] },
         { name: t('nav.assigned'), path: '/assigned-programs', icon: ClipboardList, roles: ['admin', 'therapist'] },
         { name: t('nav.patientProgress'), path: '/patient-progress', icon: TrendingUp, roles: ['admin', 'therapist'] },
         { name: t('nav.analytics'), path: '/exercise-analytics', icon: BarChart3, roles: ['admin', 'therapist'] },

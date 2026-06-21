@@ -11,7 +11,7 @@ import Sidebar from '@/components/Sidebar.jsx';
 import Header from '@/components/Header.jsx';
 import { toast } from 'sonner';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Select from '@/components/Select.jsx';
 
 
 
@@ -32,6 +32,7 @@ export default function ProgramBuilderPage() {
   const [expectedDuration, setExpectedDuration] = useState('');
   const [canvasItems, setCanvasItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isTemplateEdit, setIsTemplateEdit] = useState(false);
 
   useEffect(() => {
     const fetchExercises = async () => {
@@ -59,6 +60,10 @@ export default function ProgramBuilderPage() {
           setClinicalGoal(data.clinical_goal || '');
           setBodyRegion(data.body_region || '');
           setExpectedDuration(data.expected_duration || '');
+          
+          if (programId && (!data.clinic_id || data.clinic_id === '')) {
+            setIsTemplateEdit(true);
+          }
           // Map exercises dari template ke format canvas
           const exercisesFromTemplate = Array.isArray(data.exercises) ? data.exercises : [];
           const items = exercisesFromTemplate.map(ex => ({
@@ -160,7 +165,7 @@ export default function ProgramBuilderPage() {
       setBodyRegion('');
       setExpectedDuration('');
       setCanvasItems([]);
-      navigate('/exercise-programs');
+      navigate(isTemplateEdit ? '/program-templates' : '/exercise-programs');
     } catch(e) {
       toast.error(e.message);
     }
@@ -200,33 +205,27 @@ export default function ProgramBuilderPage() {
               value={bodyRegion}
               onValueChange={value => setBodyRegion(value)}
               className="bg-background border-border"
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select region" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Neck">Neck</SelectItem>
-                <SelectItem value="Shoulder">Shoulder</SelectItem>
-                <SelectItem value="Lower Back">Lower Back</SelectItem>
-                <SelectItem value="Knee">Knee</SelectItem>
-              </SelectContent>
-            </Select>
+              placeholder="Select region"
+              options={[
+                { label: "Neck", value: "Neck" },
+                { label: "Shoulder", value: "Shoulder" },
+                { label: "Lower Back", value: "Lower Back" },
+                { label: "Knee", value: "Knee" }
+              ]}
+            />
             <Select 
               value={expectedDuration}
               onValueChange={value => setExpectedDuration(value)}
               className="bg-background border-border"
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select duration" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1 Week">1 Week</SelectItem>
-                <SelectItem value="2 weeks">2 weeks</SelectItem>
-                <SelectItem value="4 weeks">4 weeks</SelectItem>
-                <SelectItem value="6 weeks">6 weeks</SelectItem>
-                <SelectItem value="8 weeks">8 weeks</SelectItem>
-              </SelectContent>
-            </Select>
+              placeholder="Select duration"
+              options={[
+                { label: "1 Week", value: "1 Week" },
+                { label: "2 weeks", value: "2 weeks" },
+                { label: "4 weeks", value: "4 weeks" },
+                { label: "6 weeks", value: "6 weeks" },
+                { label: "8 weeks", value: "8 weeks" }
+              ]}
+            />
           </div>
           <Button onClick={programId ? handleEdit : handleSave} className="shadow-glow-primary rounded-full px-8 shrink-0" disabled={isLoading}>
             <Save className="w-4 h-4 mr-2" /> {programId ? 'Update Program' : 'Save Program'}

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Select from '@/components/Select.jsx';
 import { Download, TrendingUp, Activity, Target, Flame, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import apiServerClient from '@/lib/apiServerClient.js';
@@ -122,17 +122,19 @@ const RecoveryProgressPage = () => {
           <p className="text-muted-foreground mt-1">Track your improvements over time.</p>
         </div>
         <div className="flex gap-3">
-          <Select value={timePeriod} onValueChange={setTimePeriod}>
-            <SelectTrigger className="w-[140px] rounded-xl">
-              <SelectValue placeholder="Time Period" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7days">Last 7 Days</SelectItem>
-              <SelectItem value="30days">Last 30 Days</SelectItem>
-              <SelectItem value="90days">Last 90 Days</SelectItem>
-              <SelectItem value="all">All Time</SelectItem>
-            </SelectContent>
-          </Select>
+          <Select 
+            value={timePeriod} 
+            onValueChange={setTimePeriod}
+            placeholder="Time Period"
+            className="w-[140px]"
+            options={[
+              { label: "Last 7 Days", value: "7days" },
+              { label: "Last 30 Days", value: "30days" },
+              { label: "Last 90 Days", value: "90days" },
+              { label: "All Time", value: "all" }
+            ]}
+            isSearchable={false}
+          />
           <Button variant="outline" size="icon" className="rounded-xl shrink-0">
             <Download className="w-4 h-4" />
           </Button>

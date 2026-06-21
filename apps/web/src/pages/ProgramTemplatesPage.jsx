@@ -10,9 +10,11 @@ import Header from '@/components/Header.jsx';
 import apiServerClient from '@/lib/apiServerClient.js';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext.jsx';
 
 export default function ProgramTemplatesPage() {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [templates, setTemplates] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -74,10 +76,21 @@ export default function ProgramTemplatesPage() {
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="pt-4 border-t border-border/50">
-                    <Button className="w-full" variant="secondary" onClick={() => navigate(`/program-builder?template=${t.id}`)}>
-                      Use Template <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
+                  <CardFooter className="pt-4 border-t border-border/50 flex gap-2">
+                    {currentUser?.role === 'super_admin' ? (
+                      <>
+                        <Button className="flex-1" variant="outline" onClick={() => navigate(`/program-builder?program=${t.id}`)}>
+                          Edit Template
+                        </Button>
+                        <Button className="flex-1" onClick={() => navigate(`/program-builder?template=${t.id}`)}>
+                          Use Template <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      </>
+                    ) : (
+                      <Button className="w-full" variant="secondary" onClick={() => navigate(`/program-builder?template=${t.id}`)}>
+                        Use Template <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    )}
                   </CardFooter>
                 </Card>
               ))

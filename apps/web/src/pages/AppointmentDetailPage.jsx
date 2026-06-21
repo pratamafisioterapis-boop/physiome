@@ -11,6 +11,8 @@ import { Helmet } from 'react-helmet';
 import EditAppointmentModal from '@/components/appointments/EditAppointmentModal.jsx';
 import DeleteAppointmentConfirmation from '@/components/appointments/DeleteAppointmentConfirmation.jsx';
 import { toast } from 'sonner';
+import Select from '@/components/Select.jsx';
+
 
 const AppointmentDetailPage = () => {
   const { id } = useParams();
@@ -118,16 +120,18 @@ const AppointmentDetailPage = () => {
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <select 
+                    <Select 
                       value={appointment.status}
                       onChange={(e) => handleStatusChange(e.target.value)}
-                      className="h-10 rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      <option value="Scheduled">Scheduled</option>
-                      <option value="Confirmed">Confirmed</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Cancelled">Cancelled</option>
-                    </select>
+                      className="w-40"
+                      options={[
+                        { label: 'Scheduled', value: 'Scheduled' },
+                        { label: 'Confirmed', value: 'Confirmed' },
+                        { label: 'Completed', value: 'Completed' },
+                        { label: 'Cancelled', value: 'Cancelled' }
+                      ]}
+                      isSearchable={false}
+                    />
                     <Button variant="outline" onClick={() => setIsEditOpen(true)} className="gap-2">
                       <Edit2 className="w-4 h-4" /> Edit
                     </Button>

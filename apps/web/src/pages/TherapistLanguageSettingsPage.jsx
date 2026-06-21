@@ -7,7 +7,7 @@ import pb from '@/lib/pocketbaseClient.js';
 import Header from '@/components/Header.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Select from '@/components/Select.jsx';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner'; // Pastikan toast diimpor
 import { Globe, Save, Loader2 } from 'lucide-react';
@@ -109,49 +109,57 @@ const TherapistLanguageSettingsPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Preferred Language (Global)</label>
-                        <Select value={prefs.preferred_language} onValueChange={v => setPrefs({...prefs, preferred_language: v})}>
-                          <SelectTrigger><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="en">English</SelectItem>
-                            <SelectItem value="id">Bahasa Indonesia</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <Select 
+                          value={prefs.preferred_language} 
+                          onValueChange={v => setPrefs({...prefs, preferred_language: v})}
+                          options={[
+                            { label: 'English', value: 'en' },
+                            { label: 'Bahasa Indonesia', value: 'id' }
+                          ]}
+                          isSearchable={false}
+                        />
                         <p className="text-xs text-muted-foreground">Main language for the application interface.</p>
                       </div>
 
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Clinic Default Language</label>
-                        <Select value={prefs.app_language} onValueChange={v => setPrefs({...prefs, app_language: v})}>
-                          <SelectTrigger><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="en">English</SelectItem>
-                            <SelectItem value="id">Bahasa Indonesia</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <Select 
+                          value={prefs.app_language} 
+                          onValueChange={v => setPrefs({...prefs, app_language: v})}
+                          options={[
+                            { label: 'English', value: 'en' },
+                            { label: 'Bahasa Indonesia', value: 'id' }
+                          ]}
+                          isSearchable={false}
+                        />
                         <p className="text-xs text-muted-foreground">Default language for new patients.</p>
                       </div>
 
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Exercise Content Language</label>
-                        <Select value={prefs.exercise_language} onValueChange={v => setPrefs({...prefs, exercise_language: v})}>
-                          <SelectTrigger><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="en">English</SelectItem>
-                            <SelectItem value="id">Bahasa Indonesia</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <Select 
+                          value={prefs.exercise_language} 
+                          onValueChange={v => setPrefs({...prefs, exercise_language: v})}
+                          options={[
+                            { label: 'English', value: 'en' },
+                            { label: 'Bahasa Indonesia', value: 'id' }
+                          ]}
+                          isSearchable={false}
+                        />
                         <p className="text-xs text-muted-foreground">Language used when assigning exercises.</p>
                       </div>
 
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Notification Language</label>
-                        <Select value={prefs.reminder_language} onValueChange={v => setPrefs({...prefs, reminder_language: v})}>
-                          <SelectTrigger><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="en">English</SelectItem>
-                            <SelectItem value="id">Bahasa Indonesia</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <Select 
+                          value={prefs.reminder_language} 
+                          onValueChange={v => setPrefs({...prefs, reminder_language: v})}
+                          options={[
+                            { label: 'English', value: 'en' },
+                            { label: 'Bahasa Indonesia', value: 'id' }
+                          ]}
+                          isSearchable={false}
+                        />
                         <p className="text-xs text-muted-foreground">Language for automated reminders.</p>
                       </div>
                     </div>

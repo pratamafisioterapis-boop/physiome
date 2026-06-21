@@ -104,16 +104,16 @@ function App() {
             
             {/* Exercise Ecosystem Routes */}
             <Route path="/exercise-dashboard" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ExerciseDashboard /></RoleProtectedRoute>} />
-            <Route path="/exercise-library" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ExerciseLibraryPage /></RoleProtectedRoute>} />
+            <Route path="/exercise-library" element={<RoleProtectedRoute allowedRoles={['super_admin', 'admin', 'therapist']}><ExerciseLibraryPage /></RoleProtectedRoute>} />
             <Route path="/my-videos" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><MyVideosPage /></RoleProtectedRoute>} />
             <Route path="/exercise-programs" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ExerciseProgramsPage /></RoleProtectedRoute>} />
-            <Route path="/program-builder" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ProgramBuilderPage /></RoleProtectedRoute>} />
-            <Route path="/program-templates" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ProgramTemplatesPage /></RoleProtectedRoute>} />
+            <Route path="/program-builder" element={<RoleProtectedRoute allowedRoles={['super_admin', 'admin', 'therapist']}><ProgramBuilderPage /></RoleProtectedRoute>} />
+            <Route path="/program-templates" element={<RoleProtectedRoute allowedRoles={['super_admin', 'admin', 'therapist']}><ProgramTemplatesPage /></RoleProtectedRoute>} />
             <Route path="/assigned-programs" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><AssignedProgramsPage /></RoleProtectedRoute>} />
             <Route path="/patient-progress" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><PatientProgressPage /></RoleProtectedRoute>} />
             <Route path="/exercise-analytics" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ExerciseAnalyticsPage /></RoleProtectedRoute>} />
 
-            <Route path="/exercises/:id" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ExerciseDetailPage /></RoleProtectedRoute>} />
+            <Route path="/exercises/:id" element={<RoleProtectedRoute allowedRoles={['super_admin', 'admin', 'therapist']}><ExerciseDetailPage /></RoleProtectedRoute>} />
             <Route path="/ai/program-generator" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><AIExerciseProgramGeneratorPage /></RoleProtectedRoute>} />
 
             <Route path="/soap-notes" element={<RoleProtectedRoute allowedRoles={['therapist']}><SOAPNotesPage /></RoleProtectedRoute>} />

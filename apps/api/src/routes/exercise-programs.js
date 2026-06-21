@@ -84,14 +84,19 @@ router.post('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
     const { id } = req.params;
     try {
-        const program = await prisma.exercise_programs.findFirst({
-            where: {
+        const whereClause = req.userRole === 'super_admin'
+            ? { id }
+            : {
                 id,
                 OR: [
                     { clinic_id: req.clinicId },
-                    { clinic_id: null }
+                    { clinic_id: null },
+                    { clinic_id: '' }
                 ]
-            }
+            };
+
+        const program = await prisma.exercise_programs.findFirst({
+            where: whereClause
         });
 
         if (!program) {
@@ -109,13 +114,17 @@ router.get('/:id', async (req, res, next) => {
     }
 });
 
-// PUT /exercise-programs/:id - Update program milik klinik
+// PUT /exercise-programs/:id - Update program milik klinik atau global template oleh super_admin
 router.put('/:id', async (req, res, next) => {
     const { id } = req.params;
     const { name, description, exercises, status, clinical_goal, body_region, expected_duration } = req.body;
     try {
+        const whereClause = req.userRole === 'super_admin'
+            ? { id }
+            : { id, clinic_id: req.clinicId };
+
         const updated = await prisma.exercise_programs.update({
-            where: { id, clinic_id: req.clinicId },
+            where: whereClause,
             data: {
                 name,
                 description,
@@ -132,12 +141,16 @@ router.put('/:id', async (req, res, next) => {
     }
 });
 
-// DELETE /exercise-programs/:id - Hapus program milik klinik
+// DELETE /exercise-programs/:id - Hapus program milik klinik atau global template oleh super_admin
 router.delete('/:id', async (req, res, next) => {
     const { id } = req.params;
     try {
+        const whereClause = req.userRole === 'super_admin'
+            ? { id }
+            : { id, clinic_id: req.clinicId };
+
         await prisma.exercise_programs.delete({
-            where: { id, clinic_id: req.clinicId }
+            where: whereClause
         });
         res.json({ message: 'Program deleted successfully' });
     } catch (error) {

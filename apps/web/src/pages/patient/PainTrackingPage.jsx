@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea'; // Pastikan Textarea diimpor
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Select from '@/components/Select.jsx';
 import { toast } from 'sonner';
 import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
@@ -78,19 +78,19 @@ const PainTrackingPage = () => {
 
           <div className="space-y-3">
             <label className="text-sm font-semibold text-foreground">Primary Location</label>
-            <Select value={location} onValueChange={setLocation}>
-              <SelectTrigger className="w-full rounded-xl h-12 bg-muted/50 border-transparent">
-                <SelectValue placeholder="Select body region" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Neck">Neck</SelectItem>
-                <SelectItem value="Left Shoulder">Left Shoulder</SelectItem>
-                <SelectItem value="Right Shoulder">Right Shoulder</SelectItem>
-                <SelectItem value="Lower Back">Lower Back</SelectItem>
-                <SelectItem value="Left Knee">Left Knee</SelectItem>
-                <SelectItem value="Right Knee">Right Knee</SelectItem>
-              </SelectContent>
-            </Select>
+            <Select 
+              value={location} 
+              onValueChange={setLocation}
+              placeholder="Select body region"
+              options={[
+                { label: "Neck", value: "Neck" },
+                { label: "Left Shoulder", value: "Left Shoulder" },
+                { label: "Right Shoulder", value: "Right Shoulder" },
+                { label: "Lower Back", value: "Lower Back" },
+                { label: "Left Knee", value: "Left Knee" },
+                { label: "Right Knee", value: "Right Knee" }
+              ]}
+            />
           </div>
 
           <div className="space-y-3">
