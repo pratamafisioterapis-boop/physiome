@@ -191,8 +191,12 @@ const VideoUploadComponent = ({
       setUploadProgress(0);
     });
 
-    xhr.open('POST', '/hcgi/api/videos', true);
+    const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://kulmcujbxkjjpppyorxp.supabase.co';
+    const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+
+    xhr.open('POST', `${SUPABASE_URL}/functions/v1/api/videos`, true);
     xhr.setRequestHeader('Authorization', `Bearer ${token?.trim()}`);
+    if (SUPABASE_ANON_KEY) xhr.setRequestHeader('apikey', SUPABASE_ANON_KEY);
     xhr.send(uploadData);
   };
 

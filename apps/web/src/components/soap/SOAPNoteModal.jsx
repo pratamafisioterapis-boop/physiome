@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import RichTextEditor from '@/components/RichTextEditor.jsx';
 import { toast } from 'sonner';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function SOAPNoteModal({ isOpen, onClose, onSuccess, editNote = null }) {
@@ -18,18 +18,14 @@ export default function SOAPNoteModal({ isOpen, onClose, onSuccess, editNote = n
     subjective: '',
     objective: '',
     assessment: '',
-    plan: '',
-    status: 'draft'
+    plan: ''
   });
 
   useEffect(() => {
     const fetchPatients = async () => {
       if (!currentUser?.clinic_id) return;
       try {
-        const records = await pb.collection('patients').getFullList({
-          filter: `clinic_id = "${currentUser.clinic_id}"`,
-          $autoCancel: false
-        });
+        const records = await apiServerClient.fetch('/patients');
         setPatients(records);
       } catch (error) {
         console.error('Error fetching patients:', error);
@@ -45,8 +41,7 @@ export default function SOAPNoteModal({ isOpen, onClose, onSuccess, editNote = n
         subjective: editNote.subjective || '',
         objective: editNote.objective || '',
         assessment: editNote.assessment || '',
-        plan: editNote.plan || '',
-        status: editNote.status || 'draft'
+        plan: editNote.plan || ''
       });
     } else {
       setFormData({
@@ -54,8 +49,7 @@ export default function SOAPNoteModal({ isOpen, onClose, onSuccess, editNote = n
         subjective: '',
         objective: '',
         assessment: '',
-        plan: '',
-        status: 'draft'
+        plan: ''
       });
     }
   }, [editNote, isOpen]);
@@ -66,20 +60,24 @@ export default function SOAPNoteModal({ isOpen, onClose, onSuccess, editNote = n
       toast.error('Please select a patient');
       return;
     }
-    
+
     setIsLoading(true);
     try {
-      const data = {
-        ...formData,
-        therapist_id: currentUser.id,
-        clinic_id: currentUser.clinic_id
-      };
+      const data = { ...formData };
 
       if (editNote) {
-        await pb.collection('SOAPNotes').update(editNote.id, data, { $autoCancel: false });
+        await apiServerClient.fetch(`/soap-notes/${editNote.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
         toast.success('SOAP note updated');
       } else {
-        await pb.collection('SOAPNotes').create(data, { $autoCancel: false });
+        await apiServerClient.fetch('/soap-notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
         toast.success('SOAP note created');
       }
       onSuccess();
@@ -103,38 +101,21 @@ export default function SOAPNoteModal({ isOpen, onClose, onSuccess, editNote = n
           <DialogTitle>{editNote ? 'Edit SOAP Note' : 'Create SOAP Note'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6 py-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Patient</Label>
-              <Select 
-                value={formData.patient_id} 
-                onValueChange={(val) => setFormData({...formData, patient_id: val})}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select patient" />
-                </SelectTrigger>
-                <SelectContent>
-                  {patients.map(p => (
-                    <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select 
-                value={formData.status} 
-                onValueChange={(val) => setFormData({...formData, status: val})}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="finalized">Finalized</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label>Patient</Label>
+            <Select
+              value={formData.patient_id}
+              onValueChange={(val) => setFormData({...formData, patient_id: val})}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select patient" />
+              </SelectTrigger>
+              <SelectContent>
+                {patients.map(p => (
+                  <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <RichTextEditor 

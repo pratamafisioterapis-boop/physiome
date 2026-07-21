@@ -9,15 +9,13 @@ import RichTextEditor from '@/components/admin/RichTextEditor.jsx';
 import TagInput from '@/components/admin/TagInput.jsx';
 import ImageUpload from '@/components/admin/ImageUpload.jsx';
 import VideoUpload from '@/components/admin/VideoUpload.jsx';
-import pb from '@/lib/pocketbaseClient';
-import { useAuth } from '@/contexts/AuthContext.jsx';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { Helmet } from 'react-helmet';
 import { toast } from 'sonner';
 import { ArrowLeft, Save } from 'lucide-react';
 
 const AddExercisePage = () => {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -41,14 +39,17 @@ const AddExercisePage = () => {
     }
     setIsSaving(true);
     try {
+      const { target_muscles, ...rest } = formData;
       const data = {
-        ...formData,
-        target_muscles: formData.target_muscles.join(', '),
+        ...rest,
         equipment_needed: formData.equipment_needed,
-        clinic_id: currentUser.clinic_id,
         slug: formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
       };
-      await pb.collection('exercises').create(data, { $autoCancel: false });
+      await apiServerClient.fetch('/exercises', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
       toast.success('Exercise created successfully');
       navigate('/admin/exercises');
     } catch (error) {

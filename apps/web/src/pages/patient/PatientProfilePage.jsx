@@ -2,7 +2,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/contexts/AuthContext.jsx';
-import pb from '@/lib/pocketbaseClient.js';
 import { User, Settings, Bell, Shield, HelpCircle, LogOut, ChevronRight } from 'lucide-react';
 import Button from '@/components/Button.jsx'; // Menggunakan Button kustom
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -28,7 +27,7 @@ const PatientProfilePage = () => {
 
       <div className="bg-card rounded-3xl p-6 shadow-sm border border-border flex flex-col items-center text-center">
         <Avatar className="w-24 h-24 mb-4 border-4 border-background shadow-md">
-          <AvatarImage src={currentUser?.avatar ? pb.files.getUrl(currentUser, currentUser.avatar) : ''} />
+          <AvatarImage src={currentUser?.avatar || ''} />
           <AvatarFallback className="text-2xl bg-primary/10 text-primary">
             {currentUser?.fullName?.charAt(0) || 'P'}
           </AvatarFallback>

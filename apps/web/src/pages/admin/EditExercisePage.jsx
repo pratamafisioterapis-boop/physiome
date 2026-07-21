@@ -10,8 +10,7 @@ import RichTextEditor from '@/components/admin/RichTextEditor.jsx';
 import TagInput from '@/components/admin/TagInput.jsx';
 import VideoManagementModal from '@/components/exercises/VideoManagementModal.jsx';
 import VideoPlayerComponent from '@/components/exercises/VideoPlayerComponent.jsx';
-import pb from '@/lib/pocketbaseClient';
-import { useAuth } from '@/contexts/AuthContext.jsx';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { Helmet } from 'react-helmet';
 import { toast } from 'sonner';
 import { ArrowLeft, Save, Trash2, Video } from 'lucide-react';
@@ -20,8 +19,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 const EditExercisePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
-  
+
   const [exercise, setExercise] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -40,7 +38,7 @@ const EditExercisePage = () => {
   useEffect(() => {
     const fetchExercise = async () => {
       try {
-        const record = await pb.collection('exercises').getOne(id, { $autoCancel: false });
+        const record = await apiServerClient.fetch(`/exercises/${id}`);
         setExercise(record);
         setFormData({
           name: record.name || '',
@@ -64,11 +62,13 @@ const EditExercisePage = () => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      const data = {
-        ...formData,
-        target_muscles: formData.target_muscles.join(', ')
-      };
-      await pb.collection('exercises').update(id, data, { $autoCancel: false });
+      const { target_muscles, ...rest } = formData;
+      const data = { ...rest };
+      await apiServerClient.fetch(`/exercises/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
       toast.success('Exercise updated successfully');
       navigate('/admin/exercises');
     } catch (error) {
@@ -81,7 +81,7 @@ const EditExercisePage = () => {
   const handleDelete = async () => {
     if (!window.confirm('Are you sure you want to delete this exercise?')) return;
     try {
-      await pb.collection('exercises').delete(id, { $autoCancel: false });
+      await apiServerClient.fetch(`/exercises/${id}`, { method: 'DELETE' });
       toast.success('Exercise deleted successfully');
       navigate('/admin/exercises');
     } catch (error) {
@@ -90,8 +90,8 @@ const EditExercisePage = () => {
   };
 
   if (isLoading) return <div className="min-h-screen bg-background flex justify-center items-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
-  
-  const videoUrl = exercise?.video_url ? pb.files.getUrl(exercise, exercise.video_url) : null;
+
+  const videoUrl = exercise?.video_url || null;
 
   return (
     <>

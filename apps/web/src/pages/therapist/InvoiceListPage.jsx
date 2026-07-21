@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/contexts/AuthContext';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -21,13 +21,8 @@ export default function InvoiceListPage() {
     if (!currentUser?.clinic_id) return;
     setIsLoading(true);
     try {
-      const records = await pb.collection('invoices').getList(1, 50, {
-        filter: `clinic_id = "${currentUser.clinic_id}"`,
-        sort: '-created',
-        expand: 'patient_id',
-        $autoCancel: false
-      });
-      setInvoices(records.items);
+      const records = await apiServerClient.fetch('/billing/invoices');
+      setInvoices(records);
     } catch (error) {
       console.error('Error fetching invoices:', error);
       toast.error('Failed to load invoices');
@@ -50,9 +45,9 @@ export default function InvoiceListPage() {
     }
   };
 
-  const filteredInvoices = invoices.filter(inv => 
-    inv.invoice_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    inv.expand?.patient_id?.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredInvoices = invoices.filter(inv =>
+    inv.invoiceNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    inv.patients?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -111,10 +106,10 @@ export default function InvoiceListPage() {
             ) : (
               filteredInvoices.map((inv) => (
                 <TableRow key={inv.id}>
-                  <TableCell className="font-medium">{inv.invoice_number}</TableCell>
-                  <TableCell>{inv.expand?.patient_id?.full_name || 'Unknown'}</TableCell>
-                  <TableCell>{format(new Date(inv.invoice_date), 'MMM d, yyyy')}</TableCell>
-                  <TableCell className="tabular-nums">${inv.total.toFixed(2)}</TableCell>
+                  <TableCell className="font-medium">{inv.invoiceNumber}</TableCell>
+                  <TableCell>{inv.patients?.name || 'Unknown'}</TableCell>
+                  <TableCell>{format(new Date(inv.invoiceDate), 'MMM d, yyyy')}</TableCell>
+                  <TableCell className="tabular-nums">${Number(inv.totalAmount || 0).toFixed(2)}</TableCell>
                   <TableCell>
                     <Badge className={getStatusColor(inv.status)}>
                       {inv.status || 'Pending'}
