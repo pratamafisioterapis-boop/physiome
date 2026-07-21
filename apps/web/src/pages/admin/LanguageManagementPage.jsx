@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import pb from '@/lib/pocketbaseClient.js';
+import apiServerClient from '@/lib/apiServerClient.js';
 import Header from '@/components/Header.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,11 +17,8 @@ const LanguageManagementPage = () => {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const records = await pb.collection('translation_status').getFullList({
-          sort: '-completion_percentage',
-          $autoCancel: false
-        });
-        setStatus(records);
+        const records = await apiServerClient.fetch('/translation-status');
+        setStatus(records || []);
       } catch (error) {
         toast.error('Failed to load translation status');
       } finally {

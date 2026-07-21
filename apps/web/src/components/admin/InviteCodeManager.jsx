@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -30,11 +30,7 @@ export default function InviteCodeManager() {
   const fetchCodes = async () => {
     setIsLoading(true);
     try {
-      const records = await pb.collection('invite_codes').getFullList({
-        sort: '-created',
-        expand: 'used_by',
-        $autoCancel: false
-      });
+      const records = await apiServerClient.fetch('/invite-codes');
       setCodes(records);
     } catch (error) {
       console.error('Error fetching invite codes:', error);
@@ -67,12 +63,15 @@ export default function InviteCodeManager() {
       const data = {
         code: newCode,
         role: formData.role,
-        created_by: currentUser.id,
         is_active: true,
         expires_at: formData.expires_at ? new Date(formData.expires_at).toISOString() : null
       };
 
-      await pb.collection('invite_codes').create(data, { $autoCancel: false });
+      await apiServerClient.fetch('/invite-codes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
       setGeneratedCode(newCode);
       toast.success('Invite code generated successfully');
       fetchCodes();
@@ -86,7 +85,11 @@ export default function InviteCodeManager() {
 
   const handleDeactivate = async (id) => {
     try {
-      await pb.collection('invite_codes').update(id, { is_active: false }, { $autoCancel: false });
+      await apiServerClient.fetch(`/invite-codes/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: false })
+      });
       toast.success('Code deactivated');
       fetchCodes();
     } catch (error) {
@@ -97,7 +100,7 @@ export default function InviteCodeManager() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this invite code?')) return;
     try {
-      await pb.collection('invite_codes').delete(id, { $autoCancel: false });
+      await apiServerClient.fetch(`/invite-codes/${id}`, { method: 'DELETE' });
       toast.success('Code deleted');
       fetchCodes();
     } catch (error) {
@@ -110,10 +113,10 @@ export default function InviteCodeManager() {
     toast.success('Copied to clipboard');
   };
 
-  const filteredCodes = codes.filter(c => 
+  const filteredCodes = codes.filter(c =>
     c.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.expand?.used_by?.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    c.users?.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (currentUser?.role !== 'admin') {
@@ -190,7 +193,7 @@ export default function InviteCodeManager() {
                     <TableCell className="capitalize">{code.role}</TableCell>
                     <TableCell>{statusBadge}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {code.expand?.used_by?.email || '-'}
+                      {code.users?.email || '-'}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {code.expires_at ? format(new Date(code.expires_at), 'MMM d, yyyy') : 'Never'}

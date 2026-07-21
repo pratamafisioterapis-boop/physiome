@@ -4,7 +4,7 @@ import Sidebar from '@/components/Sidebar.jsx';
 import Button from '@/components/Button.jsx';
 import Input from '@/components/Input.jsx';
 import CategoryTree from '@/components/admin/CategoryTree.jsx';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { Helmet } from 'react-helmet';
 import { toast } from 'sonner';
@@ -19,10 +19,7 @@ const CategoriesManagementPage = () => {
     const fetchCategories = async () => {
       if (!currentUser?.clinic_id) return;
       try {
-        const records = await pb.collection('categories').getFullList({
-          filter: `clinic_id = "${currentUser.clinic_id}"`,
-          $autoCancel: false
-        });
+        const records = await apiServerClient.fetch('/categories');
         setCategories(records);
       } catch (error) {
         console.error(error);

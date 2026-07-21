@@ -9,7 +9,7 @@ import StatCard from '@/components/admin/StatCard.jsx';
 import BulkImportExercises from '@/components/admin/BulkImportExercises.jsx';
 import BulkExportExercises from '@/components/admin/BulkExportExercises.jsx';
 import { Search, Plus, Edit2, Trash2, Copy, Upload, Download, FileText } from 'lucide-react';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { Helmet } from 'react-helmet';
 
@@ -26,11 +26,7 @@ const ExerciseLibraryAdminPage = () => {
     const fetchExercises = async () => {
       if (!currentUser?.clinic_id) return;
       try {
-        const records = await pb.collection('exercises').getFullList({
-          filter: `clinic_id = "${currentUser.clinic_id}"`,
-          sort: '-created',
-          $autoCancel: false
-        });
+        const records = await apiServerClient.fetch('/exercises');
         setExercises(records);
       } catch (error) {
         console.error(error);

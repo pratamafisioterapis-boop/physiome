@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { History, ChevronLeft, ChevronRight, Brain, Trash2, Calendar } from 'lucide-react';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { toast } from 'sonner';
 
@@ -17,12 +17,7 @@ const ConversationHistory = ({ onSelectHistory }) => {
   const fetchHistory = async () => {
     if (!currentUser?.clinic_id) return;
     try {
-      const records = await pb.collection('AIGenerationHistory').getFullList({
-        filter: `clinic_id="${currentUser.clinic_id}" && user_id="${currentUser.id}"`,
-        sort: '-created',
-        expand: 'program_id',
-        $autoCancel: false
-      });
+      const records = await apiServerClient.fetch('/ai-generation-history');
       setHistory(records);
     } catch (error) {
       console.error(error);
@@ -38,7 +33,7 @@ const ConversationHistory = ({ onSelectHistory }) => {
   const handleDelete = async (id, e) => {
     e.stopPropagation();
     try {
-      await pb.collection('AIGenerationHistory').delete(id, { $autoCancel: false });
+      await apiServerClient.fetch(`/ai-generation-history/${id}`, { method: 'DELETE' });
       setHistory(prev => prev.filter(h => h.id !== id));
       toast.success('History item removed');
     } catch (err) {
@@ -49,7 +44,7 @@ const ConversationHistory = ({ onSelectHistory }) => {
   const handleClearAll = async () => {
     if(!window.confirm('Are you sure you want to clear all history?')) return;
     try {
-      await Promise.all(history.map(h => pb.collection('AIGenerationHistory').delete(h.id, { $autoCancel: false })));
+      await apiServerClient.fetch('/ai-generation-history', { method: 'DELETE' });
       setHistory([]);
       toast.success('All history cleared');
     } catch (err) {
@@ -103,7 +98,7 @@ const ConversationHistory = ({ onSelectHistory }) => {
                       <h4 className="font-semibold text-foreground line-clamp-1 text-sm">{item.diagnosis}</h4>
                       <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                         <Calendar className="w-3 h-3" />
-                        {new Date(item.created).toLocaleDateString()}
+                        {new Date(item.created_at).toLocaleDateString()}
                       </div>
                     </div>
                   ))

@@ -13,16 +13,14 @@ import Select from '@/components/Select.jsx';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Sparkles, Trash2, Brain, AlertTriangle } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext.jsx'; // Pastikan useAuth diimpor
 import { useIntegratedAi } from '@/hooks/use-integrated-ai.jsx';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet';
 
 const STORAGE_KEY = 'ai_generator_form';
 
 const AIExerciseProgramGeneratorPage = () => {
-  const { currentUser } = useAuth();
   const { messages, sendMessage, isStreaming, clearMessages } = useIntegratedAi();
 
   const [formState, setFormState] = useState(() => {
@@ -121,36 +119,40 @@ const AIExerciseProgramGeneratorPage = () => {
   const saveProgramToDb = async (status = 'Active') => {
     if (!aiData) return null;
     try {
-      const record = await pb.collection('exercise_programs').create({
-        name: `${formState.diagnosis} Program`,
-        description: aiData.program_goal,
-        clinical_goal: aiData.program_goal,
-        body_region: formState.bodyRegion,
-        expected_duration: aiData.exercises[0]?.duration || '4 weeks',
-        exercises: aiData.exercises,
-        created_by: currentUser.id,
-        clinic_id: currentUser.clinic_id,
-        status: status,
-        ai_generated: true,
-        ai_confidence_score: aiData.confidence_score,
-        ai_prompt: `Diagnosis: ${formState.diagnosis}, Stage: ${formState.recoveryStage}`
-      }, { $autoCancel: false });
-      
+      const record = await apiServerClient.fetch('/exercise-programs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: `${formState.diagnosis} Program`,
+          description: aiData.program_goal,
+          clinical_goal: aiData.program_goal,
+          body_region: formState.bodyRegion,
+          expected_duration: aiData.exercises[0]?.duration || '4 weeks',
+          exercises: aiData.exercises,
+          status: status,
+          ai_generated: true,
+          ai_confidence_score: aiData.confidence_score,
+          ai_prompt: `Diagnosis: ${formState.diagnosis}, Stage: ${formState.recoveryStage}`
+        })
+      });
+
       setActiveProgramId(record.id);
 
       // Create history record
-      await pb.collection('AIGenerationHistory').create({
-        user_id: currentUser.id,
-        diagnosis: formState.diagnosis,
-        pain_level: formState.painLevel,
-        age: parseInt(formState.age) || null,
-        body_region: formState.bodyRegion,
-        functional_limitation: formState.functionalLimitation,
-        recovery_stage: formState.recoveryStage,
-        program_id: record.id,
-        confidence_score: aiData.confidence_score,
-        clinic_id: currentUser.clinic_id
-      }, { $autoCancel: false });
+      await apiServerClient.fetch('/ai-generation-history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          diagnosis: formState.diagnosis,
+          pain_level: formState.painLevel,
+          age: parseInt(formState.age) || null,
+          body_region: formState.bodyRegion,
+          functional_limitation: formState.functionalLimitation,
+          recovery_stage: formState.recoveryStage,
+          program_id: record.id,
+          confidence_score: aiData.confidence_score
+        })
+      });
 
       return record.id;
     } catch (err) {

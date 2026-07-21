@@ -7,11 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import pb from '@/lib/pocketbaseClient';
-import { useAuth } from '@/contexts/AuthContext';
+import apiServerClient from '@/lib/apiServerClient.js';
 
 export default function CreatePackageModal({ isOpen, onClose, onSuccess, editPackage = null }) {
-  const { currentUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -48,16 +46,21 @@ export default function CreatePackageModal({ isOpen, onClose, onSuccess, editPac
     e.preventDefault();
     setIsLoading(true);
     try {
-      const data = {
-        ...formData,
-        clinic_id: currentUser.clinic_id
-      };
+      const data = { ...formData };
 
       if (editPackage) {
-        await pb.collection('packages').update(editPackage.id, data, { $autoCancel: false });
+        await apiServerClient.fetch(`/packages/${editPackage.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
         toast.success('Package updated successfully');
       } else {
-        await pb.collection('packages').create(data, { $autoCancel: false });
+        await apiServerClient.fetch('/packages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
         toast.success('Package created successfully');
       }
       onSuccess();

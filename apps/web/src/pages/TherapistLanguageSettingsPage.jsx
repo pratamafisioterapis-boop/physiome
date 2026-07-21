@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { useLanguage } from '@/hooks/useLanguage.js';
-import pb from '@/lib/pocketbaseClient.js';
+import apiServerClient from '@/lib/apiServerClient.js';
 import Header from '@/components/Header.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -17,8 +17,7 @@ const TherapistLanguageSettingsPage = () => {
   const { language, setLanguage, t } = useLanguage();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [prefId, setPrefId] = useState(null);
-  
+
   const [prefs, setPrefs] = useState({
     preferred_language: language,
     app_language: language,
@@ -29,17 +28,13 @@ const TherapistLanguageSettingsPage = () => {
   useEffect(() => {
     const fetchPrefs = async () => {
       try {
-        const records = await pb.collection('user_language_preferences').getFullList({
-          filter: `user_id="${currentUser.id}"`,
-          $autoCancel: false
-        });
-        if (records.length > 0) {
-          setPrefId(records[0].id);
+        const pref = await apiServerClient.fetch(`/user-preferences/language/${currentUser.id}`);
+        if (pref) {
           setPrefs({
-            preferred_language: records[0].preferred_language || 'en',
-            app_language: records[0].app_language || 'en',
-            exercise_language: records[0].exercise_language || 'en',
-            reminder_language: records[0].reminder_language || 'en'
+            preferred_language: pref.preferred_language || 'en',
+            app_language: pref.app_language || 'en',
+            exercise_language: pref.exercise_language || 'en',
+            reminder_language: pref.reminder_language || 'en'
           });
         }
       } catch (error) {
@@ -54,18 +49,12 @@ const TherapistLanguageSettingsPage = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const data = {
-        user_id: currentUser.id,
-        ...prefs
-      };
+      await apiServerClient.fetch(`/user-preferences/language/${currentUser.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(prefs)
+      });
 
-      if (prefId) {
-        await pb.collection('user_language_preferences').update(prefId, data, { $autoCancel: false });
-      } else {
-        const record = await pb.collection('user_language_preferences').create(data, { $autoCancel: false });
-        setPrefId(record.id);
-      }
-      
       // Update global context if preferred language changed
       if (prefs.preferred_language !== language) {
         setLanguage(prefs.preferred_language);

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import HistoryItem from './HistoryItem';
 import { Input } from '@/components/ui/input';
 import { Search, Loader2 } from 'lucide-react';
-import pb from '@/lib/pocketbaseClient.js';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { toast } from 'sonner';
 
@@ -17,14 +17,8 @@ export default function GenerationHistory({ onLoadHistory }) {
     if (!currentUser) return;
     setIsLoading(true);
     try {
-      // Assuming SOAPHistory collection maps patient_id to actual names if expanded, 
-      // but if not, we display basic info.
-      const records = await pb.collection('SOAPHistory').getList(1, 50, {
-        filter: `therapist_id = "${currentUser.id}" && deleted = false`,
-        sort: '-created',
-        $autoCancel: false
-      });
-      setHistoryList(records.items);
+      const records = await apiServerClient.fetch('/soap-history');
+      setHistoryList(records);
     } catch (err) {
       console.error("Error fetching SOAP history:", err);
       // Fallback silently
@@ -40,7 +34,7 @@ export default function GenerationHistory({ onLoadHistory }) {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this history record?")) return;
     try {
-      await pb.collection('SOAPHistory').update(id, { deleted: true }, { $autoCancel: false });
+      await apiServerClient.fetch(`/soap-history/${id}`, { method: 'DELETE' });
       setHistoryList(prev => prev.filter(item => item.id !== id));
       toast.success("Record deleted");
     } catch (err) {

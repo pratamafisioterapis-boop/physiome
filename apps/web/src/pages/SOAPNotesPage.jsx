@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/contexts/AuthContext';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input'; // Pastikan Input diimpor
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Plus, Search, Edit2, Trash2, FileText } from 'lucide-react';
 import SOAPNoteModal from '@/components/soap/SOAPNoteModal.jsx';
 import { format } from 'date-fns';
@@ -25,13 +24,25 @@ export default function SOAPNotesPage() {
     if (!currentUser?.clinic_id) return;
     setIsLoading(true);
     try {
-      const records = await pb.collection('SOAPNotes').getList(1, 50, {
-        filter: `clinic_id = "${currentUser.clinic_id}" && therapist_id = "${currentUser.id}"`,
-        sort: '-created',
-        expand: 'patient_id',
-        $autoCancel: false
-      });
-      setNotes(records.items);
+      // The API only exposes SOAP notes scoped to a single patient
+      // (GET /soap-notes/patient/:patientId), so we fetch the clinic's
+      // patients first, then gather each patient's notes.
+      const patients = await apiServerClient.fetch('/patients');
+      const notesByPatient = await Promise.all(
+        patients.map(async (patient) => {
+          try {
+            const patientNotes = await apiServerClient.fetch(`/soap-notes/patient/${patient.id}`);
+            return patientNotes.map((note) => ({ ...note, patient }));
+          } catch (err) {
+            return [];
+          }
+        })
+      );
+      const allNotes = notesByPatient
+        .flat()
+        .filter((note) => note.therapist_id === currentUser.id)
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setNotes(allNotes);
     } catch (error) {
       console.error('Error fetching notes:', error);
       toast.error('Failed to load SOAP notes');
@@ -47,7 +58,7 @@ export default function SOAPNotesPage() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this note?')) return;
     try {
-      await pb.collection('SOAPNotes').delete(id, { $autoCancel: false });
+      await apiServerClient.fetch(`/soap-notes/${id}`, { method: 'DELETE' });
       toast.success('Note deleted');
       fetchNotes();
     } catch (error) {
@@ -65,8 +76,8 @@ export default function SOAPNotesPage() {
     setIsModalOpen(true);
   };
 
-  const filteredNotes = notes.filter(n => 
-    n.expand?.patient_id?.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredNotes = notes.filter(n =>
+    n.patient?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -116,7 +127,6 @@ export default function SOAPNotesPage() {
                     <TableRow>
                       <TableHead>Date</TableHead>
                       <TableHead>Patient</TableHead>
-                      <TableHead>Status</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -125,7 +135,7 @@ export default function SOAPNotesPage() {
                     {isLoading ? (
                       <TableRow>
                         <TableCell
-                          colSpan={4}
+                          colSpan={3}
                           className="text-center py-8 text-muted-foreground"
                         >
                           Loading notes...
@@ -133,7 +143,7 @@ export default function SOAPNotesPage() {
                       </TableRow>
                     ) : filteredNotes.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={4} className="text-center py-12">
+                        <TableCell colSpan={3} className="text-center py-12">
                           <div className="flex flex-col items-center justify-center text-muted-foreground">
                             <FileText className="w-12 h-12 mb-4 opacity-20" />
                             <p>No SOAP notes found.</p>
@@ -147,23 +157,11 @@ export default function SOAPNotesPage() {
                       filteredNotes.map((note) => (
                         <TableRow key={note.id}>
                           <TableCell>
-                            {format(new Date(note.created), 'MMM d, yyyy')}
+                            {format(new Date(note.created_at), 'MMM d, yyyy')}
                           </TableCell>
 
                           <TableCell className="font-medium">
-                            {note.expand?.patient_id?.full_name || 'Unknown Patient'}
-                          </TableCell>
-
-                          <TableCell>
-                            <Badge
-                              variant={
-                                note.status === 'finalized'
-                                  ? 'default'
-                                  : 'secondary'
-                              }
-                            >
-                              {note.status || 'draft'}
-                            </Badge>
+                            {note.patient?.name || 'Unknown Patient'}
                           </TableCell>
 
                           <TableCell className="text-right">

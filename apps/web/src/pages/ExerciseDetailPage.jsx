@@ -8,7 +8,7 @@ import DifficultyBadge from '@/components/exercises/DifficultyBadge.jsx';
 import VideoPlayerComponent from '@/components/exercises/VideoPlayerComponent.jsx';
 import VideoManagementModal from '@/components/exercises/VideoManagementModal.jsx';
 import { ArrowLeft, Plus, Activity, Info, AlertTriangle, ArrowUpCircle, Video } from 'lucide-react';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 
@@ -25,7 +25,7 @@ const ExerciseDetailPage = () => {
   useEffect(() => {
     const fetchExercise = async () => {
       try {
-        const record = await pb.collection('exercises').getOne(id, { $autoCancel: false });
+        const record = await apiServerClient.fetch(`/exercises/${id}`);
         setExercise(record);
       } catch (error) {
         console.error(error);
@@ -42,7 +42,7 @@ const ExerciseDetailPage = () => {
   if (!exercise) return null;
 
   const isTherapistOrAdmin = ['admin', 'therapist'].includes(currentUser?.role);
-  const videoUrl = exercise.video_url ? pb.files.getUrl(exercise, exercise.video_url) : null;
+  const videoUrl = exercise.video_url || null;
 
   return (
     <>

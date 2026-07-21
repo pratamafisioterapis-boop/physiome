@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/contexts/AuthContext';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -23,12 +23,8 @@ export default function PackageManagementPage() {
     if (!currentUser?.clinic_id) return;
     setIsLoading(true);
     try {
-      const records = await pb.collection('packages').getList(1, 50, {
-        filter: `clinic_id = "${currentUser.clinic_id}"`,
-        sort: '-created',
-        $autoCancel: false
-      });
-      setPackages(records.items);
+      const records = await apiServerClient.fetch('/packages');
+      setPackages(records);
     } catch (error) {
       console.error('Error fetching packages:', error);
       toast.error('Failed to load packages');
@@ -44,7 +40,7 @@ export default function PackageManagementPage() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this package?')) return;
     try {
-      await pb.collection('packages').delete(id, { $autoCancel: false });
+      await apiServerClient.fetch(`/packages/${id}`, { method: 'DELETE' });
       toast.success('Package deleted');
       fetchPackages();
     } catch (error) {

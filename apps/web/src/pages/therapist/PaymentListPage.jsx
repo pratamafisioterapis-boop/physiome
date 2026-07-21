@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '@/contexts/AuthContext';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -21,13 +21,8 @@ export default function PaymentListPage() {
     if (!currentUser?.clinic_id) return;
     setIsLoading(true);
     try {
-      const records = await pb.collection('payments').getList(1, 50, {
-        filter: `clinic_id = "${currentUser.clinic_id}"`,
-        sort: '-created',
-        expand: 'patient_id,invoice_id',
-        $autoCancel: false
-      });
-      setPayments(records.items);
+      const records = await apiServerClient.fetch('/billing/payments');
+      setPayments(records);
     } catch (error) {
       console.error('Error fetching payments:', error);
       toast.error('Failed to load payments');
@@ -40,9 +35,9 @@ export default function PaymentListPage() {
     fetchPayments();
   }, [currentUser]);
 
-  const filteredPayments = payments.filter(pay => 
-    pay.expand?.patient_id?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    pay.reference_number?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPayments = payments.filter(pay =>
+    pay.patients?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    pay.referenceNumber?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -101,16 +96,16 @@ export default function PaymentListPage() {
             ) : (
               filteredPayments.map((pay) => (
                 <TableRow key={pay.id}>
-                  <TableCell>{format(new Date(pay.payment_date), 'MMM d, yyyy')}</TableCell>
-                  <TableCell className="font-medium">{pay.expand?.patient_id?.full_name || 'Unknown'}</TableCell>
+                  <TableCell>{format(new Date(pay.paymentDate), 'MMM d, yyyy')}</TableCell>
+                  <TableCell className="font-medium">{pay.patients?.name || 'Unknown'}</TableCell>
                   <TableCell className="tabular-nums font-semibold text-[hsl(var(--billing-success))]">
-                    ${pay.amount.toFixed(2)}
+                    ${Number(pay.paymentAmount || 0).toFixed(2)}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{pay.method}</Badge>
+                    <Badge variant="outline">{pay.paymentMethod}</Badge>
                   </TableCell>
-                  <TableCell>{pay.expand?.invoice_id?.invoice_number || '-'}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm">{pay.reference_number || '-'}</TableCell>
+                  <TableCell>{pay.invoices?.invoiceNumber || '-'}</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">{pay.referenceNumber || '-'}</TableCell>
                 </TableRow>
               ))
             )}

@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { toast } from 'sonner';
 
@@ -26,12 +26,8 @@ const AssignToProgramModal = ({ isOpen, onClose, programId, programName, onAssig
     const fetchPatients = async () => {
       if (!currentUser?.clinic_id) return;
       try {
-        const records = await pb.collection('patients').getFullList({
-          filter: `clinic_id="${currentUser.clinic_id}"`,
-          sort: 'full_name',
-          $autoCancel: false
-        });
-        setPatients(records);
+        const records = await apiServerClient.fetch('/patients');
+        setPatients([...records].sort((a, b) => (a.name || '').localeCompare(b.name || '')));
       } catch (error) {
         console.error('Failed to load patients', error);
       }
@@ -47,16 +43,19 @@ const AssignToProgramModal = ({ isOpen, onClose, programId, programName, onAssig
 
     setIsSubmitting(true);
     try {
-      await pb.collection('program_assignments').create({
-        program_id: programId,
-        patient_id: formData.patient_id,
-        start_date: formData.start_date + " 12:00:00.000Z",
-        end_date: formData.end_date + " 12:00:00.000Z",
-        therapist_notes: formData.therapist_notes,
-        status: formData.status,
-        clinic_id: currentUser.clinic_id
-      }, { $autoCancel: false });
-      
+      await apiServerClient.fetch('/program-assignments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          program_id: programId,
+          patient_id: formData.patient_id,
+          start_date: formData.start_date,
+          end_date: formData.end_date,
+          therapist_notes: formData.therapist_notes,
+          status: formData.status
+        })
+      });
+
       toast.success('Program successfully assigned to patient.');
       onAssigned();
       onClose();
@@ -85,7 +84,7 @@ const AssignToProgramModal = ({ isOpen, onClose, programId, programName, onAssig
               </SelectTrigger>
               <SelectContent>
                 {patients.map(p => (
-                  <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>
+                  <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import VideoUploadComponent from './VideoUploadComponent.jsx';
 import VideoPlayerComponent from './VideoPlayerComponent.jsx';
-import pb from '@/lib/pocketbaseClient';
+import apiServerClient from '@/lib/apiServerClient.js';
 import { toast } from 'sonner';
 import { Trash2 } from 'lucide-react';
 
@@ -13,38 +13,47 @@ const VideoManagementModal = ({ isOpen, onClose, exercise, onUpdate }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const existingVideoUrl = exercise?.video_url ? pb.files.getUrl(exercise, exercise.video_url) : null;
+  const existingVideoUrl = exercise?.video_url || null;
 
   const handleUpload = async () => {
     if (!selectedFile) return;
-    
+
     setIsUploading(true);
     setUploadProgress(10); // Start progress immediately for UX
-    
+
     try {
       const formData = new FormData();
-      formData.append('video_url', selectedFile);
-      
+      formData.append('video_file', selectedFile);
+
       // Fake progress interval while real upload happens
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => Math.min(prev + 10, 90));
       }, 300);
 
-      const updatedRecord = await pb.collection('exercises').update(exercise.id, formData, { $autoCancel: false });
-      
+      const uploadedVideo = await apiServerClient.fetch('/videos', {
+        method: 'POST',
+        body: formData
+      });
+
+      const updatedRecord = await apiServerClient.fetch(`/exercises/${exercise.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ video_url: uploadedVideo.video_url })
+      });
+
       clearInterval(progressInterval);
       setUploadProgress(100);
-      
+
       toast.success('Video uploaded successfully');
       onUpdate(updatedRecord);
       setSelectedFile(null);
-      
+
       setTimeout(() => {
         onClose();
         setUploadProgress(0);
         setIsUploading(false);
       }, 500);
-      
+
     } catch (error) {
       console.error('Error uploading video:', error);
       toast.error('Failed to upload video');
@@ -55,12 +64,14 @@ const VideoManagementModal = ({ isOpen, onClose, exercise, onUpdate }) => {
 
   const handleDelete = async () => {
     if (!window.confirm('Are you sure you want to delete the current video?')) return;
-    
+
     try {
-      const updatedRecord = await pb.collection('exercises').update(exercise.id, {
-        video_url: null
-      }, { $autoCancel: false });
-      
+      const updatedRecord = await apiServerClient.fetch(`/exercises/${exercise.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ video_url: null })
+      });
+
       toast.success('Video deleted successfully');
       onUpdate(updatedRecord);
     } catch (error) {
