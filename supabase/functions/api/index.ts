@@ -739,6 +739,196 @@ async function createSoapNote(ctx: AuthCtx, body: Record<string, unknown>) {
   return json(data, 201);
 }
 
+async function updateSoapNote(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
+  const { subjective, objective, assessment, plan } = body as Record<string, string>;
+  const { data: note } = await admin.from("soap_notes").select("id, patients!inner(clinic_id)").eq("id", id).maybeSingle();
+  if (!note || (note as Record<string, any>).patients?.clinic_id !== ctx.clinicId) return notFound("SOAP note not found");
+
+  const { data, error } = await admin
+    .from("soap_notes")
+    .update({ subjective, objective, assessment, plan })
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw new HttpError(500, error.message);
+  return json(data);
+}
+
+async function deleteSoapNote(ctx: AuthCtx, id: string) {
+  const { data: note } = await admin.from("soap_notes").select("id, patients!inner(clinic_id)").eq("id", id).maybeSingle();
+  if (!note || (note as Record<string, any>).patients?.clinic_id !== ctx.clinicId) return notFound("SOAP note not found");
+
+  await admin.from("soap_notes").delete().eq("id", id);
+  return json({ message: "SOAP note deleted successfully" });
+}
+
+// ---------- soap history (AI-generated SOAP drafts) ----------
+
+async function listSoapHistory(ctx: AuthCtx, url: URL) {
+  let query = admin.from("soap_history").select("*").eq("therapist_id", ctx.userId).eq("deleted", false);
+  const patientId = url.searchParams.get("patient_id");
+  if (patientId) query = query.eq("patient_id", patientId);
+  const { data } = await query.order("created_at", { ascending: false });
+  return json(data ?? []);
+}
+
+async function createSoapHistory(ctx: AuthCtx, body: Record<string, unknown>) {
+  const { patient_id, input_notes, generated_soap } = body as Record<string, unknown>;
+  const { data, error } = await admin
+    .from("soap_history")
+    .insert({ therapist_id: ctx.userId, patient_id, input_notes, generated_soap })
+    .select()
+    .single();
+  if (error) throw new HttpError(500, error.message);
+  return json(data, 201);
+}
+
+async function deleteSoapHistory(ctx: AuthCtx, id: string) {
+  const { data, error } = await admin
+    .from("soap_history")
+    .update({ deleted: true })
+    .eq("id", id)
+    .eq("therapist_id", ctx.userId)
+    .select()
+    .maybeSingle();
+  if (error) throw new HttpError(500, error.message);
+  if (!data) return notFound("SOAP history entry not found");
+  return json({ message: "SOAP history entry deleted" });
+}
+
+// ---------- categories ----------
+
+async function listCategories(ctx: AuthCtx) {
+  const { data } = await admin
+    .from("categories")
+    .select("*")
+    .or(`clinic_id.eq.${ctx.clinicId},clinic_id.is.null`)
+    .order("name", { ascending: true });
+  return json(data ?? []);
+}
+
+async function createCategory(ctx: AuthCtx, body: Record<string, unknown>) {
+  const { data, error } = await admin.from("categories").insert({ ...body, clinic_id: ctx.clinicId }).select().single();
+  if (error) throw new HttpError(500, error.message);
+  return json(data, 201);
+}
+
+async function updateCategory(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
+  const { data, error } = await admin.from("categories").update(body).eq("id", id).eq("clinic_id", ctx.clinicId).select().maybeSingle();
+  if (error) throw new HttpError(500, error.message);
+  if (!data) return notFound("Category not found");
+  return json(data);
+}
+
+async function deleteCategory(ctx: AuthCtx, id: string) {
+  await admin.from("categories").delete().eq("id", id).eq("clinic_id", ctx.clinicId);
+  return json({ message: "Category deleted successfully" });
+}
+
+// ---------- service packages (catalog, distinct from patient_packages) ----------
+
+async function listPackages(ctx: AuthCtx) {
+  const { data } = await admin.from("packages").select("*").eq("clinic_id", ctx.clinicId).order("created_at", { ascending: false });
+  return json(data ?? []);
+}
+
+async function createPackage(ctx: AuthCtx, body: Record<string, unknown>) {
+  const { data, error } = await admin.from("packages").insert({ ...body, clinic_id: ctx.clinicId }).select().single();
+  if (error) throw new HttpError(500, error.message);
+  return json(data, 201);
+}
+
+async function updatePackage(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
+  const { data, error } = await admin.from("packages").update(body).eq("id", id).eq("clinic_id", ctx.clinicId).select().maybeSingle();
+  if (error) throw new HttpError(500, error.message);
+  if (!data) return notFound("Package not found");
+  return json(data);
+}
+
+async function deletePackage(ctx: AuthCtx, id: string) {
+  await admin.from("packages").delete().eq("id", id).eq("clinic_id", ctx.clinicId);
+  return json({ message: "Package deleted successfully" });
+}
+
+// ---------- AI program generation history ----------
+
+async function listAiGenerationHistory(ctx: AuthCtx) {
+  const { data } = await admin
+    .from("ai_generation_history")
+    .select("*, exercise_programs(name)")
+    .eq("user_id", ctx.userId)
+    .order("created_at", { ascending: false });
+  return json(data ?? []);
+}
+
+async function createAiGenerationHistory(ctx: AuthCtx, body: Record<string, unknown>) {
+  const { data, error } = await admin
+    .from("ai_generation_history")
+    .insert({ ...body, user_id: ctx.userId, clinic_id: ctx.clinicId })
+    .select()
+    .single();
+  if (error) throw new HttpError(500, error.message);
+  return json(data, 201);
+}
+
+async function deleteAiGenerationHistory(ctx: AuthCtx, id: string) {
+  await admin.from("ai_generation_history").delete().eq("id", id).eq("user_id", ctx.userId);
+  return json({ message: "Deleted successfully" });
+}
+
+async function clearAiGenerationHistory(ctx: AuthCtx) {
+  await admin.from("ai_generation_history").delete().eq("user_id", ctx.userId);
+  return json({ message: "History cleared" });
+}
+
+// ---------- invite codes (admin management) ----------
+
+function requireAdmin(ctx: AuthCtx) {
+  if (ctx.role !== "admin" && ctx.role !== "super_admin") throw new HttpError(403, "Forbidden: admins only");
+}
+
+async function listInviteCodes(ctx: AuthCtx) {
+  requireAdmin(ctx);
+  const { data } = await admin
+    .from("invite_codes")
+    .select("*, users!invite_codes_used_by_fkey(fullName, email)")
+    .order("created_at", { ascending: false });
+  return json(data ?? []);
+}
+
+async function createInviteCode(ctx: AuthCtx, body: Record<string, unknown>) {
+  requireAdmin(ctx);
+  const { code, role, expires_at } = body as Record<string, string>;
+  const { data, error } = await admin
+    .from("invite_codes")
+    .insert({ code: code || crypto.randomUUID().slice(0, 8).toUpperCase(), role: role || "therapist", expires_at: expires_at || null })
+    .select()
+    .single();
+  if (error) throw new HttpError(500, error.message);
+  return json(data, 201);
+}
+
+async function updateInviteCode(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
+  requireAdmin(ctx);
+  const { data, error } = await admin.from("invite_codes").update(body).eq("id", id).select().maybeSingle();
+  if (error) throw new HttpError(500, error.message);
+  if (!data) return notFound("Invite code not found");
+  return json(data);
+}
+
+async function deleteInviteCode(ctx: AuthCtx, id: string) {
+  requireAdmin(ctx);
+  await admin.from("invite_codes").delete().eq("id", id);
+  return json({ message: "Invite code deleted successfully" });
+}
+
+// ---------- translation status ----------
+
+async function listTranslationStatus() {
+  const { data } = await admin.from("translation_status").select("*").order("completion_percentage", { ascending: false });
+  return json(data ?? []);
+}
+
 // ---------- exercise logs / pain logs ----------
 
 async function listExerciseLogs(ctx: AuthCtx, url: URL) {
@@ -1355,7 +1545,45 @@ Deno.serve(async (req: Request) => {
     if (segments[0] === "soap-notes") {
       if (segments[1] === "patient" && method === "GET") return await listSoapNotes(ctx, segments[2]);
       if (method === "POST" && segments.length === 1) return await createSoapNote(ctx, await body());
+      if (method === "PUT" && segments.length === 2) return await updateSoapNote(ctx, segments[1], await body());
+      if (method === "DELETE" && segments.length === 2) return await deleteSoapNote(ctx, segments[1]);
     }
+
+    if (segments[0] === "soap-history") {
+      if (method === "GET" && segments.length === 1) return await listSoapHistory(ctx, url);
+      if (method === "POST" && segments.length === 1) return await createSoapHistory(ctx, await body());
+      if (method === "DELETE" && segments.length === 2) return await deleteSoapHistory(ctx, segments[1]);
+    }
+
+    if (segments[0] === "categories") {
+      if (method === "GET" && segments.length === 1) return await listCategories(ctx);
+      if (method === "POST" && segments.length === 1) return await createCategory(ctx, await body());
+      if (method === "PUT" && segments.length === 2) return await updateCategory(ctx, segments[1], await body());
+      if (method === "DELETE" && segments.length === 2) return await deleteCategory(ctx, segments[1]);
+    }
+
+    if (segments[0] === "packages") {
+      if (method === "GET" && segments.length === 1) return await listPackages(ctx);
+      if (method === "POST" && segments.length === 1) return await createPackage(ctx, await body());
+      if (method === "PUT" && segments.length === 2) return await updatePackage(ctx, segments[1], await body());
+      if (method === "DELETE" && segments.length === 2) return await deletePackage(ctx, segments[1]);
+    }
+
+    if (segments[0] === "ai-generation-history") {
+      if (method === "GET" && segments.length === 1) return await listAiGenerationHistory(ctx);
+      if (method === "POST" && segments.length === 1) return await createAiGenerationHistory(ctx, await body());
+      if (method === "DELETE" && segments.length === 1) return await clearAiGenerationHistory(ctx);
+      if (method === "DELETE" && segments.length === 2) return await deleteAiGenerationHistory(ctx, segments[1]);
+    }
+
+    if (segments[0] === "invite-codes") {
+      if (method === "GET" && segments.length === 1) return await listInviteCodes(ctx);
+      if (method === "POST" && segments.length === 1) return await createInviteCode(ctx, await body());
+      if (method === "PUT" && segments.length === 2) return await updateInviteCode(ctx, segments[1], await body());
+      if (method === "DELETE" && segments.length === 2) return await deleteInviteCode(ctx, segments[1]);
+    }
+
+    if (segments[0] === "translation-status" && method === "GET") return await listTranslationStatus();
 
     if (segments[0] === "exercise-logs") {
       if (method === "GET" && segments.length === 1) return await listExerciseLogs(ctx, url);
