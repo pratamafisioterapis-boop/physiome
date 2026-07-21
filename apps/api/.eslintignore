@@ -1,8 +1,0 @@
-node_modules
-dist
-build
-src/generated
-src/generated/**
-src/**/generated/**
-.pnp.cjs
-.pnp.loader.mjs
