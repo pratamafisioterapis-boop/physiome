@@ -1459,7 +1459,7 @@ Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS_HEADERS });
 
   const url = new URL(req.url);
-  let path = url.pathname.replace(/^\/functions\/v1\/api/, "");
+  let path = url.pathname.replace(/^\/functions\/v1\/api/, "").replace(/^\/api/, "");
   if (!path) path = "/";
   const method = req.method;
   const segments = path.split("/").filter(Boolean);
