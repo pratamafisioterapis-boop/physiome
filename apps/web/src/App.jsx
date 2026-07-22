@@ -4,6 +4,7 @@ import { Route, Routes, BrowserRouter as Router, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from '@/contexts/AuthContext.jsx';
 import { LanguageProvider } from '@/contexts/LanguageContext.jsx';
 import ScrollToTop from '@/components/ScrollToTop.jsx';
+import RecoveryRedirect from '@/components/RecoveryRedirect.jsx';
 import ProtectedRoute from '@/components/ProtectedRoute.jsx';
 import RoleProtectedRoute from '@/components/RoleProtectedRoute.jsx';
 import SuperAdminDashboard from '@/pages/SuperAdminDashboard.jsx';
@@ -86,6 +87,7 @@ function App() {
         <Suspense fallback={<div className="h-screen w-screen flex items-center justify-center">Loading...</div>}>
         <Router>
           <ScrollToTop />
+          <RecoveryRedirect />
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
