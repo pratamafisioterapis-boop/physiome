@@ -1,7 +1,7 @@
 // Backend is now Supabase: Postgres + Auth + a single Edge Function ("api")
 // that replaces the old Express server. See supabase/functions/api/index.ts.
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://kulmcujbxkjjpppyorxp.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bG1jdWpieGtqanBwcHlvcnhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2Mjk1NDYsImV4cCI6MjA4NDIwNTU0Nn0.dCAvZSjnOqeYwX7s_Z1DfMr-fuoaMa62F75bSHwMJp8';
 const API_SERVER_URL = `${SUPABASE_URL}/functions/v1/api`;
 
 const apiServerClient = {

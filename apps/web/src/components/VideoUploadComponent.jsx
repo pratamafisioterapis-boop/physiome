@@ -192,7 +192,7 @@ const VideoUploadComponent = ({
     });
 
     const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://kulmcujbxkjjpppyorxp.supabase.co';
-    const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+    const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bG1jdWpieGtqanBwcHlvcnhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2Mjk1NDYsImV4cCI6MjA4NDIwNTU0Nn0.dCAvZSjnOqeYwX7s_Z1DfMr-fuoaMa62F75bSHwMJp8';
 
     xhr.open('POST', `${SUPABASE_URL}/functions/v1/api/videos`, true);
     xhr.setRequestHeader('Authorization', `Bearer ${token?.trim()}`);
