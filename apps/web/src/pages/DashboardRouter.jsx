@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import AdminDashboard from '@/pages/AdminDashboard.jsx';
 import DashboardPage from '@/pages/DashboardPage.jsx'; // Therapist Dashboard
@@ -10,6 +11,8 @@ export default function DashboardRouter() {
   const role = currentUser?.role || 'therapist';
 
   switch (role) {
+    case 'super_admin':
+      return <Navigate to="/super-admin" replace />;
     case 'admin':
       return <AdminDashboard />;
     case 'patient':

@@ -54,6 +54,8 @@ const LoginPage = () => {
       
       if (user.role === 'patient') {
         navigate('/patient/dashboard');
+      } else if (user.role === 'super_admin') {
+        navigate('/super-admin');
       } else if (user.clinic_id || user.clinicId || user.role === 'admin') {
         navigate('/dashboard');
       } else {
