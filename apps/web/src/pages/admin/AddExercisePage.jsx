@@ -39,9 +39,9 @@ const AddExercisePage = () => {
     }
     setIsSaving(true);
     try {
-      const { target_muscles, ...rest } = formData;
       const data = {
-        ...rest,
+        ...formData,
+        target_muscles: formData.target_muscles.join(', '),
         equipment_needed: formData.equipment_needed,
         slug: formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
       };

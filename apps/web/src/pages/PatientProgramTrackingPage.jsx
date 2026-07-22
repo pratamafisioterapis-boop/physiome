@@ -163,7 +163,7 @@ const PatientProgramTrackingPage = () => {
                           <p className="text-sm font-medium text-muted-foreground mb-4">This Week's Adherence</p>
                           <div className="h-32">
                             <ResponsiveContainer width="100%" height="100%" debounce={1}>
-                              <BarChart data={getDailyAdherenceData(asg.id)}>
+                              <BarChart data={getDailyAdherenceData(asg.program_id)}>
                                 <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: 'var(--muted-foreground)', fontSize: 12}} />
                                 <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: '8px', border: '1px solid var(--border)'}} />
                                 <Bar dataKey="completed" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
