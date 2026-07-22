@@ -62,8 +62,7 @@ const EditExercisePage = () => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      const { target_muscles, ...rest } = formData;
-      const data = { ...rest };
+      const data = { ...formData, target_muscles: formData.target_muscles.join(', ') };
       await apiServerClient.fetch(`/exercises/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

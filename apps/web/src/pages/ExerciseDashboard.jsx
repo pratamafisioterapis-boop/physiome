@@ -20,10 +20,10 @@ export default function ExerciseDashboard() {
       try {
         const data = await apiServerClient.fetch('/dashboard/admin-stats');
         setStats({
-          exercises: data.programs || 0,
+          exercises: data.exercises || 0,
           programs: data.programs || 0,
-          assigned: data.patients || 0,
-          active: data.appointments || 0
+          assigned: data.assignedPrograms || 0,
+          active: data.programs || 0
         });
         setRecent([]);
       } catch (error) {

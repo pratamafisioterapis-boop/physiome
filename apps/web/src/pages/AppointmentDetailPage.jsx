@@ -82,8 +82,8 @@ const AppointmentDetailPage = () => {
 
   if (!appointment) return null;
 
-  const patient = appointment.patients;
-  const therapist = appointment.therapists;
+  const patient = appointment.patient;
+  const therapist = appointment.therapist;
 
   return (
     <>

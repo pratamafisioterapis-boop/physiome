@@ -444,19 +444,29 @@ async function deleteTherapist(ctx: AuthCtx, id: string) {
 
 // ---------- appointments ----------
 
-async function listAppointments(ctx: AuthCtx) {
-  const { data } = await admin
+async function listAppointments(ctx: AuthCtx, params: URLSearchParams) {
+  let query = admin
     .from("appointments")
-    .select("*, patient:patients(id, name), therapist:therapists(id, users!therapists_userId_fkey(fullName))")
-    .eq("clinic_id", ctx.clinicId)
-    .order("date", { ascending: false });
+    .select("*, patient:patients(id, name), therapist:therapists(id, user:users!therapists_userId_fkey(fullName))")
+    .eq("clinic_id", ctx.clinicId);
+
+  const therapistId = params.get("therapist_id");
+  if (therapistId) query = query.eq("therapist_id", therapistId);
+  const date = params.get("date");
+  if (date) query = query.eq("date", date.slice(0, 10));
+  const statusNe = params.get("status!");
+  if (statusNe) query = query.neq("status", statusNe);
+  const status = params.get("status");
+  if (status) query = query.eq("status", status);
+
+  const { data } = await query.order("date", { ascending: false });
   return json(data ?? []);
 }
 
 async function getAppointment(ctx: AuthCtx, id: string) {
   const { data } = await admin
     .from("appointments")
-    .select("*, patient:patients(*), therapist:therapists(*, users!therapists_userId_fkey(fullName, email, phone))")
+    .select("*, patient:patients(*), therapist:therapists(*, user:users!therapists_userId_fkey(fullName, email, phone))")
     .eq("id", id)
     .eq("clinic_id", ctx.clinicId)
     .maybeSingle();
@@ -569,10 +579,10 @@ async function listExercisePrograms(ctx: AuthCtx) {
 }
 
 async function createExerciseProgram(ctx: AuthCtx, body: Record<string, unknown>) {
-  const { name, description, exercises, status, clinical_goal, body_region, expected_duration } = body as Record<string, unknown>;
+  const { name, description, exercises, status, clinical_goal, body_region, expected_duration, ai_generated, ai_confidence_score, ai_prompt } = body as Record<string, unknown>;
   const { data, error } = await admin
     .from("exercise_programs")
-    .insert({ name, description, clinical_goal, body_region, expected_duration, exercises, status: status || "Active", clinic_id: ctx.clinicId, created_by: ctx.userId })
+    .insert({ name, description, clinical_goal, body_region, expected_duration, exercises, status: status || "Active", ai_generated, ai_confidence_score, ai_prompt, clinic_id: ctx.clinicId, created_by: ctx.userId })
     .select()
     .single();
   if (error) throw new HttpError(500, error.message);
@@ -1117,17 +1127,21 @@ async function patientStats(ctx: AuthCtx) {
 
 async function adminStats(ctx: AuthCtx) {
   const today = new Date().toISOString().slice(0, 10);
-  const [patients, therapists, programs, appts] = await Promise.all([
+  const [patients, therapists, programs, appts, exercises, assignments] = await Promise.all([
     admin.from("patients").select("id", { count: "exact", head: true }).eq("clinic_id", ctx.clinicId),
     admin.from("therapists").select("id", { count: "exact", head: true }).eq("clinic_id", ctx.clinicId),
     admin.from("exercise_programs").select("id", { count: "exact", head: true }).eq("clinic_id", ctx.clinicId).eq("status", "Active"),
     admin.from("appointments").select("id", { count: "exact", head: true }).eq("clinic_id", ctx.clinicId).eq("date", today),
+    admin.from("exercises").select("id", { count: "exact", head: true }).eq("clinic_id", ctx.clinicId),
+    admin.from("program_assignments").select("id", { count: "exact", head: true }).eq("clinic_id", ctx.clinicId).eq("status", "Active"),
   ]);
   return json({
     patients: patients.count ?? 0,
     therapists: therapists.count ?? 0,
     programs: programs.count ?? 0,
     appointments: appts.count ?? 0,
+    exercises: exercises.count ?? 0,
+    assignedPrograms: assignments.count ?? 0,
     adherence: 72,
   });
 }
@@ -1511,7 +1525,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (segments[0] === "appointments") {
-      if (method === "GET" && segments.length === 1) return await listAppointments(ctx);
+      if (method === "GET" && segments.length === 1) return await listAppointments(ctx, url.searchParams);
       if (method === "GET" && segments.length === 2) return await getAppointment(ctx, segments[1]);
       if (method === "POST" && segments.length === 1) return await createAppointment(ctx, await body());
       if (method === "PUT" && segments.length === 2) return await updateAppointment(ctx, segments[1], await body());

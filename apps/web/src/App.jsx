@@ -44,7 +44,7 @@ import CategoriesManagementPage from '@/pages/admin/CategoriesManagementPage.jsx
 import ExerciseStatisticsPage from '@/pages/admin/ExerciseStatisticsPage.jsx';
 import LanguageManagementPage from '@/pages/admin/LanguageManagementPage.jsx';
 import TherapistListPage from '@/pages/TheraphistListPage.jsx';
-// import TherapistDetailPage from '@/pages/TherapistDetailPage.jsx';
+import TherapistDetailPage from '@/pages/TherapistDetailPage.jsx';
 
 
 // Patient Portal Pages
@@ -97,6 +97,7 @@ function App() {
             <Route path="/patients/:patientId/programs" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><PatientProgramTrackingPage /></RoleProtectedRoute>} />
 
             <Route path="/therapists" element={<RoleProtectedRoute allowedRoles={['admin']}><TherapistListPage /></RoleProtectedRoute>} />
+            <Route path="/therapists/:id" element={<RoleProtectedRoute allowedRoles={['admin']}><TherapistDetailPage /></RoleProtectedRoute>} />
             
             <Route path="/appointments" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><AppointmentListPage /></RoleProtectedRoute>} />
             <Route path="/appointments/calendar" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><CalendarViewPage /></RoleProtectedRoute>} />
