@@ -192,12 +192,16 @@ async function authLogin(body: Record<string, unknown>) {
   const { data: signInData, error: signInError } = await admin.auth.signInWithPassword({ email, password });
   if (signInError || !signInData?.session) return err(401, "Invalid email or password");
 
-  const { data: user } = await admin
+  const { data: user, error: userError } = await admin
     .from("users")
     .select("id, fullName, role, clinic_id, therapists(id)")
     .eq("id", signInData.user.id)
-    .single();
+    .maybeSingle();
 
+  if (userError) {
+    console.error("authLogin profile lookup failed:", userError);
+    throw new HttpError(500, `Login succeeded but profile lookup failed: ${userError.message}`);
+  }
   if (!user) return err(401, "Invalid email or password");
 
   return json({
