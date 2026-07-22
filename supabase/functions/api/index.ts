@@ -44,7 +44,6 @@ type AuthCtx = { userId: string; role: string; clinicId: string | null };
 async function requireAuth(req: Request): Promise<AuthCtx> {
   const authHeader = req.headers.get("Authorization") || "";
   const token = authHeader.split(" ")[1];
-  console.log(`DEBUG requireAuth: authHeader=${JSON.stringify(authHeader)}`);
   if (!token) throw new HttpError(401, "Unauthorized: No token provided");
 
   const { data, error } = await admin.auth.getUser(token);
@@ -1473,8 +1472,6 @@ Deno.serve(async (req: Request) => {
     }
   };
 
-  console.log(`DEBUG incoming: method=${method} path=${JSON.stringify(path)} pathname=${JSON.stringify(url.pathname)}`);
-
   try {
     // Public routes
     if (path === "/health" && method === "GET") return json({ status: "ok" });
@@ -1650,8 +1647,9 @@ Deno.serve(async (req: Request) => {
 
     return err(404, `No route for ${method} ${path}`);
   } catch (e) {
-    if (e instanceof HttpError) return err(e.status, e.message);
+    const debugInfo = ` [DEBUG method=${method} path=${JSON.stringify(path)} pathname=${JSON.stringify(url.pathname)} hasAuthHeader=${req.headers.has("authorization")} hasApikeyHeader=${req.headers.has("apikey")} origin=${JSON.stringify(req.headers.get("origin"))}]`;
+    if (e instanceof HttpError) return err(e.status, e.message + debugInfo);
     console.error(e);
-    return err(500, e instanceof Error ? e.message : "Internal server error");
+    return err(500, (e instanceof Error ? e.message : "Internal server error") + debugInfo);
   }
 });
