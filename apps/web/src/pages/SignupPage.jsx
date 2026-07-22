@@ -7,16 +7,24 @@ import Input from '@/components/Input.jsx';
 import { Helmet } from 'react-helmet';
 import Select from '@/components/Select.jsx';
 
-import { Loader2 } from 'lucide-react';
+import { Building2, Stethoscope, User, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+
+const ACCOUNT_TYPES = [
+  { value: 'clinic', label: 'Clinic', description: 'Register a new clinic and become its admin', icon: Building2 },
+  { value: 'therapist', label: 'Therapist', description: 'Join an existing clinic with an invite code', icon: Stethoscope },
+  { value: 'patient', label: 'Patient', description: 'Join your clinic with an invite code', icon: User },
+];
 
 const SignupPage = () => {
   const navigate = useNavigate();
   const { signup } = useAuth();
+  const [accountType, setAccountType] = useState('clinic');
   const [formData, setFormData] = useState({
     clinicName: '',
     fullName: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
     inviteCode: '',
@@ -25,7 +33,12 @@ const SignupPage = () => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  
+
+  const handleAccountTypeChange = (value) => {
+    setAccountType(value);
+    setErrors({});
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -33,10 +46,13 @@ const SignupPage = () => {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
-  
+
   const validate = () => {
     const newErrors = {};
-    if (!formData.clinicName) newErrors.clinicName = 'Clinic name is required';
+    if (accountType === 'clinic' && !formData.clinicName) newErrors.clinicName = 'Clinic name is required';
+    if ((accountType === 'therapist' || accountType === 'patient') && !formData.inviteCode) {
+      newErrors.inviteCode = 'An invite code from your clinic is required';
+    }
     if (!formData.fullName) newErrors.fullName = 'Full name is required';
     if (!formData.email) newErrors.email = 'Email is required';
     if (!formData.password) newErrors.password = 'Password is required';
@@ -46,29 +62,38 @@ const SignupPage = () => {
     }
     return newErrors;
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validate();
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    
+
     setIsLoading(true);
     try {
-      await signup(
-        formData.clinicName,
-        formData.fullName,
-        formData.email,
-        formData.password,
-        formData.inviteCode,
-        formData.packagePlan,
-        formData.paymentMethod
-      );
+      const { user } = await signup({
+        accountType,
+        clinicName: formData.clinicName,
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        inviteCode: formData.inviteCode,
+        packagePlan: formData.packagePlan,
+        paymentMethod: formData.paymentMethod
+      });
       toast.success('Account created successfully!');
-      navigate('/onboarding', { state: { clinicName: formData.clinicName } });
+
+      if (accountType === 'clinic') {
+        navigate('/onboarding', { state: { clinicName: formData.clinicName } });
+      } else if (user.role === 'patient') {
+        navigate('/patient/dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error) {
       console.error('Registration error:', error);
       const errorMessage = error?.response?.message || error?.message || 'Failed to create account. Please try again.';
@@ -78,15 +103,15 @@ const SignupPage = () => {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <>
       <Helmet>
         <title>Sign up - Physiome</title>
         <meta name="description" content="Create your Physiome account and start managing your physiotherapy clinic" />
       </Helmet>
-      
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/10 flex items-center justify-center p-4">
+
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/10 flex items-center justify-center p-4 py-12">
         <div className="w-full max-w-md">
           <div className="bg-card rounded-2xl shadow-soft-lg border border-border p-8">
             <div className="text-center mb-8">
@@ -94,21 +119,57 @@ const SignupPage = () => {
                 <span className="text-white font-bold text-2xl">P</span>
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-2">Create your account</h1>
-              <p className="text-muted-foreground">Start managing your clinic today</p>
+              <p className="text-muted-foreground">Choose how you'd like to join Physiome</p>
             </div>
-            
+
+            <div className="grid grid-cols-3 gap-2 mb-6">
+              {ACCOUNT_TYPES.map(({ value, label, icon: Icon }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => handleAccountTypeChange(value)}
+                  className={`flex flex-col items-center gap-1.5 rounded-xl border p-3 text-sm font-medium transition-colors ${
+                    accountType === value
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border text-muted-foreground hover:bg-muted'
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  {label}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground text-center -mt-3 mb-6">
+              {ACCOUNT_TYPES.find((t) => t.value === accountType)?.description}
+            </p>
+
             <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
-                label="Clinic name"
-                type="text"
-                name="clinicName"
-                value={formData.clinicName}
-                onChange={handleChange}
-                error={errors.clinicName}
-                placeholder="Your Clinic Name"
-                required
-              />
-              
+              {accountType === 'clinic' && (
+                <Input
+                  label="Clinic name"
+                  type="text"
+                  name="clinicName"
+                  value={formData.clinicName}
+                  onChange={handleChange}
+                  error={errors.clinicName}
+                  placeholder="Your Clinic Name"
+                  required
+                />
+              )}
+
+              {(accountType === 'therapist' || accountType === 'patient') && (
+                <Input
+                  label="Invite Code"
+                  type="text"
+                  name="inviteCode"
+                  value={formData.inviteCode}
+                  onChange={handleChange}
+                  error={errors.inviteCode}
+                  placeholder="e.g. ABC123XYZ"
+                  required
+                />
+              )}
+
               <Input
                 label="Full name"
                 type="text"
@@ -119,7 +180,7 @@ const SignupPage = () => {
                 placeholder="John Smith"
                 required
               />
-              
+
               <Input
                 label="Email"
                 type="email"
@@ -130,7 +191,19 @@ const SignupPage = () => {
                 placeholder="you@example.com"
                 required
               />
-              
+
+              {accountType === 'patient' && (
+                <Input
+                  label="Phone (optional)"
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  error={errors.phone}
+                  placeholder="+62 812 3456 7890"
+                />
+              )}
+
               <Input
                 label="Password"
                 type="password"
@@ -141,7 +214,7 @@ const SignupPage = () => {
                 placeholder="At least 8 characters"
                 required
               />
-              
+
               <Input
                 label="Confirm password"
                 type="password"
@@ -153,54 +226,41 @@ const SignupPage = () => {
                 required
               />
 
-              <div className="pt-2 mt-4 border-t border-border">
-                <Input
-                  label="Invite Code (Optional)"
-                  type="text"
-                  name="inviteCode"
-                  value={formData.inviteCode}
-                  onChange={handleChange}
-                  error={errors.inviteCode}
-                  placeholder="e.g. ABC123XYZ"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Enter an invite code if you were asked to join an existing clinic.
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <Select
-                  label="Choose plan"
-                  id="packagePlan"
-                  name="packagePlan"
-                  value={formData.packagePlan}
-                  onChange={handleChange}
-                  options={[
-                    { label: 'Demo 14 Hari (Gratis)', value: 'demo-14' },
-                    { label: 'Bulanan', value: 'monthly' },
-                    { label: '3 Bulan', value: 'quarterly' },
-                    { label: 'Tahunan', value: 'yearly' }
-                  ]}
-                  isSearchable={false}
-                />
-
-                <div>
+              {accountType === 'clinic' && (
+                <div className="space-y-3">
                   <Select
-                    label="Metode pembayaran"
-                    id="paymentMethod"
-                    name="paymentMethod"
-                    value={formData.paymentMethod}
+                    label="Choose plan"
+                    id="packagePlan"
+                    name="packagePlan"
+                    value={formData.packagePlan}
                     onChange={handleChange}
                     options={[
-                      { label: 'Transfer Bank', value: 'transfer' }
+                      { label: 'Demo 14 Hari (Gratis)', value: 'demo-14' },
+                      { label: 'Bulanan', value: 'monthly' },
+                      { label: '3 Bulan', value: 'quarterly' },
+                      { label: 'Tahunan', value: 'yearly' }
                     ]}
                     isSearchable={false}
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Untuk paket berbayar, silakan lakukan transfer sesuai instruksi pada halaman pengaturan pembayaran Super Admin.
-                  </p>
+
+                  <div>
+                    <Select
+                      label="Metode pembayaran"
+                      id="paymentMethod"
+                      name="paymentMethod"
+                      value={formData.paymentMethod}
+                      onChange={handleChange}
+                      options={[
+                        { label: 'Transfer Bank', value: 'transfer' }
+                      ]}
+                      isSearchable={false}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Untuk paket berbayar, silakan lakukan transfer sesuai instruksi pada halaman pengaturan pembayaran Super Admin.
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {errors.submit && (
                 <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
@@ -217,7 +277,7 @@ const SignupPage = () => {
                 {isLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Create account'}
               </Button>
             </form>
-            
+
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
                 Already have an account?{' '}
