@@ -214,6 +214,33 @@ async function authLogin(body: Record<string, unknown>) {
   });
 }
 
+async function authForgotPassword(body: Record<string, unknown>) {
+  const { email, redirectTo } = body as Record<string, string>;
+  if (!email) bad("email is required");
+
+  // Always respond with a generic success message so we never reveal
+  // whether an email is registered.
+  await admin.auth.resetPasswordForEmail(email, {
+    redirectTo: redirectTo || undefined,
+  });
+
+  return json({ message: "If an account exists for that email, a reset link has been sent." });
+}
+
+async function authResetPassword(body: Record<string, unknown>) {
+  const { accessToken, password } = body as Record<string, string>;
+  if (!accessToken || !password) bad("accessToken and password are required");
+  if (password.length < 8) bad("Password must be at least 8 characters");
+
+  const { data, error } = await admin.auth.getUser(accessToken);
+  if (error || !data?.user) return err(401, "This reset link is invalid or has expired");
+
+  const { error: updateError } = await admin.auth.admin.updateUserById(data.user.id, { password });
+  if (updateError) throw new HttpError(500, updateError.message);
+
+  return json({ message: "Password updated successfully" });
+}
+
 async function authMe(ctx: AuthCtx) {
   const { data: user } = await admin
     .from("users")
@@ -1491,6 +1518,8 @@ Deno.serve(async (req: Request) => {
     if (path === "/health" && method === "GET") return json({ status: "ok" });
     if (path === "/auth/register" && method === "POST") return await authRegister(await body());
     if (path === "/auth/login" && method === "POST") return await authLogin(await body());
+    if (path === "/auth/forgot-password" && method === "POST") return await authForgotPassword(await body());
+    if (path === "/auth/reset-password" && method === "POST") return await authResetPassword(await body());
 
     // Everything below requires auth
     const ctx = await requireAuth(req);
