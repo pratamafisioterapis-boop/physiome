@@ -19,6 +19,7 @@ export default function SuperAdminPaymentSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
 
   const fetchSettings = async () => {
     setLoading(true);
@@ -28,7 +29,10 @@ export default function SuperAdminPaymentSettings() {
       const list = Array.isArray(data) ? data : [];
       setSettingsList(list);
 
-      if (list.length > 0) {
+      if (isCreatingNew) {
+        // Leave the blank "create new" form in place; don't snap back to
+        // an existing item just because the list was refreshed.
+      } else if (list.length > 0) {
         const selected = list.find((item) => item.id === selectedId) || list[0];
         setSelectedId(selected.id);
         setSettings({
@@ -64,6 +68,7 @@ export default function SuperAdminPaymentSettings() {
   };
 
   const handleSelectSetting = (setting) => {
+    setIsCreatingNew(false);
     setSelectedId(setting.id);
     setSettings({
       bank_name: setting.bank_name || '',
@@ -75,6 +80,7 @@ export default function SuperAdminPaymentSettings() {
   };
 
   const handleNewSetting = () => {
+    setIsCreatingNew(true);
     setSelectedId(null);
     setSettings({
       bank_name: '',
@@ -101,6 +107,7 @@ export default function SuperAdminPaymentSettings() {
       });
 
       setMessage('Payment settings saved successfully.');
+      setIsCreatingNew(false);
       setSelectedId(saved.id);
       await fetchSettings();
     } catch (error) {
@@ -221,7 +228,7 @@ export default function SuperAdminPaymentSettings() {
               </div>
 
               <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Button variant="primary" onClick={handleSave} disabled={saving || loading}>
+                <Button variant="default" onClick={handleSave} disabled={saving || loading}>
                   {saving ? 'Saving...' : selectedId ? 'Update settings' : 'Create settings'}
                 </Button>
                 <Button variant="outline" onClick={fetchSettings} disabled={loading || saving}>
