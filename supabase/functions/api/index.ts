@@ -97,7 +97,9 @@ async function authRegister(body: Record<string, unknown>) {
     fullName,
     email,
     password,
+    phone,
     inviteCode,
+    accountType,
     packagePlan,
     paymentMethod,
   } = body as Record<string, string>;
@@ -111,7 +113,9 @@ async function authRegister(body: Record<string, unknown>) {
   let userRole = "admin";
   let inviteId: string | null = null;
 
-  if (inviteCode) {
+  if (accountType === "therapist" || accountType === "patient") {
+    if (!inviteCode) bad(`An invite code from your clinic is required to sign up as a ${accountType}`);
+
     const { data: codeData } = await admin
       .from("invite_codes")
       .select("*")
@@ -122,20 +126,21 @@ async function authRegister(body: Record<string, unknown>) {
     if (!codeData || (codeData.expires_at && new Date() > new Date(codeData.expires_at))) {
       return err(400, "Invalid or expired invite code");
     }
+    if (codeData.role !== accountType) {
+      return err(400, `This invite code is for a different role (${codeData.role}). Ask your clinic for a ${accountType} invite code.`);
+    }
+    if (!codeData.clinic_id) {
+      return err(400, "This invite code isn't linked to a clinic. Please ask your clinic administrator for a new one.");
+    }
 
-    const { data: inviter } = await admin
-      .from("users")
-      .select("clinic_id")
-      .eq("invite_code_id", codeData.id)
-      .maybeSingle();
-
-    clinicId = inviter?.clinic_id ?? null;
-    userRole = codeData.role || "therapist";
+    clinicId = codeData.clinic_id;
+    userRole = codeData.role;
     inviteId = codeData.id;
   } else {
+    if (!clinicName) bad("Clinic name is required");
     const { data: newClinic, error: clinicError } = await admin
       .from("clinics")
-      .insert({ name: clinicName || `${fullName}'s Clinic` })
+      .insert({ name: clinicName })
       .select()
       .single();
     if (clinicError) throw new HttpError(500, clinicError.message);
@@ -155,6 +160,7 @@ async function authRegister(body: Record<string, unknown>) {
       id: created.user.id,
       email,
       fullName,
+      phone: phone || null,
       role: userRole,
       clinic_id: clinicId,
       invite_code_id: inviteId,
@@ -171,7 +177,18 @@ async function authRegister(body: Record<string, unknown>) {
     await admin.from("invite_codes").update({ used_by: userRow.id, is_active: false }).eq("id", inviteId);
   }
 
-  if (!inviteCode) {
+  if (userRole === "patient") {
+    const { error: patientError } = await admin
+      .from("patients")
+      .insert({ userId: userRow.id, name: fullName, email, phone: phone || null, clinic_id: clinicId });
+    if (patientError) {
+      await admin.auth.admin.deleteUser(created.user.id);
+      await admin.from("users").delete().eq("id", userRow.id);
+      throw new HttpError(500, patientError.message);
+    }
+  }
+
+  if (!inviteId) {
     await admin.from("clinics").update({ created_by: userRow.id }).eq("id", clinicId);
     await admin.from("clinic_subscriptions").insert({
       clinic_id: clinicId,
@@ -939,21 +956,29 @@ function requireAdmin(ctx: AuthCtx) {
   if (ctx.role !== "admin" && ctx.role !== "super_admin") throw new HttpError(403, "Forbidden: admins only");
 }
 
+const INVITE_ROLES = ["admin", "therapist", "patient"];
+
 async function listInviteCodes(ctx: AuthCtx) {
   requireAdmin(ctx);
-  const { data } = await admin
-    .from("invite_codes")
-    .select("*, users!invite_codes_used_by_fkey(fullName, email)")
-    .order("created_at", { ascending: false });
+  let query = admin.from("invite_codes").select("*, users!invite_codes_used_by_fkey(fullName, email)");
+  if (ctx.role !== "super_admin") query = query.eq("clinic_id", ctx.clinicId);
+  const { data } = await query.order("created_at", { ascending: false });
   return json(data ?? []);
 }
 
 async function createInviteCode(ctx: AuthCtx, body: Record<string, unknown>) {
   requireAdmin(ctx);
+  if (!ctx.clinicId) bad("You must belong to a clinic to create invite codes");
   const { code, role, expires_at } = body as Record<string, string>;
+  if (role && !INVITE_ROLES.includes(role)) bad("Invalid role");
   const { data, error } = await admin
     .from("invite_codes")
-    .insert({ code: code || crypto.randomUUID().slice(0, 8).toUpperCase(), role: role || "therapist", expires_at: expires_at || null })
+    .insert({
+      code: code || crypto.randomUUID().slice(0, 8).toUpperCase(),
+      role: role || "therapist",
+      expires_at: expires_at || null,
+      clinic_id: ctx.clinicId,
+    })
     .select()
     .single();
   if (error) throw new HttpError(500, error.message);
@@ -962,7 +987,13 @@ async function createInviteCode(ctx: AuthCtx, body: Record<string, unknown>) {
 
 async function updateInviteCode(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
   requireAdmin(ctx);
-  const { data, error } = await admin.from("invite_codes").update(body).eq("id", id).select().maybeSingle();
+  const { is_active, expires_at } = body as Record<string, unknown>;
+  let query = admin
+    .from("invite_codes")
+    .update({ ...(is_active !== undefined && { is_active }), ...(expires_at !== undefined && { expires_at }) })
+    .eq("id", id);
+  if (ctx.role !== "super_admin") query = query.eq("clinic_id", ctx.clinicId);
+  const { data, error } = await query.select().maybeSingle();
   if (error) throw new HttpError(500, error.message);
   if (!data) return notFound("Invite code not found");
   return json(data);
@@ -970,7 +1001,9 @@ async function updateInviteCode(ctx: AuthCtx, id: string, body: Record<string, u
 
 async function deleteInviteCode(ctx: AuthCtx, id: string) {
   requireAdmin(ctx);
-  await admin.from("invite_codes").delete().eq("id", id);
+  let query = admin.from("invite_codes").delete().eq("id", id);
+  if (ctx.role !== "super_admin") query = query.eq("clinic_id", ctx.clinicId);
+  await query;
   return json({ message: "Invite code deleted successfully" });
 }
 
