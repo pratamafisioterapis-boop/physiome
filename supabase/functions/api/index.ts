@@ -1438,7 +1438,13 @@ async function superAdminUpdateClinic(ctx: AuthCtx, id: string, body: Record<str
 
 async function superAdminDeleteClinic(ctx: AuthCtx, id: string) {
   requireSuperAdmin(ctx);
-  await admin.from("clinics").delete().eq("id", id);
+  const { error } = await admin.from("clinics").delete().eq("id", id);
+  if (error) {
+    if (error.code === "23503") {
+      return err(409, "Cannot delete this clinic while it still has admins, therapists, or patients assigned to it. Remove or reassign them first.");
+    }
+    throw new HttpError(500, error.message);
+  }
   return json({ success: true, message: "Clinic deleted" });
 }
 
@@ -1513,8 +1519,14 @@ async function superAdminDeleteUser(ctx: AuthCtx, id: string) {
   const { data: target } = await admin.from("users").select("role").eq("id", id).maybeSingle();
   if (target?.role === "super_admin") return err(400, "Cannot delete the super_admin account");
 
+  const { error } = await admin.from("users").delete().eq("id", id);
+  if (error) {
+    if (error.code === "23503") {
+      return err(409, "Cannot delete this user because other records (e.g. a clinic, exercises, or SOAP notes) still reference them. Remove those first.");
+    }
+    throw new HttpError(500, error.message);
+  }
   await admin.auth.admin.deleteUser(id).catch(() => {});
-  await admin.from("users").delete().eq("id", id);
   return json({ success: true, message: "User deleted" });
 }
 
