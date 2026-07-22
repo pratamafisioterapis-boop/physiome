@@ -1455,7 +1455,8 @@ async function superAdminCreateUser(ctx: AuthCtx, body: Record<string, unknown>)
   const { email, password, fullName, role, clinic_id, phone } = body as Record<string, string>;
   if (!email || !password || !fullName || !role) bad("Email, password, fullName, and role are required");
   if (!SUPPORTED_ROLES.includes(role)) bad("Invalid role");
-  if (role !== "super_admin" && !clinic_id) bad("Clinic is required for admin, therapist, and patient roles");
+  if (role === "super_admin") bad("Only one super_admin account is allowed");
+  if (!clinic_id) bad("Clinic is required for admin, therapist, and patient roles");
 
   const { data: existing } = await admin.from("users").select("id").eq("email", email).maybeSingle();
   if (existing) return err(400, "User already exists");
@@ -1465,7 +1466,7 @@ async function superAdminCreateUser(ctx: AuthCtx, body: Record<string, unknown>)
 
   const { data: user, error } = await admin
     .from("users")
-    .insert({ id: created.user.id, email, fullName, role, clinic_id: role === "super_admin" ? null : clinic_id, phone: phone || null })
+    .insert({ id: created.user.id, email, fullName, role, clinic_id, phone: phone || null })
     .select()
     .single();
   if (error) {
@@ -1480,6 +1481,11 @@ async function superAdminUpdateUser(ctx: AuthCtx, id: string, body: Record<strin
   requireSuperAdmin(ctx);
   const { email, fullName, role, clinic_id, phone } = body as Record<string, string>;
   if (role && !SUPPORTED_ROLES.includes(role)) bad("Invalid role");
+
+  const { data: target } = await admin.from("users").select("role").eq("id", id).maybeSingle();
+  if (!target) return notFound("User not found");
+  if (target.role === "super_admin" && role && role !== "super_admin") bad("Cannot change the super_admin account's role");
+  if (role === "super_admin" && target.role !== "super_admin") bad("Only one super_admin account is allowed");
   if (role && role !== "super_admin" && !clinic_id) bad("Clinic is required for admin, therapist, and patient roles");
 
   const normalizedClinicId = clinic_id === "" ? null : clinic_id;
@@ -1504,6 +1510,9 @@ async function superAdminUpdateUser(ctx: AuthCtx, id: string, body: Record<strin
 
 async function superAdminDeleteUser(ctx: AuthCtx, id: string) {
   requireSuperAdmin(ctx);
+  const { data: target } = await admin.from("users").select("role").eq("id", id).maybeSingle();
+  if (target?.role === "super_admin") return err(400, "Cannot delete the super_admin account");
+
   await admin.auth.admin.deleteUser(id).catch(() => {});
   await admin.from("users").delete().eq("id", id);
   return json({ success: true, message: "User deleted" });

@@ -201,7 +201,7 @@ export default function SuperAdminUsers() {
         <div className="p-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-2">Users Management</h1>
-            <p className="text-muted-foreground">Manage all users (admins, therapists, super_admins)</p>
+            <p className="text-muted-foreground">Manage all users (admins, therapists, and patients)</p>
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.4fr] gap-6">
@@ -263,17 +263,19 @@ export default function SuperAdminUsers() {
                             </span>
                           </TableCell>
                           <TableCell>
-                            <Button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(user.id);
-                              }}
-                              variant="ghost"
-                              size="sm"
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                            {user.role !== 'super_admin' && (
+                              <Button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(user.id);
+                                }}
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -340,29 +342,38 @@ export default function SuperAdminUsers() {
                     name="role"
                     value={formData.role}
                     onChange={handleInputChange}
-                    options={[
-                      { label: 'Therapist', value: 'therapist' },
-                      { label: 'Admin', value: 'admin' },
-                      { label: 'Patient', value: 'patient' },
-                      { label: 'Super Admin', value: 'super_admin' }
-                    ]}
+                    disabled={formData.role === 'super_admin'}
+                    options={
+                      formData.role === 'super_admin'
+                        ? [{ label: 'Super Admin', value: 'super_admin' }]
+                        : [
+                            { label: 'Therapist', value: 'therapist' },
+                            { label: 'Admin', value: 'admin' },
+                            { label: 'Patient', value: 'patient' },
+                          ]
+                    }
                   />
-                </div>
-
-                <div>
-                  <Select
-                    label={`Clinic ${formData.role !== 'super_admin' ? '*' : ''}`}
-                    name="clinic_id"
-                    value={formData.clinic_id}
-                    onChange={handleInputChange}
-                    options={clinicsList.map((clinic) => ({ label: clinic.name, value: clinic.id }))}
-                  />
-                  {formData.role !== 'super_admin' && (
+                  {formData.role === 'super_admin' && (
                     <p className="mt-2 text-xs text-muted-foreground">
-                      Clinic is required for admin, therapist, and patient roles.
+                      There is only one super_admin account and its role cannot be changed.
                     </p>
                   )}
                 </div>
+
+                {formData.role !== 'super_admin' && (
+                  <div>
+                    <Select
+                      label="Clinic *"
+                      name="clinic_id"
+                      value={formData.clinic_id}
+                      onChange={handleInputChange}
+                      options={clinicsList.map((clinic) => ({ label: clinic.name, value: clinic.id }))}
+                    />
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Clinic is required for admin, therapist, and patient roles.
+                    </p>
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
