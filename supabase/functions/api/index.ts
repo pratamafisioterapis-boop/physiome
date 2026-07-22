@@ -194,7 +194,7 @@ async function authLogin(body: Record<string, unknown>) {
 
   const { data: user, error: userError } = await admin
     .from("users")
-    .select("id, fullName, role, clinic_id, therapists(id)")
+    .select("id, fullName, role, clinic_id")
     .eq("id", signInData.user.id)
     .maybeSingle();
 
@@ -203,6 +203,8 @@ async function authLogin(body: Record<string, unknown>) {
     throw new HttpError(500, `Login succeeded but profile lookup failed: ${userError.message}`);
   }
   if (!user) return err(401, "Invalid email or password");
+
+  const { data: therapist } = await admin.from("therapists").select("id").eq("userId", user.id).maybeSingle();
 
   return json({
     message: "Login successful",
@@ -213,7 +215,7 @@ async function authLogin(body: Record<string, unknown>) {
       fullName: user.fullName,
       role: user.role,
       clinic_id: user.clinic_id,
-      therapistId: user.therapists?.[0]?.id,
+      therapistId: therapist?.id,
     },
   });
 }
