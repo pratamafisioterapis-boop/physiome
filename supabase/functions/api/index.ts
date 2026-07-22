@@ -44,6 +44,7 @@ type AuthCtx = { userId: string; role: string; clinicId: string | null };
 async function requireAuth(req: Request): Promise<AuthCtx> {
   const authHeader = req.headers.get("Authorization") || "";
   const token = authHeader.split(" ")[1];
+  console.log(`DEBUG requireAuth: authHeader=${JSON.stringify(authHeader)}`);
   if (!token) throw new HttpError(401, "Unauthorized: No token provided");
 
   const { data, error } = await admin.auth.getUser(token);
@@ -1471,6 +1472,8 @@ Deno.serve(async (req: Request) => {
       return {};
     }
   };
+
+  console.log(`DEBUG incoming: method=${method} path=${JSON.stringify(path)} pathname=${JSON.stringify(url.pathname)}`);
 
   try {
     // Public routes
