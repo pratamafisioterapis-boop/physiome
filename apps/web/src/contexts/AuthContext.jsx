@@ -83,6 +83,22 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
+  const forgotPassword = async (email) => {
+    return apiServerClient.fetch('/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, redirectTo: `${window.location.origin}/reset-password` })
+    });
+  };
+
+  const resetPassword = async (accessToken, password) => {
+    return apiServerClient.fetch('/auth/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ accessToken, password })
+    });
+  };
+
   const logout = useCallback(() => {
     localStorage.removeItem('auth_token');
     setCurrentUser(null);
@@ -128,6 +144,8 @@ export const AuthProvider = ({ children }) => {
     login,
     signup,
     logout,
+    forgotPassword,
+    resetPassword,
     updateUserClinicId,
     refreshUser
   };

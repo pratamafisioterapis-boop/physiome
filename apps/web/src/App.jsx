@@ -13,6 +13,8 @@ import SuperAdminUsers from '@/pages/SuperAdminUsers.jsx';
 import LandingPage from '@/pages/LandingPage.jsx';
 import LoginPage from '@/pages/LoginPage.jsx';
 import SignupPage from '@/pages/SignupPage.jsx';
+import ForgotPasswordPage from '@/pages/ForgotPasswordPage.jsx';
+import ResetPasswordPage from '@/pages/ResetPasswordPage.jsx';
 import OnboardingPage from '@/pages/OnboardingPage.jsx';
 import DashboardRouter from '@/pages/DashboardRouter.jsx';
 import PatientListPage from '@/pages/PatientListPage.jsx';
@@ -88,6 +90,8 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<SignupPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
             
             <Route path="/dashboard" element={<ProtectedRoute><DashboardRouter /></ProtectedRoute>} />
