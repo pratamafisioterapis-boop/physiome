@@ -9,10 +9,22 @@ import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 
 const admin: SupabaseClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
+
+// signInWithPassword mutates the calling client's in-memory session, and
+// `admin` is a module-level singleton reused across warm invocations. If we
+// ever called it on `admin`, every later `.from()` call on this same warm
+// instance would silently run as that end user (role "authenticated")
+// instead of service_role. Always sign in on a fresh, throwaway client.
+function freshAuthClient(): SupabaseClient {
+  return createClient(SUPABASE_URL, ANON_KEY, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -171,7 +183,7 @@ async function authRegister(body: Record<string, unknown>) {
     });
   }
 
-  const { data: signInData, error: signInError } = await admin.auth.signInWithPassword({ email, password });
+  const { data: signInData, error: signInError } = await freshAuthClient().auth.signInWithPassword({ email, password });
   if (signInError || !signInData?.session) throw new HttpError(500, "Registered but failed to create session");
 
   return json(
@@ -189,7 +201,7 @@ async function authLogin(body: Record<string, unknown>) {
   const { email, password } = body as Record<string, string>;
   if (!email || !password) bad("email and password are required");
 
-  const { data: signInData, error: signInError } = await admin.auth.signInWithPassword({ email, password });
+  const { data: signInData, error: signInError } = await freshAuthClient().auth.signInWithPassword({ email, password });
   if (signInError || !signInData?.session) return err(401, "Invalid email or password");
 
   const { data: user, error: userError } = await admin
@@ -198,10 +210,7 @@ async function authLogin(body: Record<string, unknown>) {
     .eq("id", signInData.user.id)
     .maybeSingle();
 
-  if (userError) {
-    console.error("authLogin profile lookup failed:", userError);
-    throw new HttpError(500, `Login succeeded but profile lookup failed: ${userError.message}`);
-  }
+  if (userError) throw new HttpError(500, userError.message);
   if (!user) return err(401, "Invalid email or password");
 
   const { data: therapist } = await admin.from("therapists").select("id").eq("userId", user.id).maybeSingle();
