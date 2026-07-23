@@ -173,7 +173,7 @@ const FullscreenTimerMode = ({ config, exerciseName, exerciseIndex, totalExercis
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <HeartRateMonitor theme="dark" />
+          <HeartRateMonitor theme="dark" readOnly />
           <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20 rounded-full">
             <Activity className="w-4 h-4 mr-2 text-orange-400" /> Log Pain
           </Button>
