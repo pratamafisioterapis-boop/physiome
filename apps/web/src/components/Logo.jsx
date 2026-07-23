@@ -5,9 +5,9 @@ import React from 'react';
 // (rendered into /icons/icon-192.png), not a redrawn copy.
 export const PhysiomeMark = ({ className = 'w-8 h-8' }) => (
   <img
-    src="/icons/icon-192.png"
+    src="/icons/mark-512.png"
     alt="Physiome"
-    className={`${className} rounded-lg object-contain bg-white shrink-0`}
+    className={`${className} object-contain shrink-0`}
   />
 );
 
