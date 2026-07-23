@@ -2,8 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { ArrowLeft, PlayCircle, Clock, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, PlayCircle, Clock, ShieldAlert, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { Card, CardContent } from '@/components/ui/card';
 import VideoPlayerComponent from '@/components/exercises/VideoPlayerComponent.jsx';
 import FullscreenTimerMode from '@/components/timer/FullscreenTimerMode.jsx';
 import SessionDataTracker from '@/components/timer/SessionDataTracker.jsx';
@@ -13,15 +15,21 @@ import { toast } from 'sonner';
 const PatientExerciseViewPage = () => {
   const { assignmentId } = useParams();
   const navigate = useNavigate();
-  
+
   const [assignment, setAssignment] = useState(null);
   const [exercises, setExercises] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const [timerActive, setTimerActive] = useState(false);
   const [sessionComplete, setSessionComplete] = useState(false);
   const [sessionStats, setSessionStats] = useState(null);
+
+  // Real session capture (replaces the previous mock stats).
+  const [showPainPrompt, setShowPainPrompt] = useState(false);
+  const [painBefore, setPainBefore] = useState(0);
+  const [sessionStart, setSessionStart] = useState(null);
+  const [completedCount, setCompletedCount] = useState(0);
 
   useEffect(() => {
     const fetchProgramDetails = async () => {
@@ -66,18 +74,45 @@ const PatientExerciseViewPage = () => {
     permission_mode:
       currentExercise.permission_mode ?? 'Patient Controlled'
   };
+  // Called when the patient taps "Start Guided Exercise". We capture the
+  // pre-session pain score once (at the start of the first exercise) and mark
+  // the real session start time so duration is measured, not mocked.
+  const beginSession = () => {
+    if (sessionStart === null) {
+      setShowPainPrompt(true);
+    } else {
+      setTimerActive(true);
+    }
+  };
+
+  const confirmPainAndStart = () => {
+    setSessionStart(Date.now());
+    setShowPainPrompt(false);
+    setTimerActive(true);
+  };
+
   const handleTimerComplete = () => {
     setTimerActive(false);
+    const doneNow = completedCount + 1;
+    setCompletedCount(doneNow);
+
     if (currentIndex < exercises.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
-      setSessionStats({ // Ini adalah mock data, perlu diimplementasikan secara nyata
-        exercisesCompleted: exercises.length,
-        setsCompleted: exercises.reduce((acc, curr) => acc + (curr.sets || 3), 0), // Menggunakan curr.sets langsung
-        painBefore: 3, // Mock, would capture at start
-        durationSeconds: 1500, // Mock, would calculate real time
-        adherenceRate: 100,
-        completionPercentage: 100
+      const durationSeconds = sessionStart ? Math.round((Date.now() - sessionStart) / 1000) : 0;
+      const total = exercises.length || 1;
+      const completionPercentage = Math.round((doneNow / total) * 100);
+      const setsCompleted = exercises
+        .slice(0, doneNow)
+        .reduce((acc, curr) => acc + (Number(curr.sets) || 1), 0);
+
+      setSessionStats({
+        exercisesCompleted: doneNow,
+        setsCompleted,
+        painBefore,
+        durationSeconds,
+        adherenceRate: completionPercentage,
+        completionPercentage,
       });
       setSessionComplete(true);
     }
@@ -153,13 +188,44 @@ const PatientExerciseViewPage = () => {
       </main>
 
       <div className="fixed bottom-0 left-0 right-0 p-4 md:p-6 bg-background/90 backdrop-blur-xl border-t border-border max-w-2xl mx-auto z-20">
-        <Button 
-          className="w-full h-14 text-lg rounded-2xl gap-3 font-bold shadow-glow-primary bg-[hsl(var(--timer-primary))] hover:bg-[hsl(var(--timer-primary))]/90 text-white transition-all hover:scale-[1.02] active:scale-[0.98]" 
-          onClick={() => setTimerActive(true)}
+        <Button
+          className="w-full h-14 text-lg rounded-2xl gap-3 font-bold shadow-glow-primary bg-[hsl(var(--timer-primary))] hover:bg-[hsl(var(--timer-primary))]/90 text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+          onClick={beginSession}
         >
           <PlayCircle className="w-6 h-6" /> Start Guided Exercise
         </Button>
       </div>
+
+      {showPainPrompt && (
+        <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in zoom-in-95 duration-300">
+          <Card className="w-full max-w-md border-border shadow-soft-lg overflow-hidden">
+            <div className="bg-primary/10 p-6 text-center border-b border-border">
+              <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center mx-auto mb-3 text-primary-foreground">
+                <Activity className="w-7 h-7" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground">Before we start</h2>
+              <p className="text-muted-foreground text-sm mt-1">How is your pain level right now?</p>
+            </div>
+            <CardContent className="p-6 space-y-6">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-sm">Pain level</span>
+                  <span className={`text-xl font-bold ${painBefore > 6 ? 'text-destructive' : painBefore > 3 ? 'text-orange-500' : 'text-success'}`}>{painBefore}/10</span>
+                </div>
+                <Slider value={[painBefore]} max={10} step={1} onValueChange={v => setPainBefore(v[0])} className="py-2" />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>0 - None</span>
+                  <span>5 - Moderate</span>
+                  <span>10 - Severe</span>
+                </div>
+              </div>
+              <Button className="w-full h-12 text-lg rounded-xl shadow-glow-primary" onClick={confirmPainAndStart}>
+                Start Session <PlayCircle className="w-5 h-5 ml-2" />
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };

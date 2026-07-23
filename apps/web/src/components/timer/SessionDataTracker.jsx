@@ -6,11 +6,9 @@ import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
 import { CheckCircle2, Save, Activity } from 'lucide-react';
 import apiServerClient from '@/lib/apiServerClient.js';
-import { useAuth } from '@/contexts/AuthContext.jsx';
 import { toast } from 'sonner';
 
 const SessionDataTracker = ({ sessionData, programId, onComplete }) => {
-  const { currentUser } = useAuth();
   const [painAfter, setPainAfter] = useState(sessionData.painBefore || 0);
   const [notes, setNotes] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -22,7 +20,9 @@ const SessionDataTracker = ({ sessionData, programId, onComplete }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          patient_id: currentUser.id,
+          // patient_id is resolved server-side from the auth token; sending the
+          // user id here previously violated the exercise_logs FK and silently
+          // broke every save.
           program_id: programId,
           exercises_completed: sessionData.exercisesCompleted,
           sets_completed: sessionData.setsCompleted,

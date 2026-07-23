@@ -33,6 +33,8 @@ import ProgramTemplatesPage from '@/pages/ProgramTemplatesPage.jsx';
 import AssignedProgramsPage from '@/pages/AssignedProgramsPage.jsx';
 import PatientProgressPage from '@/pages/PatientProgressPage.jsx';
 import ExerciseAnalyticsPage from '@/pages/ExerciseAnalyticsPage.jsx';
+import PatientMonitoringPage from '@/pages/PatientMonitoringPage.jsx';
+import TherapistMessagesPage from '@/pages/therapist/TherapistMessagesPage.jsx';
 
 import ExerciseDetailPage from '@/pages/ExerciseDetailPage.jsx';
 import PatientProgramTrackingPage from '@/pages/PatientProgramTrackingPage.jsx';
@@ -118,6 +120,8 @@ function App() {
             <Route path="/program-templates" element={<RoleProtectedRoute allowedRoles={['super_admin', 'admin', 'therapist']}><ProgramTemplatesPage /></RoleProtectedRoute>} />
             <Route path="/assigned-programs" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><AssignedProgramsPage /></RoleProtectedRoute>} />
             <Route path="/patient-progress" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><PatientProgressPage /></RoleProtectedRoute>} />
+            <Route path="/patient-monitoring" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><PatientMonitoringPage /></RoleProtectedRoute>} />
+            <Route path="/messages" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><TherapistMessagesPage /></RoleProtectedRoute>} />
             <Route path="/exercise-analytics" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ExerciseAnalyticsPage /></RoleProtectedRoute>} />
 
             <Route path="/exercises/:id" element={<RoleProtectedRoute allowedRoles={['super_admin', 'admin', 'therapist']}><ExerciseDetailPage /></RoleProtectedRoute>} />

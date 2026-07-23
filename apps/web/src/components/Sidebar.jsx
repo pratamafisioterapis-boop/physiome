@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, Calendar, Settings, LogOut, 
   Activity, Video, Dumbbell, ClipboardList, TrendingUp, BarChart3, Presentation, PlusSquare,
-  Building2, User
+  Building2, User, HeartPulse, MessageSquare
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { cn } from '@/lib/utils.js';
@@ -109,6 +109,8 @@ export const SidebarContent = () => {
         { name: t('nav.patients'), path: '/patients', icon: Users, roles: ['admin', 'therapist'] },
         { name: t('nav.therapists'), path: '/therapists', icon: Users, roles: ['admin'] },
         { name: t('nav.appointments'), path: '/appointments', icon: Calendar, roles: ['admin', 'therapist'] },
+        { name: t('nav.monitoring') || 'Monitoring', path: '/patient-monitoring', icon: HeartPulse, roles: ['admin', 'therapist'] },
+        { name: t('nav.messages') || 'Messages', path: '/messages', icon: MessageSquare, roles: ['admin', 'therapist'] },
       ]
     },
     {
