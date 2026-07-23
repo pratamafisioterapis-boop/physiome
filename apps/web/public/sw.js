@@ -9,21 +9,26 @@
  *
  * Bump CACHE_VERSION to force clients onto a fresh cache after a deploy.
  */
-const CACHE_VERSION = 'physiome-v1';
+const CACHE_VERSION = 'physiome-v2';
 const APP_SHELL = '/index.html';
 const PRECACHE = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
-  '/favicon.svg',
+  '/icons/favicon-48.png',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/maskable-512.png',
+  '/icons/apple-touch-icon.png',
 ];
 
 self.addEventListener('install', (event) => {
+  // Precache resiliently: a single missing/failed asset must NOT abort install
+  // (a failed cache.addAll would leave the SW uninstalled and block PWA install).
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting()),
+    caches.open(CACHE_VERSION)
+      .then((cache) => Promise.allSettled(PRECACHE.map((url) => cache.add(url))))
+      .then(() => self.skipWaiting()),
   );
 });
 
