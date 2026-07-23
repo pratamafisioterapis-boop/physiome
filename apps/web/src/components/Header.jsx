@@ -75,14 +75,14 @@ const Header = () => {
                   <User className="w-4 h-4 text-primary" />
                 </div>
                 <span className="text-sm font-medium text-foreground hidden md:block">
-                  {currentUser?.full_name || currentUser?.email}
+                  {currentUser?.fullName || currentUser?.email}
                 </span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{currentUser?.full_name || 'User'}</p>
+                  <p className="text-sm font-medium leading-none">{currentUser?.fullName || 'User'}</p>
                   <p className="text-xs leading-none text-muted-foreground">{currentUser?.email}</p>
                   <p className="text-xs leading-none text-muted-foreground capitalize mt-1">Role: {userRole}</p>
                 </div>

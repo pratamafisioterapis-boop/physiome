@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import Logo from '@/components/Logo.jsx';
 
 export const SidebarContent = () => {
   const { currentUser, logout } = useAuth();
@@ -175,10 +176,10 @@ export const SidebarContent = () => {
       <div className="p-4 border-t border-border mt-auto">
         <div className="flex items-center gap-3 mb-4 px-2">
           <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary font-medium">
-            {currentUser?.name?.charAt(0) || currentUser?.full_name?.charAt(0) || 'U'}
+            {currentUser?.fullName?.charAt(0) || currentUser?.name?.charAt(0) || 'U'}
           </div>
           <div className="overflow-hidden">
-            <p className="text-sm font-semibold truncate text-foreground">{currentUser?.name || currentUser?.full_name || 'User'}</p>
+            <p className="text-sm font-semibold truncate text-foreground">{currentUser?.fullName || currentUser?.name || 'User'}</p>
             <p className="text-xs text-muted-foreground truncate capitalize">{role}</p>
           </div>
         </div>
@@ -203,12 +204,7 @@ export default function Sidebar() {
   return (
     <div className="w-64 bg-card border-r border-border h-screen flex-col fixed left-0 top-0 z-40 hidden md:flex">
       <div className="p-6 border-b border-border/50">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl">
-            P
-          </div>
-          <span className="font-bold text-xl tracking-tight text-foreground">Physiome</span>
-        </div>
+        <Logo />
       </div>
       
       <div className="flex-1 overflow-hidden">
