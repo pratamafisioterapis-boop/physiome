@@ -75,7 +75,7 @@ const LoginPage = () => {
   const handleDemoLogin = async (role, email) => {
     setDemoLoading(role);
     try {
-      const user = await login(email, 'demo123456');
+      const user = await login(email, 'Physiome123!');
       toast.success(`Logged in as ${role}`);
       if (user.role === 'patient') {
         navigate('/patient/dashboard');
@@ -177,7 +177,7 @@ const LoginPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Patient Demo */}
               <button
-                onClick={() => handleDemoLogin('Patient', 'patient@demo.com')}
+                onClick={() => handleDemoLogin('Patient', 'andi@physiome.demo')}
                 disabled={demoLoading !== null}
                 className="group relative overflow-hidden rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg hover:bg-card disabled:opacity-70 disabled:cursor-not-allowed"
               >
@@ -195,7 +195,7 @@ const LoginPage = () => {
 
               {/* Therapist Demo */}
               <button
-                onClick={() => handleDemoLogin('Therapist', 'therapist@demo.com')}
+                onClick={() => handleDemoLogin('Therapist', 'therapist@physiome.demo')}
                 disabled={demoLoading !== null}
                 className="group relative overflow-hidden rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg hover:bg-card disabled:opacity-70 disabled:cursor-not-allowed"
               >
@@ -213,7 +213,7 @@ const LoginPage = () => {
 
               {/* Admin Demo */}
               <button
-                onClick={() => handleDemoLogin('Admin', 'admin@demo.com')}
+                onClick={() => handleDemoLogin('Admin', 'admin@physiome.demo')}
                 disabled={demoLoading !== null}
                 className="group relative overflow-hidden rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg hover:bg-card disabled:opacity-70 disabled:cursor-not-allowed"
               >
