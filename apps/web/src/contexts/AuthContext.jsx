@@ -120,6 +120,16 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   };
+
+  const updateProfile = async (fields) => {
+    const updated = await apiServerClient.fetch('/auth/update-profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fields)
+    });
+    setCurrentUser(updated);
+    return updated;
+  };
   
   const refreshUser = async () => {
     const token = localStorage.getItem('auth_token');
@@ -149,6 +159,7 @@ export const AuthProvider = ({ children }) => {
     forgotPassword,
     resetPassword,
     updateUserClinicId,
+    updateProfile,
     refreshUser
   };
   

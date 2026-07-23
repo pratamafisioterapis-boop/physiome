@@ -2,12 +2,15 @@ import React from 'react';
 import { Heart, Bluetooth, BluetoothConnected, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { useHeartRateMonitor } from '@/hooks/useHeartRateMonitor.js';
+import { useHeartRate } from '@/contexts/HeartRateContext.jsx';
 import { cn } from '@/lib/utils';
 
 // Live BPM readout backed by the Web Bluetooth GATT Heart Rate Service (0x180D).
 // Not supported on iOS Safari (no Web Bluetooth) — connect button is disabled there.
-const HeartRateMonitor = ({ theme = 'light', className }) => {
+// readOnly hides the "connect" action (used during a workout, where pairing
+// should already have happened in Account Settings) and renders nothing when
+// no device is connected, instead of exposing the native pairing dialog.
+const HeartRateMonitor = ({ theme = 'light', className, readOnly = false }) => {
   const {
     heartRate,
     deviceName,
@@ -17,13 +20,15 @@ const HeartRateMonitor = ({ theme = 'light', className }) => {
     isSupported,
     connect,
     disconnect,
-  } = useHeartRateMonitor();
+  } = useHeartRate();
 
   const isDark = theme === 'dark';
 
   React.useEffect(() => {
-    if (error) toast.error(error);
-  }, [error]);
+    if (error && !readOnly) toast.error(error);
+  }, [error, readOnly]);
+
+  if (readOnly && !isConnected) return null;
 
   const pillClasses = cn(
     'flex items-center gap-2 rounded-full px-4 py-2 transition-colors',
