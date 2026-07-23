@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import Button from '@/components/Button.jsx';
@@ -9,9 +9,16 @@ import { User, Stethoscope, Shield, Loader2 } from 'lucide-react';
 import { PhysiomeMark } from '@/components/Logo.jsx';
 import { toast } from 'sonner';
 
+const redirectPathForUser = (user) => {
+  if (user.role === 'patient') return '/patient/dashboard';
+  if (user.role === 'super_admin') return '/super-admin';
+  if (user.clinic_id || user.clinicId || user.role === 'admin') return '/dashboard';
+  return '/onboarding';
+};
+
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, currentUser, isAuthenticated, initialLoading } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -19,7 +26,25 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState(null);
-  
+
+  // Auto masuk jika sesi login sebelumnya masih tersimpan (token valid di localStorage)
+  useEffect(() => {
+    if (!initialLoading && isAuthenticated && currentUser) {
+      navigate(redirectPathForUser(currentUser), { replace: true });
+    }
+  }, [initialLoading, isAuthenticated, currentUser, navigate]);
+
+  if (initialLoading || (isAuthenticated && currentUser)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -52,16 +77,7 @@ const LoginPage = () => {
       const user = await login(formData.email, formData.password);
       
       toast.success('Successfully logged in');
-      
-      if (user.role === 'patient') {
-        navigate('/patient/dashboard');
-      } else if (user.role === 'super_admin') {
-        navigate('/super-admin');
-      } else if (user.clinic_id || user.clinicId || user.role === 'admin') {
-        navigate('/dashboard');
-      } else {
-        navigate('/onboarding');
-      }
+      navigate(redirectPathForUser(user));
     } catch (error) {
       console.error('Login error:', error);
       const errorMessage = error?.response?.message || error?.message || 'Invalid email or password';

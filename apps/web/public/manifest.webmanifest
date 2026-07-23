@@ -3,7 +3,7 @@
   "short_name": "Physiome",
   "description": "Home exercise programs, progress tracking, secure messaging and telehealth for physiotherapy patients and clinics.",
   "id": "/",
-  "start_url": "/?source=pwa",
+  "start_url": "/login?source=pwa",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
