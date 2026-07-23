@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom'; // Pastikan useNavigate diimpor
@@ -27,23 +27,47 @@ export default function AdminDashboard() {
   const [therapists, setTherapists] = useState([]);
   const [patients, setPatients] = useState([]);
   const [activities, setActivities] = useState([]);
+  const [chartData, setChartData] = useState([]);
+  const [pieData, setPieData] = useState([]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const data = await apiServerClient.fetch('/dashboard/admin-stats');
-        setStats(data);
-        // Data tabel sementara diset kosong sampai rute CRUD user dibuat
-        setTherapists([]);
-        setPatients([]);
-        
-        // Mock activities
-        setActivities([
-          { id: 1, type: 'user', desc: 'New patient registered: Maya Chen', time: '2 hours ago' },
-          { id: 2, type: 'program', desc: 'Program assigned to Raj Patel', time: '4 hours ago' },
-          { id: 3, type: 'assessment', desc: 'Assessment completed by John Doe', time: '5 hours ago' },
+        const [data, patientList, assignments] = await Promise.all([
+          apiServerClient.fetch('/dashboard/admin-stats'),
+          apiServerClient.fetch('/patients').catch(() => []),
+          apiServerClient.fetch('/program-assignments').catch(() => []),
         ]);
+        setStats(data);
 
+        const pts = Array.isArray(patientList) ? patientList : [];
+        setPatients(pts);
+        setTherapists([]);
+
+        // Patient growth — new registrations per week over the last 6 weeks.
+        const DAY_MS = 86400000;
+        const now = Date.now();
+        const weeks = Array.from({ length: 6 }, () => 0);
+        pts.forEach((p) => {
+          if (!p.created_at) return;
+          const wk = Math.floor((now - new Date(p.created_at).getTime()) / (7 * DAY_MS));
+          if (wk >= 0 && wk < 6) weeks[5 - wk] += 1;
+        });
+        setChartData(weeks.map((count, i) => ({ name: `W${i + 1}`, patients: count })));
+
+        // Program status distribution from assignments.
+        const asgs = Array.isArray(assignments) ? assignments : [];
+        const statusCounts = {};
+        asgs.forEach((a) => { statusCounts[a.status || 'Active'] = (statusCounts[a.status || 'Active'] || 0) + 1; });
+        setPieData(Object.entries(statusCounts).map(([name, value]) => ({ name, value })));
+
+        // Recent activity — real recent patient registrations.
+        const recent = [...pts]
+          .filter((p) => p.created_at)
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .slice(0, 4)
+          .map((p, i) => ({ id: i, type: 'user', desc: `New patient registered: ${p.name}`, time: new Date(p.created_at).toLocaleDateString() }));
+        setActivities(recent);
       } catch (error) {
         console.error('Error fetching admin data:', error);
       } finally {
@@ -53,15 +77,6 @@ export default function AdminDashboard() {
 
     fetchDashboardData();
   }, [currentUser]);
-
-  const mockChartData = [
-    { name: 'Mon', patients: 40 }, { name: 'Tue', patients: 45 }, { name: 'Wed', patients: 55 },
-    { name: 'Thu', patients: 50 }, { name: 'Fri', patients: 65 }, { name: 'Sat', patients: 70 },
-  ];
-
-  const mockPieData = [
-    { name: 'Completed', value: 400 }, { name: 'Active', value: 300 }, { name: 'Paused', value: 100 }
-  ];
 
   return (
     <>
@@ -113,14 +128,14 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Patient Growth Trend</CardTitle>
+                    <CardTitle className="text-lg">New Patients (weekly)</CardTitle>
                   </CardHeader>
                   <CardContent className="h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={mockChartData}>
+                      <LineChart data={chartData}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                         <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
                         <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))' }} />
                         <Line type="monotone" dataKey="patients" stroke="hsl(var(--primary))" strokeWidth={3} dot={false} />
                       </LineChart>
@@ -132,16 +147,23 @@ export default function AdminDashboard() {
                     <CardTitle className="text-lg">Program Status</CardTitle>
                   </CardHeader>
                   <CardContent className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie data={mockPieData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                          {mockPieData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))' }} />
-                      </PieChart>
-                    </ResponsiveContainer>
+                    {pieData.length === 0 ? (
+                      <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+                        No programs assigned yet.
+                      </div>
+                    ) : (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" nameKey="name">
+                            {pieData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))' }} />
+                          <Legend />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    )}
                   </CardContent>
                 </Card>
               </div>
