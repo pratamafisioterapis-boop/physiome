@@ -35,6 +35,7 @@ import PatientProgressPage from '@/pages/PatientProgressPage.jsx';
 import ExerciseAnalyticsPage from '@/pages/ExerciseAnalyticsPage.jsx';
 import PatientMonitoringPage from '@/pages/PatientMonitoringPage.jsx';
 import TherapistMessagesPage from '@/pages/therapist/TherapistMessagesPage.jsx';
+import TelehealthCallPage from '@/pages/TelehealthCallPage.jsx';
 
 import ExerciseDetailPage from '@/pages/ExerciseDetailPage.jsx';
 import PatientProgramTrackingPage from '@/pages/PatientProgramTrackingPage.jsx';
@@ -123,6 +124,7 @@ function App() {
             <Route path="/patient-progress" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><PatientProgressPage /></RoleProtectedRoute>} />
             <Route path="/patient-monitoring" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><PatientMonitoringPage /></RoleProtectedRoute>} />
             <Route path="/messages" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><TherapistMessagesPage /></RoleProtectedRoute>} />
+            <Route path="/telehealth/:room" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><TelehealthCallPage /></RoleProtectedRoute>} />
             <Route path="/exercise-analytics" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ExerciseAnalyticsPage /></RoleProtectedRoute>} />
 
             <Route path="/exercises/:id" element={<RoleProtectedRoute allowedRoles={['super_admin', 'admin', 'therapist']}><ExerciseDetailPage /></RoleProtectedRoute>} />
