@@ -126,8 +126,20 @@ export const useHeartRateMonitor = () => {
         optionalServices: KNOWN_FITNESS_SERVICES,
       });
 
-      const server = await device.gatt.connect();
-      const services = await server.getPrimaryServices();
+      // Some wearables (notably Samsung Galaxy Watch) accept the initial GATT
+      // connection but drop it again a moment later before service discovery
+      // completes — retry once before concluding the device refuses us.
+      let server;
+      let services;
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        server = await device.gatt.connect();
+        try {
+          services = await server.getPrimaryServices();
+          break;
+        } catch (err) {
+          if (attempt === 1) throw err;
+        }
+      }
 
       const serviceDetails = await Promise.all(
         services.map(async (service) => {
@@ -146,7 +158,13 @@ export const useHeartRateMonitor = () => {
 
       server.disconnect();
     } catch (err) {
-      if (err?.name !== 'NotFoundError') {
+      if (err?.name === 'NotFoundError') {
+        // user cancelled the device picker
+      } else if (String(err?.message).includes('GATT Server is disconnected')) {
+        setDebugError(
+          `"${device?.name || 'Perangkat ini'}" memutus koneksi Bluetooth segera setelah dihubungkan, sebelum servisnya sempat terbaca. Ini indikasi kuat perangkat tersebut menolak koneksi dari aplikasi pihak ketiga (umum pada Samsung Galaxy Watch) — datanya memang tidak dibagikan lewat Bluetooth standar.`
+        );
+      } else {
         setDebugError(err?.message || 'Gagal memindai perangkat.');
       }
     } finally {
