@@ -1812,6 +1812,58 @@ async function listMessageThreads(ctx: AuthCtx) {
   return json([...byPatient.values()].sort((a, b) => new Date(b.last_at).getTime() - new Date(a.last_at).getTime()));
 }
 
+// ---------- PROMs (patient-reported outcome measures) ----------
+
+// Scoring is computed client-side from the instrument definition; we store the
+// answers plus the resulting score/interpretation so clinicians can trend them.
+async function listPromResponses(ctx: AuthCtx, url: URL) {
+  if (ctx.role === "patient") {
+    const patient = await resolvePatientForUser(ctx);
+    if (!patient) return json([]);
+    const { data } = await admin.from("prom_responses").select("*").eq("patient_id", patient.id).order("created_at", { ascending: false });
+    return json(data ?? []);
+  }
+  let query = admin.from("prom_responses").select("*").eq("clinic_id", ctx.clinicId);
+  const patientId = url.searchParams.get("patient_id");
+  if (patientId) query = query.eq("patient_id", patientId);
+  const { data } = await query.order("created_at", { ascending: false });
+  return json(data ?? []);
+}
+
+async function createPromResponse(ctx: AuthCtx, body: Record<string, unknown>) {
+  const { instrument, score, max_score, interpretation, answers } = body as Record<string, unknown>;
+  if (!instrument) bad("instrument is required");
+
+  let patientId = (body as Record<string, string>).patient_id;
+  let clinicId = ctx.clinicId;
+  if (ctx.role === "patient") {
+    const patient = await resolvePatientForUser(ctx);
+    if (!patient) return notFound("Patient profile not found");
+    patientId = patient.id;
+  } else {
+    if (!patientId) bad("patient_id is required");
+    const { data: p } = await admin.from("patients").select("id, clinic_id").eq("id", patientId).eq("clinic_id", ctx.clinicId).maybeSingle();
+    if (!p) return err(403, "Access denied to patient");
+    clinicId = p.clinic_id;
+  }
+
+  const { data, error } = await admin
+    .from("prom_responses")
+    .insert({
+      patient_id: patientId,
+      clinic_id: clinicId,
+      instrument: String(instrument),
+      score: score != null ? Number(score) : null,
+      max_score: max_score != null ? Number(max_score) : null,
+      interpretation: interpretation != null ? String(interpretation) : null,
+      answers: answers ?? null,
+    })
+    .select()
+    .single();
+  if (error) throw new HttpError(500, error.message);
+  return json(data, 201);
+}
+
 // ---------- router ----------
 
 Deno.serve(async (req: Request) => {
@@ -1961,6 +2013,11 @@ Deno.serve(async (req: Request) => {
       if (segments[1] === "threads" && method === "GET") return await listMessageThreads(ctx);
       if (method === "GET" && segments.length === 1) return await listMessages(ctx, url);
       if (method === "POST" && segments.length === 1) return await createMessage(ctx, await body());
+    }
+
+    if (segments[0] === "prom-responses") {
+      if (method === "GET" && segments.length === 1) return await listPromResponses(ctx, url);
+      if (method === "POST" && segments.length === 1) return await createPromResponse(ctx, await body());
     }
 
     if (segments[0] === "videos") {

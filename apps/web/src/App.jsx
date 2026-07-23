@@ -66,6 +66,7 @@ import TelehealthPage from '@/pages/patient/TelehealthPage.jsx';
 import PatientProfilePage from '@/pages/patient/PatientProfilePage.jsx';
 import PatientLanguageSettingsPage from '@/pages/patient/PatientLanguageSettingsPage.jsx';
 import AchievementsPage from '@/pages/patient/AchievementsPage.jsx';
+import AssessmentsPage from '@/pages/patient/AssessmentsPage.jsx';
 
 // SOAP Notes Assistant
 import SOAPNotesPage from '@/pages/SOAPNotesPage.jsx';
@@ -165,7 +166,7 @@ function App() {
               <Route path="profile" element={<PatientProfilePage />} />
               <Route path="settings/language" element={<PatientLanguageSettingsPage />} />
               {/* Fallbacks for missing pages to prevent 404s during dev */}
-              <Route path="assessments" element={<div className="p-8 text-center">Assessments Coming Soon</div>} />
+              <Route path="assessments" element={<AssessmentsPage />} />
               <Route path="achievements" element={<AchievementsPage />} />
               <Route path="education" element={<div className="p-8 text-center">Education Center Coming Soon</div>} />
             </Route>

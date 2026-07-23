@@ -13,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext.jsx';
 import { sendWhatsAppReminder, exerciseReminderMessage } from '@/lib/whatsapp.js';
 import EditPatientModal from '@/components/patients/EditPatientModal.jsx';
 import DeletePatientConfirmation from '@/components/patients/DeletePatientConfirmation.jsx';
+import PromResultsCard from '@/components/patient/PromResultsCard.jsx';
 
 const PatientDetailPage = () => {
   const { id } = useParams();
@@ -212,6 +213,9 @@ const PatientDetailPage = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Patient-reported outcome measures */}
+                  <PromResultsCard patientId={patient.id} />
 
                   {/* Placeholder: Related Appointments */}
                   <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
