@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Play, Calendar, Flame, Activity, Loader2 } from 'lucide-react';
+import { Play, Calendar, Flame, Activity, Loader2, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import apiServerClient from '@/lib/apiServerClient.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
+import { nextStreakMilestone } from '@/lib/achievements.js';
 
 const PatientDashboardWidgets = () => {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ const PatientDashboardWidgets = () => {
   const nextAppointment = stats?.appointments?.[0];
   const adherence = stats?.adherence || 0;
   const streak = stats?.streak || 0;
+  const nextMilestone = nextStreakMilestone(streak);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -116,27 +118,31 @@ const PatientDashboardWidgets = () => {
         </CardContent>
       </Card>
 
-      {/* Recovery Streak */}
-      <Card className="border-0 shadow-soft bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-950/30 dark:to-transparent">
-        <CardContent className="p-6">
-          <div className="flex justify-between items-start">
-            <div className="flex gap-4 items-center">
-              <div className="p-4 bg-orange-500/20 rounded-2xl text-orange-600"><Flame className="w-8 h-8" /></div>
-              <div>
-                <p className="text-sm font-semibold text-orange-600/80 dark:text-orange-400 uppercase tracking-wider">Recovery Streak</p>
-                <h3 className="text-3xl font-bold text-orange-700 dark:text-orange-300">{streak} Days</h3>
+      {/* Recovery Streak → Achievements */}
+      <button type="button" onClick={() => navigate('/patient/achievements')} className="text-left">
+        <Card className="border-0 shadow-soft bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-950/30 dark:to-transparent h-full transition-transform hover:scale-[1.01]">
+          <CardContent className="p-6">
+            <div className="flex justify-between items-start">
+              <div className="flex gap-4 items-center">
+                <div className="p-4 bg-orange-500/20 rounded-2xl text-orange-600"><Flame className="w-8 h-8" /></div>
+                <div>
+                  <p className="text-sm font-semibold text-orange-600/80 dark:text-orange-400 uppercase tracking-wider">Recovery Streak</p>
+                  <h3 className="text-3xl font-bold text-orange-700 dark:text-orange-300">{streak} {streak === 1 ? 'Day' : 'Days'}</h3>
+                </div>
               </div>
+              <ChevronRight className="w-5 h-5 text-orange-600/50 mt-1" />
             </div>
-          </div>
-          {stats?.lastPainReduction && (
             <div className="mt-4 pt-4 border-t border-orange-200/50 dark:border-orange-800/50">
               <p className="text-sm font-medium text-orange-800/80 dark:text-orange-200/80 flex items-center gap-2">
-                <Activity className="w-4 h-4" /> Last Session: Pain reduced by {stats.lastPainReduction} points
+                <Activity className="w-4 h-4" />
+                {nextMilestone
+                  ? `${nextMilestone - streak} more to a ${nextMilestone}-day streak`
+                  : 'Legendary consistency — view your badges'}
               </p>
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </button>
 
     </div>
   );

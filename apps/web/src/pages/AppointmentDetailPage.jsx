@@ -5,7 +5,7 @@ import Header from '@/components/Header.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
 import Button from '@/components/Button.jsx';
 import StatusBadge from '@/components/appointments/StatusBadge.jsx';
-import { ArrowLeft, Edit2, Trash2, Calendar, Clock, User, Activity } from 'lucide-react';
+import { ArrowLeft, Edit2, Trash2, Calendar, Clock, User, Activity, Video } from 'lucide-react';
 import apiServerClient from '@/lib/apiServerClient.js';
 import { Helmet } from 'react-helmet';
 import EditAppointmentModal from '@/components/appointments/EditAppointmentModal.jsx';
@@ -132,6 +132,9 @@ const AppointmentDetailPage = () => {
                       ]}
                       isSearchable={false}
                     />
+                    <Button onClick={() => navigate(`/telehealth/appt-${appointment.id}`)} className="gap-2">
+                      <Video className="w-4 h-4" /> Join Telehealth
+                    </Button>
                     <Button variant="outline" onClick={() => setIsEditOpen(true)} className="gap-2">
                       <Edit2 className="w-4 h-4" /> Edit
                     </Button>

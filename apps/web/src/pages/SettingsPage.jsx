@@ -72,7 +72,7 @@ export default function SettingsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label>Full Name</Label>
-                        <Input defaultValue={currentUser?.full_name || ''} />
+                        <Input defaultValue={currentUser?.fullName || ''} />
                       </div>
 
                       <div className="space-y-2">

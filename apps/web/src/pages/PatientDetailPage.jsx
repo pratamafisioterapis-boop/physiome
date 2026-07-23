@@ -4,18 +4,23 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
 import Button from '@/components/Button.jsx';
-import { ArrowLeft, Edit2, Trash2, Calendar, FileText, Activity, User } from 'lucide-react';
+import { ArrowLeft, Edit2, Trash2, Calendar, FileText, Activity, User, MessageCircle } from 'lucide-react';
 import apiServerClient from '@/lib/apiServerClient.js';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext.jsx';
+import { sendWhatsAppReminder, exerciseReminderMessage } from '@/lib/whatsapp.js';
 import EditPatientModal from '@/components/patients/EditPatientModal.jsx';
 import DeletePatientConfirmation from '@/components/patients/DeletePatientConfirmation.jsx';
+import PromResultsCard from '@/components/patient/PromResultsCard.jsx';
 
 const PatientDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  
+  const { currentUser } = useAuth();
+
   const [patient, setPatient] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -119,6 +124,21 @@ const PatientDetailPage = () => {
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
+                    {patient.phone && (
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          const ok = sendWhatsAppReminder(
+                            patient.phone,
+                            exerciseReminderMessage({ patientName: patient.name, therapistName: currentUser?.fullName }),
+                          );
+                          if (!ok) toast.error('Nomor telepon pasien tidak valid untuk WhatsApp');
+                        }}
+                        className="gap-2 text-green-600 border-green-200 hover:bg-green-50 dark:border-green-900 dark:hover:bg-green-950/30"
+                      >
+                        <MessageCircle className="w-4 h-4" /> WhatsApp
+                      </Button>
+                    )}
                     <Button variant="outline" onClick={() => setIsEditOpen(true)} className="gap-2">
                       <Edit2 className="w-4 h-4" /> {t('common.editProfile') || 'Edit Profile'}
                     </Button>
@@ -193,6 +213,9 @@ const PatientDetailPage = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Patient-reported outcome measures */}
+                  <PromResultsCard patientId={patient.id} />
 
                   {/* Placeholder: Related Appointments */}
                   <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">

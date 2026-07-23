@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '@/components/LanguageSwitcher.jsx';
+import { PhysiomeMark } from '@/components/Logo.jsx';
 
 const LandingHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -53,9 +54,7 @@ const LandingHeader = () => {
           
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-glow-primary transition-transform duration-300 group-hover:scale-105">
-              <span className="text-primary-foreground font-extrabold text-xl tracking-tighter">Ph</span>
-            </div>
+            <PhysiomeMark className="w-10 h-10 transition-transform duration-300 group-hover:scale-105" />
             <span className="text-2xl font-extrabold text-foreground tracking-tight">Physiome</span>
           </Link>
 

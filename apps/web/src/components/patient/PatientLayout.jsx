@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext.jsx';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils.js';
 import { Button } from '@/components/ui/button';
+import { PhysiomeMark } from '@/components/Logo.jsx';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import LanguageSwitcher from '@/components/LanguageSwitcher.jsx';
 import { toast } from 'sonner';
@@ -55,7 +56,7 @@ const PatientLayout = () => {
       <aside className="hidden md:flex w-64 flex-col bg-card border-r border-border z-20">
         <div className="p-6 border-b border-border/50 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl">P</div>
+            <PhysiomeMark className="w-8 h-8" />
             <span className="font-bold text-xl tracking-tight text-foreground">Physiome</span>
           </div>
         </div>
@@ -89,7 +90,7 @@ const PatientLayout = () => {
       {/* Mobile Header */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-card border-b border-border z-30 flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl">P</div>
+          <PhysiomeMark className="w-8 h-8" />
           <span className="font-bold text-lg tracking-tight text-foreground">Physiome</span>
         </div>
         <div className="flex items-center gap-2">

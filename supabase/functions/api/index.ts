@@ -1025,8 +1025,27 @@ async function listExerciseLogs(ctx: AuthCtx, url: URL) {
 }
 
 async function createExerciseLog(ctx: AuthCtx, body: Record<string, unknown>) {
-  const { program_id, patient_id, exercises_completed, sets_completed, pain_before, pain_after, duration, adherence_rate, completion_percentage, notes } =
+  const { program_id, exercises_completed, sets_completed, pain_before, pain_after, duration, adherence_rate, completion_percentage, notes } =
     body as Record<string, string>;
+
+  // Resolve the real patient row id. Patients authenticate as users, so the
+  // client only knows its user id — never trust a client-supplied patient_id.
+  // We look the patient up server-side (same pattern as createPainLog), which
+  // also fixes the FK violation that previously made every session save fail.
+  let patient_id = (body as Record<string, string>).patient_id;
+  if (ctx.role === "patient") {
+    const { data: user } = await admin.from("users").select("email").eq("id", ctx.userId).single();
+    const { data: patient } = await admin.from("patients").select("id").eq("email", user?.email).maybeSingle();
+    if (!patient) return notFound("Patient profile not found");
+    patient_id = patient.id;
+  } else if (patient_id) {
+    // Therapist/admin logging on behalf of a patient: scope to their clinic.
+    const { data: patient } = await admin.from("patients").select("id").eq("id", patient_id).eq("clinic_id", ctx.clinicId).maybeSingle();
+    if (!patient) return err(403, "Access denied to patient");
+  } else {
+    bad("patient_id is required");
+  }
+
   const { data, error } = await admin
     .from("exercise_logs")
     .insert({
@@ -1061,6 +1080,125 @@ async function createPainLog(ctx: AuthCtx, body: Record<string, unknown>) {
     .single();
   if (error) throw new HttpError(500, error.message);
   return json(data, 201);
+}
+
+async function listPainLogs(ctx: AuthCtx, url: URL) {
+  let query = admin.from("pain_logs").select("*").eq("clinic_id", ctx.clinicId);
+  const patientId = url.searchParams.get("patient_id");
+  if (patientId) query = query.eq("patient_id", patientId);
+  const { data } = await query.order("created_at", { ascending: false });
+  return json(data ?? []);
+}
+
+// ---------- remote therapeutic monitoring (RTM) ----------
+
+// Current consecutive-day streak from a set of ISO date strings (one per day
+// a session happened). Counts back from today (or yesterday, so a not-yet-
+// exercised today doesn't break an otherwise live streak).
+function streakFromDates(isoDates: string[]): number {
+  const days = [...new Set(isoDates.map((d) => new Date(d).toISOString().slice(0, 10)))].sort().reverse();
+  if (days.length === 0) return 0;
+  const dayMs = 86400000;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const mostRecent = new Date(days[0]);
+  mostRecent.setHours(0, 0, 0, 0);
+  const gap = Math.round((today.getTime() - mostRecent.getTime()) / dayMs);
+  if (gap > 1) return 0; // last session was 2+ days ago — streak broken
+  let streak = 1;
+  for (let i = 1; i < days.length; i++) {
+    const prev = new Date(days[i - 1]);
+    const cur = new Date(days[i]);
+    prev.setHours(0, 0, 0, 0);
+    cur.setHours(0, 0, 0, 0);
+    if (Math.round((prev.getTime() - cur.getTime()) / dayMs) === 1) streak++;
+    else break;
+  }
+  return streak;
+}
+
+// Per-patient monitoring rollup for the clinician RTM dashboard. Aggregates the
+// last 30 days of exercise logs and pain logs for every patient with an active
+// program, and flags who needs attention.
+async function rtmDashboard(ctx: AuthCtx) {
+  const since = new Date(Date.now() - 30 * 86400000).toISOString();
+
+  const [{ data: assignments }, { data: patients }, { data: logs }, { data: pains }] = await Promise.all([
+    admin.from("program_assignments").select("patient_id, program_id, status").eq("clinic_id", ctx.clinicId).eq("status", "Active"),
+    admin.from("patients").select("id, name, email").eq("clinic_id", ctx.clinicId),
+    admin.from("exercise_logs").select("*").eq("clinic_id", ctx.clinicId).gte("session_date", since).order("session_date", { ascending: false }),
+    admin.from("pain_logs").select("patient_id, pain_level, created_at").eq("clinic_id", ctx.clinicId).gte("created_at", since).order("created_at", { ascending: false }),
+  ]);
+
+  const activePatientIds = [...new Set((assignments ?? []).map((a: Record<string, any>) => a.patient_id).filter(Boolean))];
+  const patientById = new Map((patients ?? []).map((p: Record<string, any>) => [p.id, p]));
+  const logsByPatient = new Map<string, Record<string, any>[]>();
+  (logs ?? []).forEach((l: Record<string, any>) => {
+    if (!logsByPatient.has(l.patient_id)) logsByPatient.set(l.patient_id, []);
+    logsByPatient.get(l.patient_id)!.push(l);
+  });
+  const painByPatient = new Map<string, Record<string, any>[]>();
+  (pains ?? []).forEach((p: Record<string, any>) => {
+    if (!painByPatient.has(p.patient_id)) painByPatient.set(p.patient_id, []);
+    painByPatient.get(p.patient_id)!.push(p);
+  });
+
+  const now = Date.now();
+  const rows = activePatientIds.map((pid: string) => {
+    const patient = patientById.get(pid) || { id: pid, name: "Unknown patient" };
+    const plogs = logsByPatient.get(pid) ?? [];
+    const sessions30 = plogs.length;
+    const sessions7 = plogs.filter((l) => now - new Date(l.session_date).getTime() <= 7 * 86400000).length;
+    const adherence = sessions30
+      ? Math.round(plogs.reduce((s, l) => s + (l.completion_percentage || 0), 0) / sessions30)
+      : 0;
+    const lastSession = plogs[0]?.session_date ?? null;
+    const daysSinceLast = lastSession ? Math.floor((now - new Date(lastSession).getTime()) / 86400000) : null;
+    const streak = streakFromDates(plogs.map((l) => l.session_date));
+
+    // Pain trend: combine reported pain_after from sessions and standalone pain logs.
+    const painPoints = [
+      ...plogs.filter((l) => l.pain_after != null).map((l) => ({ v: l.pain_after, t: l.session_date })),
+      ...(painByPatient.get(pid) ?? []).map((p) => ({ v: p.pain_level, t: p.created_at })),
+    ].sort((a, b) => new Date(a.t).getTime() - new Date(b.t).getTime());
+    const painLatest = painPoints.length ? painPoints[painPoints.length - 1].v : null;
+    const painFirst = painPoints.length ? painPoints[0].v : null;
+    const painTrend = painLatest != null && painFirst != null ? painLatest - painFirst : null;
+
+    // Status flag drives the clinician's triage list.
+    let status: "on_track" | "at_risk" | "inactive" | "new";
+    if (sessions30 === 0) status = "new";
+    else if (daysSinceLast != null && daysSinceLast >= 4) status = "inactive";
+    else if (adherence < 50 || sessions7 === 0) status = "at_risk";
+    else status = "on_track";
+
+    return {
+      patient_id: pid,
+      name: patient.name,
+      email: patient.email ?? null,
+      adherence,
+      sessions_7d: sessions7,
+      sessions_30d: sessions30,
+      streak,
+      last_session: lastSession,
+      days_since_last: daysSinceLast,
+      pain_latest: painLatest,
+      pain_trend: painTrend,
+      status,
+    };
+  });
+
+  const severity: Record<string, number> = { inactive: 0, at_risk: 1, new: 2, on_track: 3 };
+  rows.sort((a, b) => severity[a.status] - severity[b.status] || b.adherence - a.adherence);
+
+  const summary = {
+    active_patients: rows.length,
+    at_risk: rows.filter((r) => r.status === "at_risk" || r.status === "inactive").length,
+    avg_adherence: rows.length ? Math.round(rows.reduce((s, r) => s + r.adherence, 0) / rows.length) : 0,
+    sessions_7d: rows.reduce((s, r) => s + r.sessions_7d, 0),
+  };
+
+  return json({ summary, patients: rows });
 }
 
 // ---------- videos ----------
@@ -1202,14 +1340,23 @@ async function patientStats(ctx: AuthCtx) {
 
 async function adminStats(ctx: AuthCtx) {
   const today = new Date().toISOString().slice(0, 10);
-  const [patients, therapists, programs, appts, exercises, assignments] = await Promise.all([
+  const since = new Date(Date.now() - 30 * 86400000).toISOString();
+  const [patients, therapists, programs, appts, exercises, assignments, logs] = await Promise.all([
     admin.from("patients").select("id", { count: "exact", head: true }).eq("clinic_id", ctx.clinicId),
     admin.from("therapists").select("id", { count: "exact", head: true }).eq("clinic_id", ctx.clinicId),
     admin.from("exercise_programs").select("id", { count: "exact", head: true }).eq("clinic_id", ctx.clinicId).eq("status", "Active"),
     admin.from("appointments").select("id", { count: "exact", head: true }).eq("clinic_id", ctx.clinicId).eq("date", today),
     admin.from("exercises").select("id", { count: "exact", head: true }).eq("clinic_id", ctx.clinicId),
     admin.from("program_assignments").select("id", { count: "exact", head: true }).eq("clinic_id", ctx.clinicId).eq("status", "Active"),
+    admin.from("exercise_logs").select("completion_percentage").eq("clinic_id", ctx.clinicId).gte("session_date", since),
   ]);
+
+  // Real clinic-wide adherence: average session completion over the last 30 days.
+  const logRows = logs.data ?? [];
+  const adherence = logRows.length
+    ? Math.round(logRows.reduce((s: number, l: Record<string, any>) => s + (l.completion_percentage || 0), 0) / logRows.length)
+    : 0;
+
   return json({
     patients: patients.count ?? 0,
     therapists: therapists.count ?? 0,
@@ -1217,7 +1364,7 @@ async function adminStats(ctx: AuthCtx) {
     appointments: appts.count ?? 0,
     exercises: exercises.count ?? 0,
     assignedPrograms: assignments.count ?? 0,
-    adherence: 72,
+    adherence,
   });
 }
 
@@ -1563,6 +1710,160 @@ async function superAdminDeleteUser(ctx: AuthCtx, id: string) {
   return json({ success: true, message: "User deleted" });
 }
 
+// ---------- messages (secure clinician <-> patient chat) ----------
+
+// A "thread" is one patient. Every clinician in the patient's clinic shares
+// that thread. All access flows through this function (service role), so we
+// enforce ownership here rather than via RLS.
+
+async function resolvePatientForUser(ctx: AuthCtx): Promise<{ id: string } | null> {
+  const { data: user } = await admin.from("users").select("email").eq("id", ctx.userId).single();
+  const { data: patient } = await admin.from("patients").select("id").eq("email", user?.email).maybeSingle();
+  return patient ?? null;
+}
+
+async function listMessages(ctx: AuthCtx, url: URL) {
+  let patientId = url.searchParams.get("patient_id") || "";
+
+  if (ctx.role === "patient") {
+    const patient = await resolvePatientForUser(ctx);
+    if (!patient) return notFound("Patient profile not found");
+    patientId = patient.id;
+  } else {
+    if (!patientId) bad("patient_id is required");
+    const { data: patient } = await admin.from("patients").select("id").eq("id", patientId).eq("clinic_id", ctx.clinicId).maybeSingle();
+    if (!patient) return err(403, "Access denied to patient");
+  }
+
+  const { data } = await admin.from("messages").select("*").eq("patient_id", patientId).order("created_at", { ascending: true });
+
+  // Mark the other party's messages as read now that they've been fetched.
+  // A patient reads clinician messages; a clinician reads patient messages.
+  const readAt = new Date().toISOString();
+  const markQuery = admin.from("messages").update({ read_at: readAt }).eq("patient_id", patientId).is("read_at", null);
+  await (ctx.role === "patient" ? markQuery.neq("sender_role", "patient") : markQuery.eq("sender_role", "patient"));
+
+  return json(data ?? []);
+}
+
+async function createMessage(ctx: AuthCtx, body: Record<string, unknown>) {
+  const { body: text } = body as Record<string, string>;
+  if (!text || !text.trim()) bad("Message body is required");
+
+  let patientId = (body as Record<string, string>).patient_id || "";
+  let clinicId = ctx.clinicId;
+
+  if (ctx.role === "patient") {
+    const patient = await resolvePatientForUser(ctx);
+    if (!patient) return notFound("Patient profile not found");
+    patientId = patient.id;
+  } else {
+    if (!patientId) bad("patient_id is required");
+    const { data: patient } = await admin.from("patients").select("id, clinic_id").eq("id", patientId).eq("clinic_id", ctx.clinicId).maybeSingle();
+    if (!patient) return err(403, "Access denied to patient");
+    clinicId = patient.clinic_id;
+  }
+
+  const senderRole = ctx.role === "patient" ? "patient" : "clinician";
+  const { data, error } = await admin
+    .from("messages")
+    .insert({ patient_id: patientId, clinic_id: clinicId, sender_id: ctx.userId, sender_role: senderRole, body: text.trim() })
+    .select()
+    .single();
+  if (error) throw new HttpError(500, error.message);
+  return json(data, 201);
+}
+
+// Thread list. Clinicians get one row per patient that has messages (with the
+// last message + how many unread from the patient). Patients get a single-row
+// summary of their own thread.
+async function listMessageThreads(ctx: AuthCtx) {
+  if (ctx.role === "patient") {
+    const patient = await resolvePatientForUser(ctx);
+    if (!patient) return json([]);
+    const { data: msgs } = await admin.from("messages").select("*").eq("patient_id", patient.id).order("created_at", { ascending: false });
+    const last = (msgs ?? [])[0] ?? null;
+    const unread = (msgs ?? []).filter((m: Record<string, any>) => m.sender_role !== "patient" && !m.read_at).length;
+    return json(last ? [{ patient_id: patient.id, last_message: last.body, last_at: last.created_at, unread }] : []);
+  }
+
+  const { data: msgs } = await admin
+    .from("messages")
+    .select("patient_id, body, sender_role, read_at, created_at, patients!inner(name, clinic_id)")
+    .eq("patients.clinic_id", ctx.clinicId)
+    .order("created_at", { ascending: false });
+
+  const byPatient = new Map<string, Record<string, any>>();
+  (msgs ?? []).forEach((m: Record<string, any>) => {
+    const existing = byPatient.get(m.patient_id);
+    if (!existing) {
+      byPatient.set(m.patient_id, {
+        patient_id: m.patient_id,
+        name: m.patients?.name || "Patient",
+        last_message: m.body,
+        last_at: m.created_at,
+        unread: 0,
+      });
+    }
+    const row = byPatient.get(m.patient_id)!;
+    if (m.sender_role === "patient" && !m.read_at) row.unread += 1;
+  });
+
+  return json([...byPatient.values()].sort((a, b) => new Date(b.last_at).getTime() - new Date(a.last_at).getTime()));
+}
+
+// ---------- PROMs (patient-reported outcome measures) ----------
+
+// Scoring is computed client-side from the instrument definition; we store the
+// answers plus the resulting score/interpretation so clinicians can trend them.
+async function listPromResponses(ctx: AuthCtx, url: URL) {
+  if (ctx.role === "patient") {
+    const patient = await resolvePatientForUser(ctx);
+    if (!patient) return json([]);
+    const { data } = await admin.from("prom_responses").select("*").eq("patient_id", patient.id).order("created_at", { ascending: false });
+    return json(data ?? []);
+  }
+  let query = admin.from("prom_responses").select("*").eq("clinic_id", ctx.clinicId);
+  const patientId = url.searchParams.get("patient_id");
+  if (patientId) query = query.eq("patient_id", patientId);
+  const { data } = await query.order("created_at", { ascending: false });
+  return json(data ?? []);
+}
+
+async function createPromResponse(ctx: AuthCtx, body: Record<string, unknown>) {
+  const { instrument, score, max_score, interpretation, answers } = body as Record<string, unknown>;
+  if (!instrument) bad("instrument is required");
+
+  let patientId = (body as Record<string, string>).patient_id;
+  let clinicId = ctx.clinicId;
+  if (ctx.role === "patient") {
+    const patient = await resolvePatientForUser(ctx);
+    if (!patient) return notFound("Patient profile not found");
+    patientId = patient.id;
+  } else {
+    if (!patientId) bad("patient_id is required");
+    const { data: p } = await admin.from("patients").select("id, clinic_id").eq("id", patientId).eq("clinic_id", ctx.clinicId).maybeSingle();
+    if (!p) return err(403, "Access denied to patient");
+    clinicId = p.clinic_id;
+  }
+
+  const { data, error } = await admin
+    .from("prom_responses")
+    .insert({
+      patient_id: patientId,
+      clinic_id: clinicId,
+      instrument: String(instrument),
+      score: score != null ? Number(score) : null,
+      max_score: max_score != null ? Number(max_score) : null,
+      interpretation: interpretation != null ? String(interpretation) : null,
+      answers: answers ?? null,
+    })
+    .select()
+    .single();
+  if (error) throw new HttpError(500, error.message);
+  return json(data, 201);
+}
+
 // ---------- router ----------
 
 Deno.serve(async (req: Request) => {
@@ -1604,6 +1905,7 @@ Deno.serve(async (req: Request) => {
     if (segments[0] === "dashboard") {
       if (segments[1] === "patient-stats" && method === "GET") return await patientStats(ctx);
       if (segments[1] === "admin-stats" && method === "GET") return await adminStats(ctx);
+      if (segments[1] === "rtm" && method === "GET") return await rtmDashboard(ctx);
     }
 
     if (segments[0] === "patients") {
@@ -1703,7 +2005,19 @@ Deno.serve(async (req: Request) => {
     }
 
     if (segments[0] === "pain-logs") {
+      if (method === "GET" && segments.length === 1) return await listPainLogs(ctx, url);
       if (method === "POST" && segments.length === 1) return await createPainLog(ctx, await body());
+    }
+
+    if (segments[0] === "messages") {
+      if (segments[1] === "threads" && method === "GET") return await listMessageThreads(ctx);
+      if (method === "GET" && segments.length === 1) return await listMessages(ctx, url);
+      if (method === "POST" && segments.length === 1) return await createMessage(ctx, await body());
+    }
+
+    if (segments[0] === "prom-responses") {
+      if (method === "GET" && segments.length === 1) return await listPromResponses(ctx, url);
+      if (method === "POST" && segments.length === 1) return await createPromResponse(ctx, await body());
     }
 
     if (segments[0] === "videos") {

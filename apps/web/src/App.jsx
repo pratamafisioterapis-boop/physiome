@@ -33,6 +33,9 @@ import ProgramTemplatesPage from '@/pages/ProgramTemplatesPage.jsx';
 import AssignedProgramsPage from '@/pages/AssignedProgramsPage.jsx';
 import PatientProgressPage from '@/pages/PatientProgressPage.jsx';
 import ExerciseAnalyticsPage from '@/pages/ExerciseAnalyticsPage.jsx';
+import PatientMonitoringPage from '@/pages/PatientMonitoringPage.jsx';
+import TherapistMessagesPage from '@/pages/therapist/TherapistMessagesPage.jsx';
+import TelehealthCallPage from '@/pages/TelehealthCallPage.jsx';
 
 import ExerciseDetailPage from '@/pages/ExerciseDetailPage.jsx';
 import PatientProgramTrackingPage from '@/pages/PatientProgramTrackingPage.jsx';
@@ -62,6 +65,8 @@ import MessagesPage from '@/pages/patient/MessagesPage.jsx';
 import TelehealthPage from '@/pages/patient/TelehealthPage.jsx';
 import PatientProfilePage from '@/pages/patient/PatientProfilePage.jsx';
 import PatientLanguageSettingsPage from '@/pages/patient/PatientLanguageSettingsPage.jsx';
+import AchievementsPage from '@/pages/patient/AchievementsPage.jsx';
+import AssessmentsPage from '@/pages/patient/AssessmentsPage.jsx';
 
 // SOAP Notes Assistant
 import SOAPNotesPage from '@/pages/SOAPNotesPage.jsx';
@@ -118,6 +123,9 @@ function App() {
             <Route path="/program-templates" element={<RoleProtectedRoute allowedRoles={['super_admin', 'admin', 'therapist']}><ProgramTemplatesPage /></RoleProtectedRoute>} />
             <Route path="/assigned-programs" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><AssignedProgramsPage /></RoleProtectedRoute>} />
             <Route path="/patient-progress" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><PatientProgressPage /></RoleProtectedRoute>} />
+            <Route path="/patient-monitoring" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><PatientMonitoringPage /></RoleProtectedRoute>} />
+            <Route path="/messages" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><TherapistMessagesPage /></RoleProtectedRoute>} />
+            <Route path="/telehealth/:room" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><TelehealthCallPage /></RoleProtectedRoute>} />
             <Route path="/exercise-analytics" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><ExerciseAnalyticsPage /></RoleProtectedRoute>} />
 
             <Route path="/exercises/:id" element={<RoleProtectedRoute allowedRoles={['super_admin', 'admin', 'therapist']}><ExerciseDetailPage /></RoleProtectedRoute>} />
@@ -158,8 +166,8 @@ function App() {
               <Route path="profile" element={<PatientProfilePage />} />
               <Route path="settings/language" element={<PatientLanguageSettingsPage />} />
               {/* Fallbacks for missing pages to prevent 404s during dev */}
-              <Route path="assessments" element={<div className="p-8 text-center">Assessments Coming Soon</div>} />
-              <Route path="achievements" element={<div className="p-8 text-center">Achievements Coming Soon</div>} />
+              <Route path="assessments" element={<AssessmentsPage />} />
+              <Route path="achievements" element={<AchievementsPage />} />
               <Route path="education" element={<div className="p-8 text-center">Education Center Coming Soon</div>} />
             </Route>
             

@@ -6,6 +6,7 @@ import Button from '@/components/Button.jsx';
 import Input from '@/components/Input.jsx';
 import { Helmet } from 'react-helmet';
 import { User, Stethoscope, Shield, Loader2 } from 'lucide-react';
+import { PhysiomeMark } from '@/components/Logo.jsx';
 import { toast } from 'sonner';
 
 const LoginPage = () => {
@@ -103,9 +104,7 @@ const LoginPage = () => {
           {/* Main Login Card */}
           <div className="w-full max-w-md bg-card rounded-2xl shadow-soft-lg border border-border p-8 mb-8 relative z-10">
             <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4 shadow-glow-primary">
-                <span className="text-white font-bold text-2xl">P</span>
-              </div>
+              <PhysiomeMark className="w-16 h-16 mx-auto mb-4" />
               <h1 className="text-2xl font-bold text-foreground mb-2">Welcome back</h1>
               <p className="text-muted-foreground">Sign in to your Physiome account</p>
             </div>
