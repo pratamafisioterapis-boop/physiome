@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Settings, HeartPulse, Bell } from 'lucide-react';
 import { toast } from 'sonner';
 import HeartRateMonitor from '@/components/HeartRateMonitor.jsx';
+import BluetoothDebugScanner from '@/components/BluetoothDebugScanner.jsx';
 import { isWebBluetoothSupported } from '@/hooks/useHeartRateMonitor.js';
 
 const PatientAccountSettingsPage = () => {
@@ -44,6 +45,7 @@ const PatientAccountSettingsPage = () => {
               Bluetooth tidak didukung di browser ini (misalnya Safari di iOS). Gunakan Chrome/Edge di Android atau desktop untuk menghubungkan perangkat.
             </p>
           )}
+          {isWebBluetoothSupported() && <BluetoothDebugScanner />}
         </CardContent>
       </Card>
 
