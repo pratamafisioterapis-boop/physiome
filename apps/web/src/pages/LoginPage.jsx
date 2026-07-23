@@ -99,7 +99,7 @@ const LoginPage = () => {
       </Helmet>
       
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/10 flex items-center justify-center p-4 py-12">
-        <div className="w-full max-w-4xl flex flex-col items-center">
+        <div className="w-full max-w-5xl flex flex-col items-center">
           
           {/* Main Login Card */}
           <div className="w-full max-w-md bg-card rounded-2xl shadow-soft-lg border border-border p-8 mb-8 relative z-10">
@@ -165,7 +165,7 @@ const LoginPage = () => {
           </div>
 
           {/* Demo Section */}
-          <div className="w-full max-w-3xl">
+          <div className="w-full max-w-5xl">
             <div className="relative flex items-center py-4 mb-6">
               <div className="flex-grow border-t border-border"></div>
               <span className="flex-shrink-0 mx-4 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -174,8 +174,8 @@ const LoginPage = () => {
               <div className="flex-grow border-t border-border"></div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Patient Demo */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Patient Demo — Andi (on-track) */}
               <button
                 onClick={() => handleDemoLogin('Patient', 'andi@physiome.demo')}
                 disabled={demoLoading !== null}
@@ -189,8 +189,26 @@ const LoginPage = () => {
                   {demoLoading === 'Patient' && <Loader2 className="w-5 h-5 animate-spin text-[#2DB8B5]" />}
                 </div>
                 <h3 className="text-lg font-bold text-foreground mb-1">Patient</h3>
-                <p className="text-sm text-muted-foreground mb-4">Patient Portal</p>
+                <p className="text-sm text-muted-foreground mb-4">Andi &middot; on-track</p>
                 <span className="text-sm font-medium text-[#2DB8B5] group-hover:underline">Click to login &rarr;</span>
+              </button>
+
+              {/* Patient Demo — Budi (at-risk) */}
+              <button
+                onClick={() => handleDemoLogin('Patient (Budi)', 'budi@physiome.demo')}
+                disabled={demoLoading !== null}
+                className="group relative overflow-hidden rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg hover:bg-card disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                <div className="absolute top-0 left-0 w-1 h-full bg-[#E0873A]"></div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-[#E0873A]/10 flex items-center justify-center text-[#E0873A] group-hover:scale-110 transition-transform duration-300">
+                    <User className="w-6 h-6" />
+                  </div>
+                  {demoLoading === 'Patient (Budi)' && <Loader2 className="w-5 h-5 animate-spin text-[#E0873A]" />}
+                </div>
+                <h3 className="text-lg font-bold text-foreground mb-1">Patient</h3>
+                <p className="text-sm text-muted-foreground mb-4">Budi &middot; at-risk</p>
+                <span className="text-sm font-medium text-[#E0873A] group-hover:underline">Click to login &rarr;</span>
               </button>
 
               {/* Therapist Demo */}
