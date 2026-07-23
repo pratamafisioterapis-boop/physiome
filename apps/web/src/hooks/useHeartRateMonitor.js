@@ -3,6 +3,24 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 const HEART_RATE_SERVICE = 'heart_rate';
 const HEART_RATE_MEASUREMENT_CHARACTERISTIC = 'heart_rate_measurement';
 
+// Standard Bluetooth SIG GATT services relevant to fitness/health wearables.
+// Web Bluetooth only allows reading services declared upfront here — it can't
+// blindly enumerate a device's full GATT table (browser privacy restriction),
+// so this is the widest "known fitness service" net we can cast for debugging
+// devices (e.g. smartwatches) that don't advertise the plain heart_rate service.
+const KNOWN_FITNESS_SERVICES = [
+  'heart_rate',
+  'battery_service',
+  'device_information',
+  'running_speed_and_cadence',
+  'cycling_speed_and_cadence',
+  'fitness_machine',
+  'body_composition',
+  'pulse_oximeter',
+  'health_thermometer',
+  'weight_scale',
+];
+
 // Parses the BLE Heart Rate Measurement characteristic per the Bluetooth SIG spec (0x2A37):
 // flags byte determines whether the HR value is uint8 or uint16.
 const parseHeartRateValue = (dataView) => {
@@ -20,6 +38,10 @@ export const useHeartRateMonitor = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState(null);
+
+  const [debugScanResult, setDebugScanResult] = useState(null);
+  const [isDebugScanning, setIsDebugScanning] = useState(false);
+  const [debugError, setDebugError] = useState(null);
 
   const deviceRef = useRef(null);
   const characteristicRef = useRef(null);
@@ -83,6 +105,55 @@ export const useHeartRateMonitor = () => {
     }
   }, [handleDisconnected, handleHeartRateNotification]);
 
+  // Diagnostic scan for devices (e.g. smartwatches) that don't advertise the
+  // plain heart_rate service. Connects without a service filter and reports
+  // back which known fitness-related GATT services (if any) it exposes, so we
+  // can tell whether the device is reachable at all via Web Bluetooth.
+  const runDebugScan = useCallback(async () => {
+    if (!isWebBluetoothSupported()) {
+      setDebugError('Bluetooth tidak didukung di browser ini.');
+      return;
+    }
+
+    setDebugError(null);
+    setDebugScanResult(null);
+    setIsDebugScanning(true);
+
+    let device;
+    try {
+      device = await navigator.bluetooth.requestDevice({
+        acceptAllDevices: true,
+        optionalServices: KNOWN_FITNESS_SERVICES,
+      });
+
+      const server = await device.gatt.connect();
+      const services = await server.getPrimaryServices();
+
+      const serviceDetails = await Promise.all(
+        services.map(async (service) => {
+          const characteristics = await service.getCharacteristics();
+          return {
+            uuid: service.uuid,
+            characteristics: characteristics.map((c) => c.uuid),
+          };
+        })
+      );
+
+      setDebugScanResult({
+        deviceName: device.name || 'Perangkat tanpa nama',
+        services: serviceDetails,
+      });
+
+      server.disconnect();
+    } catch (err) {
+      if (err?.name !== 'NotFoundError') {
+        setDebugError(err?.message || 'Gagal memindai perangkat.');
+      }
+    } finally {
+      setIsDebugScanning(false);
+    }
+  }, []);
+
   useEffect(() => {
     return () => {
       disconnect();
@@ -99,6 +170,10 @@ export const useHeartRateMonitor = () => {
     isSupported: isWebBluetoothSupported(),
     connect,
     disconnect,
+    debugScanResult,
+    isDebugScanning,
+    debugError,
+    runDebugScan,
   };
 };
 
