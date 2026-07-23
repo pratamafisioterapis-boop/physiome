@@ -3,7 +3,6 @@ import React, { Suspense } from 'react';
 import { Route, Routes, BrowserRouter as Router, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext.jsx';
 import { LanguageProvider } from '@/contexts/LanguageContext.jsx';
-import { HeartRateProvider } from '@/contexts/HeartRateContext.jsx';
 import ScrollToTop from '@/components/ScrollToTop.jsx';
 import RecoveryRedirect from '@/components/RecoveryRedirect.jsx';
 import ProtectedRoute from '@/components/ProtectedRoute.jsx';
@@ -91,7 +90,6 @@ function App() {
   return (
     <AuthProvider>
       <LanguageProvider>
-        <HeartRateProvider>
         <Suspense fallback={<div className="h-screen w-screen flex items-center justify-center">Loading...</div>}>
         <Router>
           <ScrollToTop />
@@ -184,7 +182,6 @@ function App() {
           <Toaster position="top-right" theme="system" closeButton richColors />
         </Router>
         </Suspense>
-        </HeartRateProvider>
       </LanguageProvider>
     </AuthProvider>
   );

@@ -4,11 +4,8 @@ import { Helmet } from 'react-helmet';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Settings, HeartPulse, Bell } from 'lucide-react';
+import { Settings, Bell } from 'lucide-react';
 import { toast } from 'sonner';
-import HeartRateMonitor from '@/components/HeartRateMonitor.jsx';
-import BluetoothDebugScanner from '@/components/BluetoothDebugScanner.jsx';
-import { isWebBluetoothSupported } from '@/hooks/useHeartRateMonitor.js';
 
 const PatientAccountSettingsPage = () => {
   const handleSaveNotifications = (e) => {
@@ -25,29 +22,9 @@ const PatientAccountSettingsPage = () => {
           <Settings className="w-8 h-8 text-primary" /> Account Settings
         </h1>
         <p className="text-muted-foreground mt-2">
-          Kelola perangkat yang terhubung dan preferensi notifikasi akun Anda.
+          Kelola preferensi notifikasi akun Anda.
         </p>
       </div>
-
-      <Card className="border-border shadow-soft-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <HeartPulse className="w-5 h-5 text-primary" /> Connected Devices
-          </CardTitle>
-          <CardDescription>
-            Hubungkan smartwatch atau sensor detak jantung Bluetooth agar BPM Anda tampil otomatis saat sesi latihan.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <HeartRateMonitor theme="light" />
-          {!isWebBluetoothSupported() && (
-            <p className="text-sm text-muted-foreground">
-              Bluetooth tidak didukung di browser ini (misalnya Safari di iOS). Gunakan Chrome/Edge di Android atau desktop untuk menghubungkan perangkat.
-            </p>
-          )}
-          {isWebBluetoothSupported() && <BluetoothDebugScanner />}
-        </CardContent>
-      </Card>
 
       <Card className="border-border shadow-soft-lg">
         <CardHeader>
