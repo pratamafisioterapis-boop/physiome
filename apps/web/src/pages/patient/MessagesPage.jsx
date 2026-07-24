@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import ChatThread from '@/components/messages/ChatThread.jsx';
+import { usePushNotifications } from '@/hooks/usePushNotifications.js';
 
 const MessagesPage = () => {
+  const { subscribe } = usePushNotifications();
+
+  useEffect(() => {
+    subscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] flex flex-col animate-in fade-in duration-500">
       <Helmet><title>Messages | Physiome</title></Helmet>

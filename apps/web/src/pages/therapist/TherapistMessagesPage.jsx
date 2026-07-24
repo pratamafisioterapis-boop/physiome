@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
+import { useSearchParams } from 'react-router-dom';
 import Sidebar from '@/components/Sidebar.jsx';
 import Header from '@/components/Header.jsx';
 import { Card } from '@/components/ui/card';
@@ -8,13 +9,23 @@ import { MessageSquare, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils.js';
 import apiServerClient from '@/lib/apiServerClient.js';
 import ChatThread from '@/components/messages/ChatThread.jsx';
+import { usePushNotifications } from '@/hooks/usePushNotifications.js';
 
 const initials = (name = '') => name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase() || '?';
 
 const TherapistMessagesPage = () => {
+  const [searchParams] = useSearchParams();
+  const { subscribe } = usePushNotifications();
   const [threads, setThreads] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selected, setSelected] = useState(null);
+  // Deep-linked from a chat push notification (?patient_id=...) so clicking
+  // it opens straight into that conversation instead of the first thread.
+  const [selected, setSelected] = useState(searchParams.get('patient_id') || null);
+
+  useEffect(() => {
+    subscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadThreads = useCallback(async ({ silent } = {}) => {
     try {

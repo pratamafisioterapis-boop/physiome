@@ -6,10 +6,20 @@
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
+import webpush from "npm:web-push@3.6.7";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+// Web Push (chat notifications). Optional: if unset, push sends are silently
+// skipped (chat itself still works via polling) rather than erroring.
+const VAPID_PUBLIC_KEY = Deno.env.get("VAPID_PUBLIC_KEY") || "";
+const VAPID_PRIVATE_KEY = Deno.env.get("VAPID_PRIVATE_KEY") || "";
+const VAPID_CONTACT_EMAIL = Deno.env.get("VAPID_CONTACT_EMAIL") || "mailto:support@physiome.app";
+if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(VAPID_CONTACT_EMAIL, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+}
 
 const admin: SupabaseClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -1722,6 +1732,62 @@ async function resolvePatientForUser(ctx: AuthCtx): Promise<{ id: string } | nul
   return patient ?? null;
 }
 
+// ---------- push notifications (chat) ----------
+
+async function subscribePush(ctx: AuthCtx, body: Record<string, unknown>) {
+  const { endpoint, keys } = body as { endpoint?: string; keys?: { p256dh?: string; auth?: string } };
+  if (!endpoint || !keys?.p256dh || !keys?.auth) bad("Invalid push subscription");
+
+  const { error } = await admin
+    .from("push_subscriptions")
+    .upsert({ user_id: ctx.userId, endpoint, p256dh: keys.p256dh, auth: keys.auth }, { onConflict: "endpoint" });
+  if (error) throw new HttpError(500, error.message);
+  return json({ success: true });
+}
+
+async function unsubscribePush(ctx: AuthCtx, body: Record<string, unknown>) {
+  const { endpoint } = body as Record<string, string>;
+  if (!endpoint) bad("endpoint is required");
+  await admin.from("push_subscriptions").delete().eq("user_id", ctx.userId).eq("endpoint", endpoint);
+  return json({ success: true });
+}
+
+// Given who just sent a chat message, resolve who should be notified: the
+// other side of the (shared, per-patient) thread.
+async function resolveMessageRecipients(senderRole: string, patientId: string, clinicId: string | null): Promise<string[]> {
+  if (senderRole === "patient") {
+    if (!clinicId) return [];
+    const { data } = await admin.from("users").select("id").eq("clinic_id", clinicId).in("role", ["admin", "therapist"]);
+    return (data ?? []).map((u: Record<string, any>) => u.id);
+  }
+  const { data: patient } = await admin.from("patients").select("email").eq("id", patientId).maybeSingle();
+  if (!patient?.email) return [];
+  const { data: user } = await admin.from("users").select("id").eq("email", patient.email).eq("role", "patient").maybeSingle();
+  return user ? [user.id] : [];
+}
+
+async function sendChatPushNotification(userIds: string[], payload: Record<string, unknown>) {
+  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY || userIds.length === 0) return;
+
+  const { data: subs } = await admin.from("push_subscriptions").select("*").in("user_id", userIds);
+  if (!subs?.length) return;
+
+  await Promise.all(
+    subs.map(async (sub: Record<string, any>) => {
+      const subscription = { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } };
+      try {
+        await webpush.sendNotification(subscription, JSON.stringify(payload));
+      } catch (e: any) {
+        if (e?.statusCode === 404 || e?.statusCode === 410) {
+          await admin.from("push_subscriptions").delete().eq("id", sub.id);
+        } else {
+          console.error("push send error", e?.message || e);
+        }
+      }
+    }),
+  );
+}
+
 async function listMessages(ctx: AuthCtx, url: URL) {
   let patientId = url.searchParams.get("patient_id") || "";
 
@@ -1771,6 +1837,21 @@ async function createMessage(ctx: AuthCtx, body: Record<string, unknown>) {
     .select()
     .single();
   if (error) throw new HttpError(500, error.message);
+
+  // Awaited (not fire-and-forget): the edge runtime can freeze/terminate the
+  // isolate once the response is returned, so a detached promise here could
+  // simply never run to completion.
+  try {
+    const recipients = await resolveMessageRecipients(senderRole, patientId, clinicId);
+    await sendChatPushNotification(recipients, {
+      title: senderRole === "patient" ? "Pesan baru dari pasien" : "Pesan baru dari terapis Anda",
+      body: text.trim().slice(0, 120),
+      url: senderRole === "patient" ? `/messages?patient_id=${patientId}` : "/patient/messages",
+    });
+  } catch (e) {
+    console.error("chat push notification failed", e);
+  }
+
   return json(data, 201);
 }
 
@@ -2013,6 +2094,11 @@ Deno.serve(async (req: Request) => {
       if (segments[1] === "threads" && method === "GET") return await listMessageThreads(ctx);
       if (method === "GET" && segments.length === 1) return await listMessages(ctx, url);
       if (method === "POST" && segments.length === 1) return await createMessage(ctx, await body());
+    }
+
+    if (segments[0] === "push") {
+      if (segments[1] === "subscribe" && method === "POST") return await subscribePush(ctx, await body());
+      if (segments[1] === "unsubscribe" && method === "POST") return await unsubscribePush(ctx, await body());
     }
 
     if (segments[0] === "prom-responses") {
