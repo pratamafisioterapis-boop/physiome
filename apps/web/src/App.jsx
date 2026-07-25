@@ -150,7 +150,7 @@ function App() {
             <Route path="/admin/statistics" element={<RoleProtectedRoute allowedRoles={['admin']}><ExerciseStatisticsPage /></RoleProtectedRoute>} />
             <Route path="/admin/languages" element={<RoleProtectedRoute allowedRoles={['admin']}><LanguageManagementPage /></RoleProtectedRoute>} />
 
-            <Route path="/patient/programs/:assignmentId" element={<RoleProtectedRoute allowedRoles={['patient']}><PatientExerciseViewPage /></RoleProtectedRoute>} />
+            <Route path="/patient/programs/:assignmentId" element={<RoleProtectedRoute allowedRoles={['patient', 'admin', 'therapist']}><PatientExerciseViewPage /></RoleProtectedRoute>} />
             
             {/* Patient Portal Routes */}
             <Route path="/patient" element={<RoleProtectedRoute allowedRoles={['patient']}><PatientLayout /></RoleProtectedRoute>}>
