@@ -9,7 +9,9 @@
     "movement_type": "Mobility",
     "starting_position": "Standing",
     "target_muscles": "Relaksasi otot bahu, mobilitas glenohumeral pasif",
-    "equipment_needed": ["Meja atau kursi sebagai tumpuan"],
+    "equipment_needed": [
+      "Meja atau kursi sebagai tumpuan"
+    ],
     "description": "Ayunan lengan pasif yang aman untuk bahu sangat nyeri, pasca operasi bahu, atau frozen shoulder fase nyeri.",
     "description_en": "Gentle passive arm swinging, safe for a very painful shoulder, early post-operative shoulder, or the painful phase of frozen shoulder.",
     "instructions": "1. Berdiri di samping meja, tumpukan tangan yang sehat di meja dan condongkan badan ke depan.\n2. Biarkan lengan yang sakit menggantung lurus ke bawah dalam keadaan benar-benar rileks.\n3. Gerakkan badan (bukan lengan) sehingga lengan berayun ke depan-belakang selama 30 detik.\n4. Lanjutkan ayunan ke samping 30 detik, lalu memutar searah dan berlawanan jarum jam masing-masing 30 detik.\n5. Otot bahu tidak boleh dikencangkan - gerakan datang dari badan.",
@@ -23,7 +25,11 @@
     "default_frequency": "3-4x/hari",
     "evidence_level": "B",
     "evidence_source": "Kelley et al. Adhesive Capsulitis CPG, JOSPT 2013;43(5):A1-A31",
-    "tags": ["frozen shoulder", "post-op", "mobility"]
+    "tags": [
+      "frozen shoulder",
+      "post-op",
+      "mobility"
+    ]
   },
   {
     "slug": "supine-flexion-with-cane",
@@ -35,7 +41,9 @@
     "movement_type": "Mobility",
     "starting_position": "Supine",
     "target_muscles": "Lingkup gerak fleksi glenohumeral (aktif-bantu)",
-    "equipment_needed": ["Tongkat/gagang sapu"],
+    "equipment_needed": [
+      "Tongkat/gagang sapu"
+    ],
     "description": "Latihan lingkup gerak aktif-bantu di mana lengan sehat membantu lengan yang sakit, aman untuk fase awal rehabilitasi bahu.",
     "description_en": "Active-assisted range of motion where the healthy arm helps the painful arm - safe for early shoulder rehabilitation.",
     "instructions": "1. Berbaring telentang, lutut ditekuk. Pegang tongkat dengan kedua tangan selebar bahu, telapak menghadap ke bawah.\n2. Gunakan lengan yang sehat untuk mendorong tongkat ke atas kepala sejauh nyaman.\n3. Lengan yang sakit hanya ikut, tidak berusaha mengangkat.\n4. Tahan 5 detik di ujung gerak, lalu turunkan perlahan.\n5. Hentikan sebelum nyeri tajam; regangan ringan diperbolehkan.",
@@ -49,7 +57,11 @@
     "default_frequency": "2-3x/hari",
     "evidence_level": "B",
     "evidence_source": "Kelley et al. Adhesive Capsulitis CPG, JOSPT 2013; Thigpen et al. J Shoulder Elbow Surg 2016 (post-op RCR consensus)",
-    "tags": ["frozen shoulder", "post-op", "AAROM"]
+    "tags": [
+      "frozen shoulder",
+      "post-op",
+      "AAROM"
+    ]
   },
   {
     "slug": "supine-external-rotation-cane",
@@ -61,7 +73,10 @@
     "movement_type": "Mobility",
     "starting_position": "Supine",
     "target_muscles": "Kapsul anterior, rotator eksternal",
-    "equipment_needed": ["Tongkat", "Handuk gulung"],
+    "equipment_needed": [
+      "Tongkat",
+      "Handuk gulung"
+    ],
     "description": "Latihan lingkup gerak rotasi eksternal, gerakan yang paling sering terbatas pada frozen shoulder.",
     "description_en": "External rotation ROM drill - the motion most commonly restricted in frozen shoulder.",
     "instructions": "1. Berbaring telentang, siku lengan yang sakit ditekuk 90 derajat dan menempel di sisi badan, dengan handuk gulung di bawah siku.\n2. Pegang tongkat dengan kedua tangan.\n3. Dorong tongkat dengan tangan sehat sehingga lengan sakit berputar ke arah luar.\n4. Jaga siku tetap menempel di badan sepanjang gerakan.\n5. Tahan 5-10 detik pada regangan ringan, lalu kembali.",
@@ -75,7 +90,11 @@
     "default_frequency": "2x/hari",
     "evidence_level": "A",
     "evidence_source": "Kelley et al. Adhesive Capsulitis CPG, JOSPT 2013;43(5):A1-A31",
-    "tags": ["frozen shoulder", "external rotation", "AAROM"]
+    "tags": [
+      "frozen shoulder",
+      "external rotation",
+      "AAROM"
+    ]
   },
   {
     "slug": "wall-slide-shoulder",
@@ -87,7 +106,9 @@
     "movement_type": "Motor control",
     "starting_position": "Standing",
     "target_muscles": "Serratus anterior, trapezius bawah",
-    "equipment_needed": ["Dinding"],
+    "equipment_needed": [
+      "Dinding"
+    ],
     "description": "Latihan elevasi bahu terbimbing dinding untuk melatih ritme skapulohumeral.",
     "description_en": "Wall-guided shoulder elevation to retrain scapulohumeral rhythm.",
     "instructions": "1. Berdiri menghadap dinding, letakkan sisi kelingking kedua tangan dan lengan bawah di dinding, siku setinggi bahu (huruf W).\n2. Geser lengan ke atas membentuk huruf Y sambil menjaga kontak dengan dinding.\n3. Jangan mengangkat bahu ke telinga; rasakan tulang belikat berputar ke atas.\n4. Turunkan perlahan ke posisi awal dalam 3 detik.\n5. Hentikan pada ketinggian yang masih bebas nyeri.",
@@ -101,7 +122,11 @@
     "default_frequency": "1x/hari",
     "evidence_level": "B",
     "evidence_source": "Cools et al. Br J Sports Med 2014; Hardwick et al. JOSPT 2006 (scapular muscle activity wall slide)",
-    "tags": ["shoulder", "scapula", "motor control"]
+    "tags": [
+      "shoulder",
+      "scapula",
+      "motor control"
+    ]
   },
   {
     "slug": "isometric-shoulder-external-rotation",
@@ -113,7 +138,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Infraspinatus, teres minor",
-    "equipment_needed": ["Dinding atau kusen pintu"],
+    "equipment_needed": [
+      "Dinding atau kusen pintu"
+    ],
     "description": "Kontraksi isometrik rotator cuff posterior yang dapat dilakukan bahkan saat bahu masih nyeri.",
     "description_en": "Posterior rotator cuff isometric that can be performed even while the shoulder is still painful.",
     "instructions": "1. Berdiri di samping dinding dengan siku ditekuk 90 derajat dan menempel di sisi badan.\n2. Letakkan punggung tangan menempel dinding.\n3. Dorong punggung tangan ke dinding dengan kekuatan sekitar 50-70% - tidak ada gerakan yang terjadi.\n4. Tahan 10 detik sambil bernapas normal, lalu rileks 10 detik.\n5. Ulangi 10 kali.",
@@ -127,7 +154,11 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "A",
     "evidence_source": "Hopewell et al. GRASP trial, Lancet 2021;398(10298):416-428; Littlewood et al. 2016",
-    "tags": ["rotator cuff", "isometric", "shoulder pain"]
+    "tags": [
+      "rotator cuff",
+      "isometric",
+      "shoulder pain"
+    ]
   },
   {
     "slug": "band-external-rotation",
@@ -139,7 +170,10 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Infraspinatus, teres minor, penstabil skapula",
-    "equipment_needed": ["Karet elastis (resistance band)", "Handuk gulung"],
+    "equipment_needed": [
+      "Karet elastis (resistance band)",
+      "Handuk gulung"
+    ],
     "description": "Latihan penguatan utama rotator cuff posterior pada nyeri bahu terkait rotator cuff.",
     "description_en": "The key posterior rotator cuff strengthening exercise for rotator cuff related shoulder pain.",
     "instructions": "1. Ikat karet elastis setinggi pinggang, berdiri menyamping dengan lengan yang dilatih di sisi luar.\n2. Siku ditekuk 90 derajat dan dijepit di sisi badan (boleh dengan handuk gulung di ketiak).\n3. Tarik karet ke arah luar dengan memutar lengan bawah, jaga siku tetap menempel.\n4. Tahan 2 detik di ujung gerak, lalu kembali perlahan selama 3 detik.\n5. Nyeri saat latihan sampai 4/10 masih dapat diterima dan harus mereda dalam 24 jam.",
@@ -153,7 +187,11 @@
     "default_frequency": "3-5x/minggu",
     "evidence_level": "A",
     "evidence_source": "Hopewell et al. GRASP trial, Lancet 2021; Littlewood et al. Physiotherapy 2015 (self-managed loaded exercise)",
-    "tags": ["rotator cuff", "strength", "shoulder pain"]
+    "tags": [
+      "rotator cuff",
+      "strength",
+      "shoulder pain"
+    ]
   },
   {
     "slug": "band-internal-rotation",
@@ -165,7 +203,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Subscapularis, pectoralis major",
-    "equipment_needed": ["Karet elastis"],
+    "equipment_needed": [
+      "Karet elastis"
+    ],
     "description": "Penguatan rotator internal untuk keseimbangan kekuatan rotator cuff.",
     "description_en": "Internal rotator strengthening to balance rotator cuff strength.",
     "instructions": "1. Ikat karet setinggi pinggang, berdiri menyamping dengan lengan yang dilatih di sisi dalam (dekat titik ikat).\n2. Siku ditekuk 90 derajat, menempel di sisi badan.\n3. Tarik karet ke arah perut dengan memutar lengan bawah ke dalam.\n4. Tahan 2 detik, kembali perlahan 3 detik.\n5. Jaga badan tidak ikut berputar.",
@@ -179,7 +219,10 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "B",
     "evidence_source": "Hopewell et al. GRASP trial, Lancet 2021; Cools et al. Br J Sports Med 2014",
-    "tags": ["rotator cuff", "strength"]
+    "tags": [
+      "rotator cuff",
+      "strength"
+    ]
   },
   {
     "slug": "scaption-raise",
@@ -191,7 +234,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Supraspinatus, deltoid, serratus anterior",
-    "equipment_needed": ["Dumbel ringan 0,5-2 kg (opsional)"],
+    "equipment_needed": [
+      "Dumbel ringan 0,5-2 kg (opsional)"
+    ],
     "description": "Elevasi lengan pada bidang skapula (30 derajat dari depan) - posisi paling efisien dan paling sedikit menimbulkan jepitan.",
     "description_en": "Arm elevation in the scapular plane (30 degrees forward), the most efficient and least impinging position.",
     "instructions": "1. Berdiri tegak dengan lengan di samping badan, ibu jari menghadap ke atas.\n2. Angkat lengan ke arah diagonal depan (sekitar 30 derajat dari bidang samping) sampai setinggi bahu.\n3. Angkat dalam 2 detik, tahan 1 detik, turunkan dalam 3 detik.\n4. Jangan mengangkat bahu ke telinga dan jangan mencondongkan badan.\n5. Hentikan pada ketinggian bebas nyeri.",
@@ -205,7 +250,11 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "B",
     "evidence_source": "Cools et al. Br J Sports Med 2014; Hopewell et al. GRASP trial, Lancet 2021",
-    "tags": ["rotator cuff", "strength", "shoulder"]
+    "tags": [
+      "rotator cuff",
+      "strength",
+      "shoulder"
+    ]
   },
   {
     "slug": "prone-y-raise",
@@ -217,7 +266,10 @@
     "movement_type": "Strength",
     "starting_position": "Prone",
     "target_muscles": "Trapezius bawah, trapezius tengah",
-    "equipment_needed": ["Matras", "Dumbel 0,5-1 kg (opsional)"],
+    "equipment_needed": [
+      "Matras",
+      "Dumbel 0,5-1 kg (opsional)"
+    ],
     "description": "Penguatan trapezius bawah yang penting untuk kontrol skapula dan nyeri bahu kronis.",
     "description_en": "Lower trapezius strengthening, important for scapular control and persistent shoulder pain.",
     "instructions": "1. Tengkurap di matras dengan dahi disangga handuk.\n2. Julurkan lengan ke atas kepala membentuk huruf Y (sekitar 120 derajat), ibu jari menghadap atas.\n3. Angkat lengan dari lantai dengan menggerakkan tulang belikat ke bawah-dalam terlebih dahulu.\n4. Tahan 3-5 detik, turunkan perlahan.\n5. Jangan melengkungkan pinggang atau mengangkat kepala.",
@@ -231,7 +283,11 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "B",
     "evidence_source": "Cools et al. Am J Sports Med 2007 (scapular muscle exercise selection); GRASP programme 2021",
-    "tags": ["scapula", "strength", "shoulder"]
+    "tags": [
+      "scapula",
+      "strength",
+      "shoulder"
+    ]
   },
   {
     "slug": "prone-t-raise",
@@ -243,7 +299,10 @@
     "movement_type": "Strength",
     "starting_position": "Prone",
     "target_muscles": "Trapezius tengah, rhomboid, deltoid posterior",
-    "equipment_needed": ["Matras", "Dumbel 0,5-1 kg (opsional)"],
+    "equipment_needed": [
+      "Matras",
+      "Dumbel 0,5-1 kg (opsional)"
+    ],
     "description": "Penguatan retraktor skapula untuk stabilitas bahu dan postur.",
     "description_en": "Scapular retractor strengthening for shoulder stability and posture.",
     "instructions": "1. Tengkurap dengan dahi disangga handuk.\n2. Rentangkan lengan ke samping setinggi bahu membentuk huruf T, ibu jari menghadap atas.\n3. Angkat lengan dari lantai dengan merapatkan tulang belikat.\n4. Tahan 3 detik, turunkan perlahan.\n5. Jaga leher rileks.",
@@ -257,7 +316,11 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "B",
     "evidence_source": "Cools et al. Am J Sports Med 2007; Br J Sports Med 2014",
-    "tags": ["scapula", "strength", "posture"]
+    "tags": [
+      "scapula",
+      "strength",
+      "posture"
+    ]
   },
   {
     "slug": "serratus-wall-punch",
@@ -269,7 +332,9 @@
     "movement_type": "Motor control",
     "starting_position": "Standing",
     "target_muscles": "Serratus anterior",
-    "equipment_needed": ["Dinding"],
+    "equipment_needed": [
+      "Dinding"
+    ],
     "description": "Aktivasi serratus anterior untuk mencegah scapular winging dan mendukung elevasi lengan.",
     "description_en": "Serratus anterior activation to counter scapular winging and support arm elevation.",
     "instructions": "1. Berdiri menghadap dinding, kedua telapak tangan di dinding setinggi bahu, siku lurus.\n2. Tanpa menekuk siku, dorong badan menjauhi dinding sehingga tulang belikat melebar ke samping.\n3. Tahan 3 detik, lalu biarkan tulang belikat kembali merapat perlahan.\n4. Jangan mengangkat bahu ke telinga.\n5. Ulangi 12-15 kali.",
@@ -283,7 +348,11 @@
     "default_frequency": "1x/hari",
     "evidence_level": "B",
     "evidence_source": "Ludewig et al. Am J Sports Med 2004 (serratus anterior activation); Cools et al. 2014",
-    "tags": ["scapula", "serratus", "motor control"]
+    "tags": [
+      "scapula",
+      "serratus",
+      "motor control"
+    ]
   },
   {
     "slug": "sleeper-stretch",
@@ -295,7 +364,10 @@
     "movement_type": "Stretch",
     "starting_position": "Side-lying",
     "target_muscles": "Kapsul posterior glenohumeral",
-    "equipment_needed": ["Matras", "Bantal"],
+    "equipment_needed": [
+      "Matras",
+      "Bantal"
+    ],
     "description": "Peregangan kapsul posterior bahu untuk defisit rotasi internal (GIRD), umum pada atlet lempar dan nyeri bahu kronis.",
     "description_en": "Posterior shoulder capsule stretch for internal rotation deficit (GIRD), common in overhead athletes and persistent shoulder pain.",
     "instructions": "1. Berbaring menyamping pada sisi bahu yang sakit, bahu diposisikan 90 derajat ke depan, siku ditekuk 90 derajat.\n2. Gunakan tangan yang atas untuk menekan lengan bawah ke arah lantai (rotasi internal).\n3. Tekan sampai terasa regangan di belakang bahu - bukan nyeri di depan bahu.\n4. Tahan 30 detik, ulangi 3 kali.\n5. Jaga tulang belikat tetap menempel matras (jangan berguling ke belakang).",
@@ -309,7 +381,11 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "McClure et al. J Athl Train 2007 (posterior shoulder stretching); Kelley et al. JOSPT 2013",
-    "tags": ["stretch", "GIRD", "overhead athlete"]
+    "tags": [
+      "stretch",
+      "GIRD",
+      "overhead athlete"
+    ]
   },
   {
     "slug": "cross-body-adduction-stretch",
@@ -335,7 +411,10 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "McClure et al. J Athl Train 2007; Kelley et al. Adhesive Capsulitis CPG, JOSPT 2013",
-    "tags": ["stretch", "shoulder"]
+    "tags": [
+      "stretch",
+      "shoulder"
+    ]
   },
   {
     "slug": "band-row",
@@ -347,7 +426,9 @@
     "movement_type": "Strength",
     "starting_position": "Sitting",
     "target_muscles": "Rhomboid, trapezius tengah, latissimus dorsi",
-    "equipment_needed": ["Karet elastis"],
+    "equipment_needed": [
+      "Karet elastis"
+    ],
     "description": "Latihan tarik horizontal untuk kekuatan punggung atas dan postur, komponen inti program bahu dan leher.",
     "description_en": "Horizontal pulling exercise for upper back strength and posture, a core component of shoulder and neck programs.",
     "instructions": "1. Duduk dengan kaki lurus ke depan, lingkarkan karet di telapak kaki dan pegang kedua ujungnya.\n2. Duduk tegak, tarik siku ke belakang dekat sisi badan.\n3. Rapatkan tulang belikat di akhir gerakan, tahan 2 detik.\n4. Kembalikan tangan perlahan selama 3 detik.\n5. Jangan mengangkat bahu ke telinga atau membungkuk.",
@@ -361,7 +442,11 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "B",
     "evidence_source": "Hopewell et al. GRASP trial, Lancet 2021; Gross et al. Cochrane 2015",
-    "tags": ["strength", "posture", "scapula"]
+    "tags": [
+      "strength",
+      "posture",
+      "scapula"
+    ]
   },
   {
     "slug": "wall-push-up",
@@ -373,7 +458,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Pectoralis, triceps, serratus anterior",
-    "equipment_needed": ["Dinding"],
+    "equipment_needed": [
+      "Dinding"
+    ],
     "description": "Latihan tumpuan beban tubuh ringan untuk membangun kekuatan lengan dan bahu pada tahap awal.",
     "description_en": "Low-load closed-chain exercise to build early arm and shoulder strength.",
     "instructions": "1. Berdiri menghadap dinding sejauh satu lengan, telapak tangan di dinding setinggi bahu.\n2. Tekuk siku dan turunkan dada mendekati dinding, jaga badan tetap lurus.\n3. Dorong kembali ke posisi awal.\n4. Di akhir dorongan, tambahkan sedikit dorongan ekstra untuk melebarkan tulang belikat.\n5. Ulangi 10-15 kali.",
@@ -387,6 +474,171 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "B",
     "evidence_source": "ACSM's Guidelines for Exercise Testing and Prescription, 11th ed.; GRASP programme 2021",
-    "tags": ["strength", "shoulder", "beginner"]
+    "tags": [
+      "strength",
+      "shoulder",
+      "beginner"
+    ]
+  },
+  {
+    "slug": "brachial-plexus-nerve-glide",
+    "name": "Brachial Plexus Nerve Glide (Median Bias)",
+    "name_id": "Luncur Saraf Pleksus Brakialis (Bias Median)",
+    "body_region": "Shoulder",
+    "category": "Neck & Upper",
+    "difficulty": "Intermediate",
+    "movement_type": "Neurodynamic",
+    "starting_position": "Sitting",
+    "target_muscles": "Mobilitas saraf median sepanjang pleksus brakialis",
+    "equipment_needed": [],
+    "description": "Teknik sliding saraf untuk thoracic outlet syndrome neurogenik dan nyeri lengan menjalar terkait iritasi pleksus brakialis.",
+    "description_en": "A neural sliding technique for neurogenic thoracic outlet syndrome and radiating arm pain related to brachial plexus irritation.",
+    "instructions": "1. Duduk tegak, rentangkan lengan ke samping setinggi bahu, siku lurus, telapak menghadap ke depan.\n2. Tekuk pergelangan tangan dan jari ke belakang (ekstensi) sambil memiringkan kepala menjauhi lengan tersebut.\n3. Kembalikan pergelangan ke posisi netral sambil memiringkan kepala kembali ke arah lengan - ini adalah gerakan 'sliding', bukan 'tensioning'.\n4. Ulangi gerakan bolak-balik secara ritmis dan lembut.\n5. Hentikan bila muncul kesemutan/nyeri tajam menjalar, bukan sekadar rasa tertarik ringan.",
+    "instructions_en": "1. Sit upright, extend the arm out to the side at shoulder height, elbow straight, palm facing forward.\n2. Bend the wrist and fingers back (extension) while tilting the head away from that arm.\n3. Return the wrist to neutral while tilting the head back toward the arm - this is a 'slider', not a 'tensioner'.\n4. Repeat the back-and-forth motion rhythmically and gently.\n5. Stop if sharp radiating pain or tingling appears, beyond a mild pulling sensation.",
+    "contraindications": "Hindari pada cedera pleksus brakialis akut berat, diseksi vaskular yang dicurigai, atau bila gejala neurologis memburuk (kelemahan progresif).",
+    "progression_tips": "Mulai dengan versi slider ringan; setelah gejala neurogenik stabil, tambahkan penguatan postural (scapular retraction, prone T/Y raise).",
+    "default_sets": 3,
+    "default_reps": 10,
+    "default_hold_seconds": 2,
+    "default_rest_seconds": 30,
+    "default_frequency": "2-3x/hari",
+    "evidence_level": "C",
+    "evidence_source": "Coppieters & Butler Man Ther 2008 (neurodynamic sliders vs tensioners); Watson LA et al. Man Ther 2009 (thoracic outlet syndrome)",
+    "tags": [
+      "thoracic outlet",
+      "neurodynamic",
+      "nerve glide"
+    ]
+  },
+  {
+    "slug": "shoulder-90-90-external-rotation-band",
+    "name": "90/90 External Rotation with Band",
+    "name_id": "Rotasi Eksternal 90/90 dengan Band",
+    "body_region": "Shoulder",
+    "category": "Neck & Upper",
+    "difficulty": "Advanced",
+    "movement_type": "Strength",
+    "starting_position": "Standing",
+    "target_muscles": "Infraspinatus, teres minor (rotator cuff posterior) pada posisi fungsional lempar",
+    "equipment_needed": [
+      "Resistance band"
+    ],
+    "description": "Penguatan rotator cuff posterior pada posisi abduksi 90 derajat yang meniru fase cocking pada olahraga lempar/overhead.",
+    "description_en": "Posterior rotator cuff strengthening at 90 degrees of abduction, mimicking the cocking phase in throwing/overhead sports.",
+    "instructions": "1. Berdiri menyamping ke titik jangkar band, angkat lengan ke samping setinggi bahu (abduksi 90 derajat), siku ditekuk 90 derajat menghadap ke depan.\n2. Pegang band dengan tangan menghadap ke bawah/depan (posisi awal rotasi internal).\n3. Putar lengan bawah ke atas/belakang (rotasi eksternal) melawan tahanan band sambil menjaga siku tetap setinggi bahu.\n4. Tahan 1-2 detik di puncak gerak, lalu kembali perlahan.\n5. Jaga agar bahu tidak naik/shrug selama gerakan.",
+    "instructions_en": "1. Stand side-on to the band anchor, raise the arm out to the side at shoulder height (90 degrees abduction), elbow bent 90 degrees pointing forward.\n2. Hold the band with the hand facing down/forward (starting internal rotation position).\n3. Rotate the forearm up/back (external rotation) against the band resistance while keeping the elbow at shoulder height.\n4. Hold 1-2 seconds at the top, then return slowly.\n5. Keep the shoulder from shrugging during the movement.",
+    "contraindications": "Hindari pada instabilitas glenohumeral anterior akut atau nyeri impingement yang memburuk pada posisi 90 derajat abduksi. Perkenalkan hanya pada fase lanjut rehabilitasi/return-to-sport.",
+    "progression_tips": "Gunakan sebagai latihan tahap lanjut sebelum kembali ke olahraga lempar; tambahkan kecepatan gerak (rhythmic stabilization) setelah kekuatan dasar tercapai.",
+    "default_sets": 3,
+    "default_reps": 12,
+    "default_hold_seconds": 1,
+    "default_rest_seconds": 45,
+    "default_frequency": "3x/minggu",
+    "evidence_level": "B",
+    "evidence_source": "Cools et al. Br J Sports Med 2014 (scapular and rotator cuff rehabilitation exercise selection); Wilk KE et al. Am J Sports Med 2011 (throwing athlete rehabilitation)",
+    "tags": [
+      "overhead athlete",
+      "rotator cuff",
+      "return to sport",
+      "throwing"
+    ]
+  },
+  {
+    "slug": "plyometric-chest-pass",
+    "name": "Plyometric Chest Pass (Medicine Ball)",
+    "name_id": "Lempar Dada Pliometrik (Bola Medisin)",
+    "body_region": "Shoulder",
+    "category": "Neck & Upper",
+    "difficulty": "Advanced",
+    "movement_type": "Strength",
+    "starting_position": "Standing",
+    "target_muscles": "Pectoralis mayor, deltoid anterior, triceps, rotator cuff (kontrol eksentrik)",
+    "equipment_needed": [
+      "Bola medisin 1-3 kg",
+      "Dinding/rekan latihan"
+    ],
+    "description": "Latihan pliometrik lengan atas fase akhir rehabilitasi bahu untuk mempersiapkan atlet kembali ke olahraga yang membutuhkan daya ledak lengan.",
+    "description_en": "Late-stage plyometric upper-limb drill to prepare an athlete to return to sports requiring explosive arm power.",
+    "instructions": "1. Berdiri menghadap dinding dengan jarak sekitar 1-2 meter, pegang bola medisin setinggi dada.\n2. Dorong dan lempar bola ke dinding secepat mungkin dengan kedua tangan.\n3. Terima pantulan bola dengan menyerap gaya melalui siku dan bahu (kontrol eksentrik cepat) sebelum langsung mendorong lagi.\n4. Jaga gerakan tetap terkontrol dan ritmis; hentikan bila teknik menurun karena lelah.\n5. Mulai dengan beban ringan dan jarak dekat sebelum meningkatkan intensitas.",
+    "instructions_en": "1. Stand facing a wall about 1-2 metres away, hold a medicine ball at chest height.\n2. Push and throw the ball at the wall as fast as possible with both hands.\n3. Catch the rebound by absorbing the force through the elbows and shoulders (fast eccentric control) before pushing again immediately.\n4. Keep the movement controlled and rhythmic; stop if technique deteriorates with fatigue.\n5. Start with a light ball and short distance before increasing intensity.",
+    "contraindications": "Hanya untuk fase akhir rehabilitasi (return-to-sport) dengan kekuatan dasar rotator cuff dan scapular sudah memadai. Hindari pada instabilitas bahu yang belum direhabilitasi atau nyeri aktif.",
+    "progression_tips": "Naikkan berat bola, jarak lempar, atau kecepatan repetisi secara bertahap. Bisa divariasikan dengan lempar satu tangan/rotasional sesuai tuntutan olahraga.",
+    "default_sets": 3,
+    "default_reps": 10,
+    "default_hold_seconds": 0,
+    "default_rest_seconds": 60,
+    "default_frequency": "2-3x/minggu",
+    "evidence_level": "B",
+    "evidence_source": "Wilk KE et al. Am J Sports Med 2011 (throwing athlete return-to-sport progression); Cools et al. Br J Sports Med 2014",
+    "tags": [
+      "plyometric",
+      "return to sport",
+      "power",
+      "overhead athlete"
+    ]
+  },
+  {
+    "slug": "latissimus-dorsi-stretch",
+    "name": "Latissimus Dorsi Stretch",
+    "name_id": "Peregangan Otot Latissimus Dorsi",
+    "body_region": "Shoulder",
+    "category": "Neck & Upper",
+    "difficulty": "Beginner",
+    "movement_type": "Stretch",
+    "starting_position": "Standing",
+    "target_muscles": "Latissimus dorsi, teres major",
+    "equipment_needed": [
+      "Meja/kursi/tiang sebagai pegangan"
+    ],
+    "description": "Peregangan latissimus dorsi untuk membantu lingkup gerak elevasi penuh bahu, sering menjadi pembatas tersembunyi pada nyeri bahu dan frozen shoulder fase lanjut.",
+    "description_en": "Latissimus dorsi stretch to help restore full shoulder elevation, often a hidden limiter in shoulder pain and later-phase frozen shoulder.",
+    "instructions": "1. Berdiri menghadap meja/pegangan setinggi pinggang, pegang dengan kedua tangan.\n2. Tekuk pinggul ke belakang sambil menjaga lengan tetap lurus dan kepala di antara kedua lengan.\n3. Biarkan dada turun ke arah lantai sampai terasa regangan di sisi tubuh dan ketiak.\n4. Tahan sambil bernapas tenang, jangan menahan napas.\n5. Kembali perlahan ke posisi berdiri.",
+    "instructions_en": "1. Stand facing a waist-height table/support, hold on with both hands.\n2. Hinge the hips back while keeping the arms straight and the head between the arms.\n3. Let the chest sink toward the floor until a stretch is felt along the side of the body and armpit.\n4. Hold while breathing calmly, don't hold your breath.\n5. Return slowly to standing.",
+    "contraindications": "Hindari pada pasca operasi bahu tanpa izin ahli bedah atau nyeri tajam saat elevasi penuh. Modifikasi sudut bila nyeri punggung bawah muncul saat hip hinge.",
+    "progression_tips": "Gabungkan dengan latihan elevasi aktif dan penguatan scapular untuk hasil fungsional yang lebih baik.",
+    "default_sets": 3,
+    "default_reps": 1,
+    "default_hold_seconds": 30,
+    "default_rest_seconds": 20,
+    "default_frequency": "1-2x/hari",
+    "evidence_level": "C",
+    "evidence_source": "Kelley et al. Adhesive Capsulitis CPG, JOSPT 2013;43(5):A1-A31; Kisner & Colby, Therapeutic Exercise 7th ed.",
+    "tags": [
+      "frozen shoulder",
+      "stretch",
+      "elevation"
+    ]
+  },
+  {
+    "slug": "shoulder-rhythmic-stabilization",
+    "name": "Rhythmic Stabilization (Shoulder)",
+    "name_id": "Stabilisasi Ritmis Bahu",
+    "body_region": "Shoulder",
+    "category": "Neck & Upper",
+    "difficulty": "Advanced",
+    "movement_type": "Motor control",
+    "starting_position": "Standing",
+    "target_muscles": "Rotator cuff dan stabilisator scapular (kokontraksi cepat)",
+    "equipment_needed": [
+      "Rekan latihan atau terapis"
+    ],
+    "description": "Latihan stabilisasi proprioseptif fase lanjut untuk instabilitas bahu dan persiapan kembali ke olahraga kontak/overhead.",
+    "description_en": "Late-stage proprioceptive stabilisation drill for shoulder instability and preparation to return to contact or overhead sports.",
+    "instructions": "1. Berdiri dengan lengan terangkat 90 derajat ke depan atau samping, siku sedikit ditekuk.\n2. Rekan/terapis memberikan dorongan kecil dan tak terduga ke berbagai arah pada lengan/tangan.\n3. Tahan posisi lengan senetral mungkin, biarkan otot bahu bereaksi secara refleks terhadap dorongan.\n4. Lanjutkan selama 10-20 detik per set, istirahat cukup di antara set.\n5. Tingkatkan kesulitan dengan menutup mata atau berdiri di permukaan tidak stabil.",
+    "instructions_en": "1. Stand with the arm raised 90 degrees forward or to the side, elbow slightly bent.\n2. A partner/therapist applies small, unpredictable pushes to the arm/hand in different directions.\n3. Hold the arm as steady as possible, letting the shoulder muscles react reflexively to the pushes.\n4. Continue for 10-20 seconds per set, resting adequately between sets.\n5. Increase difficulty by closing the eyes or standing on an unstable surface.",
+    "contraindications": "Hanya untuk fase lanjut rehabilitasi dengan nyeri terkontrol dan kekuatan dasar memadai. Hindari pada instabilitas akut atau pasca operasi tanpa izin.",
+    "progression_tips": "Naikkan kecepatan dan besar dorongan, atau lakukan pada posisi fungsional olahraga spesifik (mis. posisi lempar).",
+    "default_sets": 3,
+    "default_reps": 1,
+    "default_hold_seconds": 15,
+    "default_rest_seconds": 30,
+    "default_frequency": "2-3x/minggu",
+    "evidence_level": "C",
+    "evidence_source": "Wilk KE et al. Am J Sports Med 2011 (throwing athlete rehabilitation); Cools et al. Br J Sports Med 2014",
+    "tags": [
+      "proprioception",
+      "instability",
+      "return to sport"
+    ]
   }
 ]

@@ -9,7 +9,10 @@
     "movement_type": "Strength",
     "starting_position": "Side-lying",
     "target_muscles": "Gluteus medius, gluteus minimus, rotator eksternal pinggul",
-    "equipment_needed": ["Matras", "Karet elastis (opsional)"],
+    "equipment_needed": [
+      "Matras",
+      "Karet elastis (opsional)"
+    ],
     "description": "Latihan aktivasi gluteus medius yang menjadi dasar program nyeri lutut, pinggul, dan punggung bawah.",
     "description_en": "Gluteus medius activation exercise that underpins knee, hip and low back programs.",
     "instructions": "1. Berbaring menyamping dengan pinggul ditekuk sekitar 45 derajat dan lutut ditekuk 90 derajat, satu lutut di atas yang lain.\n2. Jaga kedua tumit tetap bersentuhan.\n3. Angkat lutut atas seperti membuka kerang, tanpa memutar panggul ke belakang.\n4. Tahan 2-3 detik di atas, lalu turunkan perlahan.\n5. Letakkan tangan di panggul untuk memastikan panggul tidak berguling.",
@@ -23,7 +26,12 @@
     "default_frequency": "3-5x/minggu",
     "evidence_level": "A",
     "evidence_source": "Willy et al. Patellofemoral Pain CPG, JOSPT 2019;49(9):CPG1-CPG95; Distefano et al. JOSPT 2009 (gluteal EMG)",
-    "tags": ["gluteus medius", "knee", "hip", "PFP"]
+    "tags": [
+      "gluteus medius",
+      "knee",
+      "hip",
+      "PFP"
+    ]
   },
   {
     "slug": "side-lying-hip-abduction",
@@ -35,7 +43,10 @@
     "movement_type": "Strength",
     "starting_position": "Side-lying",
     "target_muscles": "Gluteus medius, tensor fasciae latae",
-    "equipment_needed": ["Matras", "Beban pergelangan kaki (opsional)"],
+    "equipment_needed": [
+      "Matras",
+      "Beban pergelangan kaki (opsional)"
+    ],
     "description": "Penguatan abduktor pinggul dengan lengan tuas panjang, progresi dari clamshell.",
     "description_en": "Long-lever hip abductor strengthening, a progression from the clamshell.",
     "instructions": "1. Berbaring menyamping dengan kedua tungkai lurus dan bertumpuk, badan segaris.\n2. Tekuk lutut bawah untuk stabilitas bila perlu.\n3. Angkat tungkai atas ke arah langit-langit setinggi sekitar 30-40 cm, dengan tumit sedikit di belakang badan.\n4. Jaga jari kaki menghadap ke depan (jangan memutar ke atas) dan panggul tidak berguling ke belakang.\n5. Tahan 2 detik, turun perlahan selama 3 detik.",
@@ -49,7 +60,11 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "A",
     "evidence_source": "Willy et al. Patellofemoral Pain CPG, JOSPT 2019; Mellor et al. BMJ 2018 (LEAP trial)",
-    "tags": ["gluteus medius", "hip", "strength"]
+    "tags": [
+      "gluteus medius",
+      "hip",
+      "strength"
+    ]
   },
   {
     "slug": "isometric-hip-abduction-wall",
@@ -61,7 +76,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Gluteus medius, gluteus minimus",
-    "equipment_needed": ["Dinding"],
+    "equipment_needed": [
+      "Dinding"
+    ],
     "description": "Latihan isometrik beban rendah yang menjadi tahap pertama protokol tendinopati gluteal (LEAP).",
     "description_en": "Low-load isometric that forms the first stage of the LEAP gluteal tendinopathy protocol.",
     "instructions": "1. Berdiri menyamping sekitar 20 cm dari dinding, sisi yang sakit dekat dinding.\n2. Tekuk lutut yang dekat dinding dan tekan bagian luar lutut/paha ke dinding.\n3. Tumpu berat badan pada tungkai yang jauh dari dinding; jaga panggul tetap sejajar.\n4. Tekan dengan kekuatan sekitar 30-50% dan tahan 30-45 detik.\n5. Ulangi 5 kali dengan istirahat 30 detik.",
@@ -75,7 +92,11 @@
     "default_frequency": "1x/hari",
     "evidence_level": "A",
     "evidence_source": "Mellor et al. BMJ 2018;361:k1662 (LEAP trial); Grimaldi & Fearon JOSPT 2015",
-    "tags": ["gluteal tendinopathy", "isometric", "hip"]
+    "tags": [
+      "gluteal tendinopathy",
+      "isometric",
+      "hip"
+    ]
   },
   {
     "slug": "hip-hitch",
@@ -87,7 +108,9 @@
     "movement_type": "Motor control",
     "starting_position": "Standing",
     "target_muscles": "Gluteus medius (sisi tumpu)",
-    "equipment_needed": ["Anak tangga atau balok rendah"],
+    "equipment_needed": [
+      "Anak tangga atau balok rendah"
+    ],
     "description": "Melatih kontrol panggul saat berdiri satu kaki - fungsi utama gluteus medius saat berjalan dan berlari.",
     "description_en": "Trains pelvic control in single-leg stance - the gluteus medius' main job during walking and running.",
     "instructions": "1. Berdiri satu kaki di tepi anak tangga, tungkai lainnya menggantung bebas di sisi luar.\n2. Pegang pegangan ringan untuk keseimbangan.\n3. Turunkan panggul sisi yang menggantung beberapa sentimeter dengan tetap menjaga lutut tumpu lurus.\n4. Angkat kembali panggul tersebut lebih tinggi dari posisi netral menggunakan otot pinggul sisi tumpu.\n5. Ulangi 10-15 kali dengan gerakan terkontrol.",
@@ -101,7 +124,12 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "B",
     "evidence_source": "Willy et al. Patellofemoral Pain CPG, JOSPT 2019; Grimaldi & Fearon JOSPT 2015",
-    "tags": ["gluteus medius", "running", "hip", "PFP"]
+    "tags": [
+      "gluteus medius",
+      "running",
+      "hip",
+      "PFP"
+    ]
   },
   {
     "slug": "lateral-band-walk",
@@ -113,7 +141,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Gluteus medius, gluteus maximus",
-    "equipment_needed": ["Karet elastis loop"],
+    "equipment_needed": [
+      "Karet elastis loop"
+    ],
     "description": "Penguatan abduktor pinggul dalam posisi menumpu berat badan, relevan untuk nyeri lutut dan stabilitas lari.",
     "description_en": "Weight-bearing hip abductor strengthening, relevant to knee pain and running stability.",
     "instructions": "1. Pasang karet elastis loop di sekitar kedua pergelangan kaki atau tepat di atas lutut.\n2. Berdiri dengan lutut sedikit ditekuk (posisi setengah jongkok) dan punggung tegak.\n3. Melangkah ke samping dengan langkah selebar bahu, jaga tegangan karet.\n4. Ikuti dengan kaki lainnya tanpa merapatkan kedua kaki sepenuhnya.\n5. Lakukan 10-15 langkah ke satu arah, lalu kembali ke arah sebaliknya.",
@@ -127,7 +157,11 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "B",
     "evidence_source": "Willy et al. Patellofemoral Pain CPG, JOSPT 2019; Cambridge et al. Clin Biomech 2012",
-    "tags": ["gluteus medius", "knee", "running"]
+    "tags": [
+      "gluteus medius",
+      "knee",
+      "running"
+    ]
   },
   {
     "slug": "hip-flexor-stretch-half-kneeling",
@@ -139,7 +173,9 @@
     "movement_type": "Stretch",
     "starting_position": "Half-kneeling",
     "target_muscles": "Iliopsoas, rectus femoris",
-    "equipment_needed": ["Matras atau bantalan lutut"],
+    "equipment_needed": [
+      "Matras atau bantalan lutut"
+    ],
     "description": "Peregangan otot fleksor pinggul yang memendek akibat duduk lama, penting untuk nyeri punggung dan pinggul.",
     "description_en": "Stretch for hip flexors shortened by prolonged sitting, relevant to back and hip pain.",
     "instructions": "1. Berlutut pada satu lutut dengan kaki depan menapak di depan (posisi setengah berlutut), gunakan bantalan di bawah lutut belakang.\n2. Kencangkan otot bokong sisi belakang dan miringkan panggul ke belakang (tarik tulang kemaluan ke atas).\n3. Geser badan sedikit ke depan tanpa melengkungkan pinggang.\n4. Tahan 30 detik saat terasa regangan di depan pinggul belakang.\n5. Ulangi 3 kali per sisi.",
@@ -153,7 +189,11 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "Kisner & Colby, Therapeutic Exercise 7th ed.; George et al. Low Back Pain CPG, JOSPT 2021",
-    "tags": ["stretch", "hip", "office worker"]
+    "tags": [
+      "stretch",
+      "hip",
+      "office worker"
+    ]
   },
   {
     "slug": "piriformis-stretch",
@@ -165,7 +205,9 @@
     "movement_type": "Stretch",
     "starting_position": "Supine",
     "target_muscles": "Piriformis, rotator eksternal pinggul, gluteus",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Peregangan otot rotator dalam pinggul untuk nyeri bokong dan kekakuan pinggul.",
     "description_en": "Deep hip rotator stretch for buttock pain and hip stiffness.",
     "instructions": "1. Berbaring telentang dengan kedua lutut ditekuk.\n2. Silangkan pergelangan kaki sisi yang sakit di atas lutut sisi lainnya membentuk angka 4.\n3. Pegang paha belakang tungkai penopang dan tarik ke arah dada.\n4. Tahan 30 detik sampai terasa regangan di bokong sisi yang disilangkan.\n5. Ulangi 3 kali per sisi.",
@@ -179,7 +221,11 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "Kisner & Colby, Therapeutic Exercise 7th ed.; Cochrane review non-specific LBP exercise",
-    "tags": ["stretch", "hip", "buttock pain"]
+    "tags": [
+      "stretch",
+      "hip",
+      "buttock pain"
+    ]
   },
   {
     "slug": "supine-hamstring-stretch",
@@ -191,7 +237,9 @@
     "movement_type": "Stretch",
     "starting_position": "Supine",
     "target_muscles": "Hamstring",
-    "equipment_needed": ["Handuk panjang atau tali/strap"],
+    "equipment_needed": [
+      "Handuk panjang atau tali/strap"
+    ],
     "description": "Peregangan hamstring yang aman bagi punggung karena dilakukan berbaring, bukan membungkuk.",
     "description_en": "Back-friendly hamstring stretch performed lying down rather than bending forward.",
     "instructions": "1. Berbaring telentang, lingkarkan handuk pada telapak kaki satu tungkai.\n2. Luruskan tungkai tersebut ke atas sambil menarik handuk perlahan.\n3. Jaga tungkai lainnya tetap menekuk dengan kaki menapak lantai dan punggung rileks.\n4. Tahan pada regangan sedang (bukan nyeri) selama 30 detik.\n5. Ulangi 3 kali per sisi.",
@@ -205,7 +253,11 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "Kisner & Colby, Therapeutic Exercise 7th ed.; Behm et al. Appl Physiol Nutr Metab 2016 (stretching review)",
-    "tags": ["stretch", "hamstring", "low back pain"]
+    "tags": [
+      "stretch",
+      "hamstring",
+      "low back pain"
+    ]
   },
   {
     "slug": "sit-to-stand",
@@ -217,7 +269,9 @@
     "movement_type": "Strength",
     "starting_position": "Sitting",
     "target_muscles": "Quadriceps, gluteus maximus, otot betis",
-    "equipment_needed": ["Kursi kokoh tanpa roda"],
+    "equipment_needed": [
+      "Kursi kokoh tanpa roda"
+    ],
     "description": "Latihan fungsional paling penting untuk kekuatan tungkai dan kemandirian, dipakai dari rehabilitasi lansia sampai pasca operasi lutut.",
     "description_en": "The most important functional leg-strength and independence exercise, used from geriatric rehab to post-knee-surgery care.",
     "instructions": "1. Duduk di tepi depan kursi dengan kaki selebar pinggul, sedikit ditarik ke belakang.\n2. Condongkan badan ke depan (\"hidung di atas jari kaki\").\n3. Berdiri dengan mendorong melalui tumit, tanpa berpegangan bila mampu.\n4. Duduk kembali perlahan selama 3 detik - jangan menjatuhkan badan.\n5. Ulangi 10 kali; catat berapa kali dalam 30 detik sebagai ukuran kemajuan.",
@@ -231,7 +285,12 @@
     "default_frequency": "3-7x/minggu",
     "evidence_level": "A",
     "evidence_source": "Otago Exercise Programme (Campbell et al. BMJ 1997); Skou & Roos 2017 (GLA:D/NEMEX)",
-    "tags": ["functional", "falls prevention", "geriatric", "knee OA"]
+    "tags": [
+      "functional",
+      "falls prevention",
+      "geriatric",
+      "knee OA"
+    ]
   },
   {
     "slug": "chair-squat",
@@ -243,7 +302,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Quadriceps, gluteus maximus, hamstring",
-    "equipment_needed": ["Kursi"],
+    "equipment_needed": [
+      "Kursi"
+    ],
     "description": "Squat dengan target kursi sebagai pembatas kedalaman, aman untuk pemula dan pasien osteoartritis lutut.",
     "description_en": "Squat with a chair as a depth target - safe for beginners and knee osteoarthritis patients.",
     "instructions": "1. Berdiri membelakangi kursi dengan kaki selebar bahu.\n2. Dorong panggul ke belakang dan turunkan badan seolah hendak duduk.\n3. Jaga lutut segaris dengan jari kaki kedua - jangan jatuh ke dalam.\n4. Sentuh kursi ringan (tanpa benar-benar duduk), lalu berdiri kembali.\n5. Ulangi 10-15 kali.",
@@ -257,7 +318,11 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "A",
     "evidence_source": "Willy et al. Patellofemoral Pain CPG, JOSPT 2019; Skou & Roos 2017 (GLA:D)",
-    "tags": ["knee OA", "quadriceps", "functional"]
+    "tags": [
+      "knee OA",
+      "quadriceps",
+      "functional"
+    ]
   },
   {
     "slug": "step-up",
@@ -269,7 +334,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Quadriceps, gluteus maximus, gluteus medius",
-    "equipment_needed": ["Anak tangga atau step 10-20 cm"],
+    "equipment_needed": [
+      "Anak tangga atau step 10-20 cm"
+    ],
     "description": "Latihan kekuatan satu kaki yang meniru pola naik tangga sehari-hari.",
     "description_en": "Single-leg strength exercise mirroring the everyday stair-climbing pattern.",
     "instructions": "1. Berdiri menghadap step setinggi 10-20 cm, pegang pegangan bila perlu.\n2. Letakkan seluruh telapak kaki sisi yang dilatih di atas step.\n3. Naik dengan mendorong melalui tumit kaki di atas step - jangan mendorong dari kaki di bawah.\n4. Turun perlahan selama 3 detik dengan kaki yang sama tetap di atas.\n5. Ulangi 10 kali lalu ganti sisi.",
@@ -283,7 +350,11 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "A",
     "evidence_source": "Skou & Roos 2017 (GLA:D/NEMEX); Willy et al. JOSPT 2019",
-    "tags": ["knee", "functional", "quadriceps"]
+    "tags": [
+      "knee",
+      "functional",
+      "quadriceps"
+    ]
   },
   {
     "slug": "split-squat",
@@ -295,7 +366,10 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Quadriceps, gluteus maximus, fleksor pinggul sisi belakang",
-    "equipment_needed": ["Matras (opsional)", "Kursi untuk pegangan"],
+    "equipment_needed": [
+      "Matras (opsional)",
+      "Kursi untuk pegangan"
+    ],
     "description": "Latihan kekuatan tungkai satu sisi dengan tuntutan keseimbangan, tahap lanjut program lutut dan pinggul.",
     "description_en": "Single-leg strength exercise with a balance demand - a later-stage knee and hip progression.",
     "instructions": "1. Berdiri dengan satu kaki melangkah ke depan sekitar satu langkah panjang.\n2. Turunkan lutut belakang lurus ke bawah sampai membentuk sekitar 90 derajat di kedua lutut.\n3. Jaga badan tegak dan lutut depan tidak melewati jauh di depan jari kaki.\n4. Dorong kembali ke atas melalui tumit kaki depan.\n5. Selesaikan repetisi pada satu sisi lalu ganti.",
@@ -309,7 +383,11 @@
     "default_frequency": "2-3x/minggu",
     "evidence_level": "B",
     "evidence_source": "Skou & Roos 2017 (GLA:D progressions); ACSM Guidelines 11th ed.",
-    "tags": ["knee", "strength", "advanced"]
+    "tags": [
+      "knee",
+      "strength",
+      "advanced"
+    ]
   },
   {
     "slug": "standing-hip-extension",
@@ -321,7 +399,10 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Gluteus maximus, hamstring",
-    "equipment_needed": ["Kursi untuk pegangan", "Karet elastis (opsional)"],
+    "equipment_needed": [
+      "Kursi untuk pegangan",
+      "Karet elastis (opsional)"
+    ],
     "description": "Penguatan gluteus maximus dalam posisi berdiri, cocok untuk lansia dan pasien osteoartritis pinggul.",
     "description_en": "Standing gluteus maximus strengthening, suitable for older adults and hip osteoarthritis.",
     "instructions": "1. Berdiri menghadap kursi/meja dan pegang ringan untuk keseimbangan.\n2. Jaga badan tetap tegak dan lutut lurus.\n3. Ayunkan satu tungkai lurus ke belakang sekitar 20-30 cm menggunakan otot bokong.\n4. Jangan melengkungkan punggung bawah untuk menambah jangkauan.\n5. Tahan 2 detik, kembali perlahan. Ulangi 12-15 kali per sisi.",
@@ -335,7 +416,12 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "A",
     "evidence_source": "Otago Exercise Programme (Campbell et al. BMJ 1997); Fransen et al. Cochrane 2014 (hip OA exercise)",
-    "tags": ["hip OA", "glutes", "falls prevention", "Otago"]
+    "tags": [
+      "hip OA",
+      "glutes",
+      "falls prevention",
+      "Otago"
+    ]
   },
   {
     "slug": "standing-hip-abduction",
@@ -347,7 +433,10 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Gluteus medius",
-    "equipment_needed": ["Kursi untuk pegangan", "Karet elastis (opsional)"],
+    "equipment_needed": [
+      "Kursi untuk pegangan",
+      "Karet elastis (opsional)"
+    ],
     "description": "Penguatan abduktor pinggul berdiri yang termasuk dalam Otago Exercise Programme untuk pencegahan jatuh.",
     "description_en": "Standing hip abductor strengthening, part of the Otago Exercise Programme for falls prevention.",
     "instructions": "1. Berdiri di belakang kursi, pegang sandaran dengan ringan.\n2. Jaga badan tegak dan jari kaki menghadap ke depan.\n3. Angkat satu tungkai lurus ke samping sekitar 20-30 cm.\n4. Jangan mencondongkan badan ke sisi berlawanan.\n5. Tahan 2 detik, turunkan perlahan. Ulangi 12-15 kali per sisi.",
@@ -361,7 +450,12 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "A",
     "evidence_source": "Otago Exercise Programme (Campbell et al. BMJ 1997; Robertson et al. BMJ 2001)",
-    "tags": ["falls prevention", "Otago", "hip", "geriatric"]
+    "tags": [
+      "falls prevention",
+      "Otago",
+      "hip",
+      "geriatric"
+    ]
   },
   {
     "slug": "copenhagen-adduction",
@@ -373,7 +467,10 @@
     "movement_type": "Strength",
     "starting_position": "Side-lying",
     "target_muscles": "Adduktor pinggul",
-    "equipment_needed": ["Bangku atau kursi", "Matras"],
+    "equipment_needed": [
+      "Bangku atau kursi",
+      "Matras"
+    ],
     "description": "Latihan penguatan adduktor eksentrik yang terbukti menurunkan risiko cedera selangkangan pada atlet.",
     "description_en": "Eccentric adductor strengthening shown to reduce groin injury risk in athletes.",
     "instructions": "1. Berbaring menyamping bertumpu pada siku bawah.\n2. Letakkan bagian dalam lutut tungkai atas di atas bangku (versi modifikasi/lebih mudah).\n3. Angkat panggul dan tungkai bawah dari lantai sampai badan lurus.\n4. Tahan 3 detik, lalu turunkan perlahan selama 3 detik.\n5. Mulai 1 set 6 repetisi per sisi dan tingkatkan bertahap.",
@@ -387,7 +484,12 @@
     "default_frequency": "2-3x/minggu",
     "evidence_level": "A",
     "evidence_source": "Harøy et al. Br J Sports Med 2019;53(3):150-157 (adductor strengthening groin injury prevention)",
-    "tags": ["groin", "adductor", "sports", "prevention"]
+    "tags": [
+      "groin",
+      "adductor",
+      "sports",
+      "prevention"
+    ]
   },
   {
     "slug": "wall-sit",
@@ -399,7 +501,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Quadriceps, gluteus",
-    "equipment_needed": ["Dinding"],
+    "equipment_needed": [
+      "Dinding"
+    ],
     "description": "Kontraksi isometrik quadriceps yang membangun daya tahan dan sering meredakan nyeri tendon patella.",
     "description_en": "Quadriceps isometric that builds endurance and often reduces patellar tendon pain.",
     "instructions": "1. Berdiri menempel dinding dengan kaki sekitar 40-50 cm dari dinding.\n2. Geser punggung turun sampai lutut menekuk sekitar 45-60 derajat (jangan lebih dari 90 derajat).\n3. Jaga lutut segaris dengan jari kaki dan berat merata pada kedua kaki.\n4. Tahan 30-45 detik sambil bernapas normal.\n5. Ulangi 5 kali dengan istirahat 1 menit.",
@@ -413,6 +517,141 @@
     "default_frequency": "1x/hari",
     "evidence_level": "B",
     "evidence_source": "Rio et al. Br J Sports Med 2015;49(19):1277-1283 (isometric analgesia patellar tendinopathy)",
-    "tags": ["knee", "isometric", "patellar tendinopathy"]
+    "tags": [
+      "knee",
+      "isometric",
+      "patellar tendinopathy"
+    ]
+  },
+  {
+    "slug": "90-90-hip-stretch",
+    "name": "90/90 Hip Stretch",
+    "name_id": "Peregangan Pinggul 90/90",
+    "body_region": "Hip",
+    "category": "Lower Limb",
+    "difficulty": "Intermediate",
+    "movement_type": "Stretch",
+    "starting_position": "Sitting",
+    "target_muscles": "Rotator eksternal dan internal pinggul (piriformis, gluteus, kapsul sendi panggul)",
+    "equipment_needed": [
+      "Matras"
+    ],
+    "description": "Peregangan rotasi pinggul dua arah sekaligus, populer pada rehabilitasi femoroacetabular impingement (FAI) dan pembatasan rotasi pinggul.",
+    "description_en": "A two-directional hip rotation stretch, commonly used in femoroacetabular impingement (FAI) rehabilitation and hip rotation restriction.",
+    "instructions": "1. Duduk di lantai, tungkai depan ditekuk 90 derajat di depan tubuh, tungkai belakang ditekuk 90 derajat di sisi tubuh.\n2. Jaga tulang belakang tetap tegak, condongkan badan sedikit ke depan di atas tungkai depan hingga terasa regangan di bokong tungkai depan (rotasi eksternal).\n3. Tahan, lalu kembali tegak dan condongkan badan ke arah tungkai belakang untuk meregangkan rotasi internal pinggul belakang.\n4. Jaga agar tidak ada nyeri tajam di sendi panggul - regangan seharusnya terasa di otot, bukan di dalam sendi.\n5. Ganti posisi tungkai depan-belakang untuk melatih sisi berlawanan.",
+    "instructions_en": "1. Sit on the floor, front leg bent 90 degrees in front of the body, back leg bent 90 degrees to the side.\n2. Keep the spine tall, lean slightly forward over the front leg until a stretch is felt in the front leg's buttock (external rotation).\n3. Hold, then sit back up and lean toward the back leg to stretch the back hip's internal rotation.\n4. Make sure there's no sharp pain inside the hip joint - the stretch should be felt in the muscle, not inside the joint.\n5. Switch the front-back leg position to train the opposite side.",
+    "contraindications": "Hindari pada instabilitas sendi panggul, labral tear yang sangat iritatif, atau nyeri tajam di dalam sendi saat posisi ini. Modifikasi sudut bila nyeri lutut muncul.",
+    "progression_tips": "Gunakan sebagai pemanasan mobilitas sebelum latihan penguatan pinggul; kombinasikan dengan latihan kontrol motorik pinggul untuk hasil fungsional.",
+    "default_sets": 3,
+    "default_reps": 1,
+    "default_hold_seconds": 30,
+    "default_rest_seconds": 20,
+    "default_frequency": "1-2x/hari",
+    "evidence_level": "C",
+    "evidence_source": "Griffin DR et al. Br J Sports Med 2016;50(19):1169-1176 (Warwick Agreement FAI syndrome consensus); Kisner & Colby, Therapeutic Exercise 7th ed.",
+    "tags": [
+      "FAI",
+      "hip mobility",
+      "stretch",
+      "rotation"
+    ]
+  },
+  {
+    "slug": "standing-hip-circles",
+    "name": "Standing Hip Circles (FAI Mobility)",
+    "name_id": "Rotasi Pinggul Berdiri (Mobilitas FAI)",
+    "body_region": "Hip",
+    "category": "Lower Limb",
+    "difficulty": "Beginner",
+    "movement_type": "Mobility",
+    "starting_position": "Standing",
+    "target_muscles": "Mobilitas sendi panggul multiarah, otot stabilisator pinggul tungkai tumpu",
+    "equipment_needed": [
+      "Kursi/dinding untuk pegangan"
+    ],
+    "description": "Latihan mobilitas panggul multibidang untuk memelihara lingkup gerak fungsional dan mengurangi kekakuan pada femoroacetabular impingement dan osteoartritis panggul awal.",
+    "description_en": "A multi-plane hip mobility exercise to maintain functional range of motion and reduce stiffness in femoroacetabular impingement and early hip osteoarthritis.",
+    "instructions": "1. Berdiri dengan satu tangan berpegangan pada kursi/dinding untuk keseimbangan.\n2. Angkat lutut tungkai yang dilatih ke depan setinggi pinggul.\n3. Putar lutut membentuk lingkaran besar ke arah luar, ke belakang, lalu kembali ke depan secara perlahan dan terkontrol.\n4. Lakukan repetisi yang ditentukan, lalu ulangi dengan arah putaran berlawanan.\n5. Ganti tungkai setelah kedua arah selesai.",
+    "instructions_en": "1. Stand holding onto a chair/wall with one hand for balance.\n2. Lift the knee of the leg being trained forward to hip height.\n3. Circle the knee out to the side, back, and forward again slowly and with control, tracing a large circle.\n4. Perform the prescribed repetitions, then repeat in the opposite rotation direction.\n5. Switch legs once both directions are complete.",
+    "contraindications": "Hentikan bila nyeri tajam di dalam sendi panggul atau bunyi 'klik' disertai nyeri muncul. Hindari pada dislokasi panggul baru atau instabilitas berat.",
+    "progression_tips": "Perbesar diameter lingkaran secara bertahap sesuai toleransi nyeri. Bisa dikombinasikan dengan latihan penguatan pinggul sebagai bagian pemanasan.",
+    "default_sets": 2,
+    "default_reps": 8,
+    "default_hold_seconds": 0,
+    "default_rest_seconds": 20,
+    "default_frequency": "1x/hari",
+    "evidence_level": "C",
+    "evidence_source": "Griffin DR et al. Br J Sports Med 2016 (Warwick Agreement FAI syndrome); Cibulka et al. Hip Pain and Mobility Deficits CPG, JOSPT 2017;47(6):A1-A37",
+    "tags": [
+      "FAI",
+      "hip mobility",
+      "circles"
+    ]
+  },
+  {
+    "slug": "adductor-squeeze-ball",
+    "name": "Adductor Squeeze (Ball Between Knees)",
+    "name_id": "Remas Adduktor (Bola di Antara Lutut)",
+    "body_region": "Hip",
+    "category": "Lower Limb",
+    "difficulty": "Beginner",
+    "movement_type": "Strength",
+    "starting_position": "Supine",
+    "target_muscles": "Adductor longus, adductor brevis, gracilis",
+    "equipment_needed": [
+      "Bola lunak atau bantal kecil"
+    ],
+    "description": "Kontraksi isometrik adduktor paha, latihan dasar pada cedera regangan groin/adduktor dan bagian dari program pencegahan cedera groin pada olahraga.",
+    "description_en": "Isometric hip adductor contraction, a foundational exercise in groin/adductor strain injury and part of sport groin injury prevention programs.",
+    "instructions": "1. Berbaring telentang, lutut ditekuk, telapak kaki rata di lantai.\n2. Letakkan bola lunak atau bantal di antara kedua lutut.\n3. Remas bola dengan meremas kedua lutut ke arah tengah dengan kekuatan sedang.\n4. Tahan 5-8 detik, lepaskan perlahan.\n5. Jaga panggul tetap stabil, tidak terangkat, selama kontraksi.",
+    "instructions_en": "1. Lie on your back, knees bent, feet flat on the floor.\n2. Place a soft ball or pillow between the knees.\n3. Squeeze the ball by pressing both knees together at a moderate effort.\n4. Hold 5-8 seconds, release slowly.\n5. Keep the pelvis stable, not lifting, throughout the contraction.",
+    "contraindications": "Hindari intensitas tinggi pada fase akut cedera groin dengan nyeri berat. Hentikan bila nyeri tajam di pangkal paha.",
+    "progression_tips": "Setelah isometrik nyaman, lanjutkan ke adduksi dinamis dengan band dan akhirnya Copenhagen Adduction untuk atlet yang kembali berolahraga.",
+    "default_sets": 3,
+    "default_reps": 10,
+    "default_hold_seconds": 6,
+    "default_rest_seconds": 20,
+    "default_frequency": "1-2x/hari",
+    "evidence_level": "A",
+    "evidence_source": "Harøy et al. Br J Sports Med 2019;53(3):150-157 (Copenhagen adduction/groin injury prevention programme); Mosler AB et al. Br J Sports Med 2018 (groin injury clinical guideline)",
+    "tags": [
+      "groin strain",
+      "adductor",
+      "isometric",
+      "injury prevention"
+    ]
+  },
+  {
+    "slug": "seated-piriformis-stretch",
+    "name": "Seated Piriformis Stretch",
+    "name_id": "Peregangan Piriformis Duduk",
+    "body_region": "Hip",
+    "category": "Lower Limb",
+    "difficulty": "Beginner",
+    "movement_type": "Stretch",
+    "starting_position": "Sitting",
+    "target_muscles": "Piriformis, rotator eksternal pinggul dalam",
+    "equipment_needed": [
+      "Kursi"
+    ],
+    "description": "Variasi duduk peregangan piriformis, mudah dilakukan di tempat kerja untuk nyeri bokong/sciatica terkait sindrom piriformis.",
+    "description_en": "A seated variation of the piriformis stretch, easy to perform at work for buttock pain/sciatica related to piriformis syndrome.",
+    "instructions": "1. Duduk tegak di kursi, silangkan pergelangan kaki tungkai yang sakit ke atas lutut tungkai yang lain (posisi angka 4).\n2. Jaga punggung tetap lurus, condongkan badan ke depan dari pinggul.\n3. Tahan sampai terasa regangan di bokong tungkai yang disilangkan.\n4. Jaga napas tetap tenang selama menahan posisi.\n5. Kembali tegak perlahan dan ganti sisi.",
+    "instructions_en": "1. Sit tall in a chair, cross the ankle of the affected leg over the opposite knee (figure-4 position).\n2. Keep the back straight, hinge forward from the hips.\n3. Hold until a stretch is felt in the buttock of the crossed leg.\n4. Keep breathing calmly while holding the position.\n5. Return upright slowly and switch sides.",
+    "contraindications": "Hentikan bila nyeri menjalar ke tungkai bertambah tajam (kemungkinan iritasi saraf skiatik bertambah, bukan sekadar otot). Hindari pada pasca operasi panggul tanpa izin.",
+    "progression_tips": "Kombinasikan dengan penguatan gluteal dan hip abduktor untuk mengurangi kekambuhan sindrom piriformis.",
+    "default_sets": 3,
+    "default_reps": 1,
+    "default_hold_seconds": 30,
+    "default_rest_seconds": 20,
+    "default_frequency": "2-3x/hari",
+    "evidence_level": "C",
+    "evidence_source": "Kisner & Colby, Therapeutic Exercise 7th ed.; George et al. Low Back Pain CPG, JOSPT 2021 (adjunct for radicular symptoms)",
+    "tags": [
+      "piriformis",
+      "sciatica",
+      "stretch",
+      "office"
+    ]
   }
 ]

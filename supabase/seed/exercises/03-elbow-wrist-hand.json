@@ -9,7 +9,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Extensor carpi radialis brevis, ekstensor pergelangan tangan",
-    "equipment_needed": ["FlexBar / batang karet elastis"],
+    "equipment_needed": [
+      "FlexBar / batang karet elastis"
+    ],
     "description": "Latihan eksentrik khusus untuk tendinopati epikondilus lateral (tennis elbow) menggunakan batang karet.",
     "description_en": "Targeted eccentric loading for lateral elbow tendinopathy (tennis elbow) using a rubber bar.",
     "instructions": "1. Pegang batang karet secara vertikal dengan tangan yang sakit di bawah, pergelangan sedikit ekstensi.\n2. Genggam ujung atas batang dengan tangan yang sehat, lalu puntir batang dengan tangan sehat hingga tegang.\n3. Julurkan kedua lengan lurus ke depan sambil menjaga puntiran.\n4. Perlahan biarkan tangan yang sakit terurai/melepas puntiran selama 3-4 detik (ini fase eksentrik).\n5. Nyeri ringan 3-4/10 selama latihan dapat diterima; nyeri harus mereda dalam 24 jam.",
@@ -23,7 +25,11 @@
     "default_frequency": "1x/hari, 5 hari/minggu",
     "evidence_level": "A",
     "evidence_source": "Tyler et al. J Shoulder Elbow Surg 2010;19(6):917-922; Lucado et al. Lateral Elbow Tendinopathy CPG, JOSPT 2022;52(12):CPG1-CPG111",
-    "tags": ["tennis elbow", "eccentric", "tendinopathy"]
+    "tags": [
+      "tennis elbow",
+      "eccentric",
+      "tendinopathy"
+    ]
   },
   {
     "slug": "eccentric-wrist-extension-dumbbell",
@@ -35,7 +41,9 @@
     "movement_type": "Strength",
     "starting_position": "Sitting",
     "target_muscles": "Ekstensor pergelangan tangan",
-    "equipment_needed": ["Dumbel 0,5-2 kg atau botol air"],
+    "equipment_needed": [
+      "Dumbel 0,5-2 kg atau botol air"
+    ],
     "description": "Alternatif Tyler Twist tanpa FlexBar - pembebanan eksentrik ekstensor pergelangan tangan dengan beban bebas.",
     "description_en": "A FlexBar-free alternative - eccentric loading of the wrist extensors with a free weight.",
     "instructions": "1. Duduk dengan lengan bawah bertumpu di meja, telapak menghadap ke bawah, pergelangan tangan menjuntai di tepi meja.\n2. Pegang beban ringan; gunakan tangan yang sehat untuk mengangkat pergelangan ke posisi ekstensi penuh.\n3. Lepaskan bantuan tangan sehat, lalu turunkan beban perlahan selama 3-4 detik.\n4. Bantu kembali ke atas dengan tangan sehat (fase mengangkat tidak dilatih).\n5. Ulangi 15 kali per set.",
@@ -49,7 +57,11 @@
     "default_frequency": "1x/hari",
     "evidence_level": "A",
     "evidence_source": "Lucado et al. Lateral Elbow Tendinopathy CPG, JOSPT 2022; Croisier et al. Br J Sports Med 2007",
-    "tags": ["tennis elbow", "eccentric", "tendinopathy"]
+    "tags": [
+      "tennis elbow",
+      "eccentric",
+      "tendinopathy"
+    ]
   },
   {
     "slug": "wrist-extensor-stretch",
@@ -75,7 +87,11 @@
     "default_frequency": "2-3x/hari",
     "evidence_level": "B",
     "evidence_source": "Lucado et al. Lateral Elbow Tendinopathy CPG, JOSPT 2022",
-    "tags": ["tennis elbow", "stretch", "wrist"]
+    "tags": [
+      "tennis elbow",
+      "stretch",
+      "wrist"
+    ]
   },
   {
     "slug": "wrist-flexor-stretch",
@@ -101,7 +117,11 @@
     "default_frequency": "2-3x/hari",
     "evidence_level": "B",
     "evidence_source": "Lucado et al. JOSPT 2022; Vicenzino Man Ther 2003",
-    "tags": ["golfer's elbow", "stretch", "wrist"]
+    "tags": [
+      "golfer's elbow",
+      "stretch",
+      "wrist"
+    ]
   },
   {
     "slug": "grip-strengthening-ball",
@@ -113,7 +133,9 @@
     "movement_type": "Strength",
     "starting_position": "Sitting",
     "target_muscles": "Fleksor jari, otot intrinsik tangan",
-    "equipment_needed": ["Bola karet lunak atau gulungan handuk"],
+    "equipment_needed": [
+      "Bola karet lunak atau gulungan handuk"
+    ],
     "description": "Penguatan genggaman untuk pemulihan fungsi tangan pasca cedera, artritis, dan tennis elbow.",
     "description_en": "Grip strengthening to restore hand function after injury, in arthritis, and in tennis elbow.",
     "instructions": "1. Duduk dengan lengan bawah bertumpu di meja atau paha.\n2. Genggam bola lunak, remas dengan kekuatan sedang.\n3. Tahan 5 detik, lalu lepaskan sepenuhnya selama 5 detik.\n4. Ulangi 10-15 kali.\n5. Hentikan bila nyeri sendi meningkat.",
@@ -127,7 +149,11 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "Erickson et al. Hand Pain and Sensory Deficits CPG, JOSPT 2019;49(5):CPG1-CPG85",
-    "tags": ["hand", "grip", "strength"]
+    "tags": [
+      "hand",
+      "grip",
+      "strength"
+    ]
   },
   {
     "slug": "tendon-gliding-hand",
@@ -153,7 +179,11 @@
     "default_frequency": "3x/hari",
     "evidence_level": "B",
     "evidence_source": "Kim SD. J Phys Ther Sci 2015 (tendon/nerve gliding CTS review); Erickson et al. JOSPT 2019",
-    "tags": ["carpal tunnel", "hand", "mobility"]
+    "tags": [
+      "carpal tunnel",
+      "hand",
+      "mobility"
+    ]
   },
   {
     "slug": "forearm-pronation-supination",
@@ -165,7 +195,9 @@
     "movement_type": "Strength",
     "starting_position": "Sitting",
     "target_muscles": "Pronator teres, supinator, brachioradialis",
-    "equipment_needed": ["Palu ringan atau dumbel dengan pegangan satu sisi"],
+    "equipment_needed": [
+      "Palu ringan atau dumbel dengan pegangan satu sisi"
+    ],
     "description": "Penguatan rotasi lengan bawah, komponen penting rehabilitasi tennis elbow dan pasca cedera lengan bawah.",
     "description_en": "Forearm rotation strengthening, an important component of tennis elbow and post-forearm-injury rehabilitation.",
     "instructions": "1. Duduk dengan lengan bawah bertumpu di paha atau meja, siku ditekuk 90 derajat.\n2. Pegang palu ringan pada gagangnya, posisi awal ibu jari menghadap atas.\n3. Putar lengan bawah perlahan sehingga telapak menghadap ke bawah, tahan 2 detik.\n4. Putar kembali sehingga telapak menghadap ke atas, tahan 2 detik.\n5. Gerakkan hanya lengan bawah - bahu tetap diam.",
@@ -179,7 +211,11 @@
     "default_frequency": "3-5x/minggu",
     "evidence_level": "B",
     "evidence_source": "Lucado et al. Lateral Elbow Tendinopathy CPG, JOSPT 2022",
-    "tags": ["tennis elbow", "forearm", "strength"]
+    "tags": [
+      "tennis elbow",
+      "forearm",
+      "strength"
+    ]
   },
   {
     "slug": "finger-extension-rubber-band",
@@ -191,7 +227,9 @@
     "movement_type": "Strength",
     "starting_position": "Sitting",
     "target_muscles": "Ekstensor jari, otot intrinsik tangan",
-    "equipment_needed": ["Karet gelang"],
+    "equipment_needed": [
+      "Karet gelang"
+    ],
     "description": "Penguatan otot pembuka jari untuk menyeimbangkan otot penggenggam yang dominan.",
     "description_en": "Finger-opening strengthening to balance the dominant gripping muscles.",
     "instructions": "1. Lingkarkan karet gelang mengelilingi semua jari dan ibu jari.\n2. Buka jari-jari melawan tahanan karet selebar mungkin.\n3. Tahan 3 detik di posisi terbuka.\n4. Tutup perlahan selama 3 detik.\n5. Ulangi 15 kali.",
@@ -205,7 +243,11 @@
     "default_frequency": "1x/hari",
     "evidence_level": "C",
     "evidence_source": "Praktik terapi tangan; Erickson et al. Hand Pain CPG, JOSPT 2019",
-    "tags": ["hand", "strength", "tennis elbow"]
+    "tags": [
+      "hand",
+      "strength",
+      "tennis elbow"
+    ]
   },
   {
     "slug": "wrist-active-rom",
@@ -231,6 +273,203 @@
     "default_frequency": "3-4x/hari",
     "evidence_level": "B",
     "evidence_source": "Erickson et al. Hand Pain and Sensory Deficits CPG, JOSPT 2019",
-    "tags": ["wrist", "mobility", "post-immobilisation"]
+    "tags": [
+      "wrist",
+      "mobility",
+      "post-immobilisation"
+    ]
+  },
+  {
+    "slug": "eccentric-wrist-flexion-golfers-elbow",
+    "name": "Eccentric Wrist Flexion (Golfer's Elbow)",
+    "name_id": "Fleksi Pergelangan Eksentrik (Golfer's Elbow)",
+    "body_region": "Elbow",
+    "category": "Neck & Upper",
+    "difficulty": "Intermediate",
+    "movement_type": "Strength",
+    "starting_position": "Sitting",
+    "target_muscles": "Fleksor pergelangan tangan, pronator teres (origo epikondilus medial)",
+    "equipment_needed": [
+      "Dumbel ringan atau botol air"
+    ],
+    "description": "Pembebanan eksentrik fleksor pergelangan tangan, analog Tyler Twist untuk tendinopati epikondilus medial (golfer's elbow).",
+    "description_en": "Eccentric loading of the wrist flexors, the golfer's-elbow analogue of the Tyler Twist for medial epicondyle tendinopathy.",
+    "instructions": "1. Duduk dengan lengan bawah bertumpu di paha atau meja, telapak menghadap ke atas, pergelangan menjuntai di tepi.\n2. Pegang beban ringan; gunakan tangan yang sehat untuk mengangkat pergelangan ke posisi fleksi penuh.\n3. Lepaskan bantuan, lalu turunkan beban perlahan (ekstensi pergelangan) selama 3-4 detik.\n4. Bantu kembali ke atas dengan tangan sehat untuk repetisi berikutnya.\n5. Nyeri ringan dapat diterima, harus mereda dalam 24 jam.",
+    "instructions_en": "1. Sit with the forearm supported on the thigh or a table, palm up, wrist over the edge.\n2. Hold a light weight; use the healthy hand to lift the wrist into full flexion.\n3. Release the assistance and lower the weight slowly (wrist extension) over 3-4 seconds.\n4. Assist back up with the healthy hand for the next repetition.\n5. Mild discomfort is acceptable; it should settle within 24 hours.",
+    "contraindications": "Hentikan bila nyeri > 5/10, kesemutan pada jari manis/kelingking (kemungkinan iritasi saraf ulnaris), atau bengkak bertambah.",
+    "progression_tips": "Naikkan beban 0,25-0,5 kg tiap 1-2 minggu saat 3x15 repetisi terasa nyaman dengan nyeri <3/10.",
+    "default_sets": 3,
+    "default_reps": 15,
+    "default_hold_seconds": 4,
+    "default_rest_seconds": 60,
+    "default_frequency": "1x/hari, 5 hari/minggu",
+    "evidence_level": "B",
+    "evidence_source": "Lucado et al. Lateral Elbow Tendinopathy CPG, JOSPT 2022 (eccentric loading principle); Kisner & Colby, Therapeutic Exercise 7th ed. (medial epicondylalgia management)",
+    "tags": [
+      "golfer's elbow",
+      "eccentric",
+      "tendinopathy"
+    ]
+  },
+  {
+    "slug": "thumb-eccentric-loading-de-quervains",
+    "name": "Thumb Eccentric Loading (De Quervain's)",
+    "name_id": "Pembebanan Eksentrik Ibu Jari (De Quervain's)",
+    "body_region": "Wrist",
+    "category": "Neck & Upper",
+    "difficulty": "Beginner",
+    "movement_type": "Strength",
+    "starting_position": "Sitting",
+    "target_muscles": "Abductor pollicis longus, extensor pollicis brevis",
+    "equipment_needed": [
+      "Karet gelang ringan"
+    ],
+    "description": "Pembebanan bertahap tendon kompartemen pertama pergelangan untuk tenosinovitis De Quervain, dimulai setelah fase nyeri akut mereda.",
+    "description_en": "Graded loading of the first dorsal compartment tendons for De Quervain's tenosynovitis, started once the acute pain phase has settled.",
+    "instructions": "1. Duduk dengan lengan bawah bertumpu di meja, pergelangan dalam posisi netral, ibu jari mengarah ke atas.\n2. Lingkarkan karet gelang di sekitar ibu jari dan telunjuk.\n3. Gerakkan ibu jari menjauh dari telapak (abduksi) melawan tahanan ringan sampai posisi terbuka penuh.\n4. Lepaskan tahanan bantuan tangan sehat, lalu biarkan ibu jari kembali perlahan ke posisi awal selama 3-4 detik (fase eksentrik).\n5. Hentikan bila nyeri tajam di sisi ibu jari pergelangan tangan.",
+    "instructions_en": "1. Sit with the forearm supported on a table, wrist in neutral, thumb pointing up.\n2. Loop a light rubber band around the thumb and index finger.\n3. Move the thumb away from the palm (abduction) against light resistance to a fully open position.\n4. Release the assist from the healthy hand, then let the thumb return slowly to the start over 3-4 seconds (eccentric phase).\n5. Stop if sharp pain occurs on the thumb side of the wrist.",
+    "contraindications": "Hindari pada fase sangat nyeri/bengkak akut - mulai dengan istirahat, splinting ibu jari, dan es terlebih dahulu. Hentikan bila nyeri meningkat >24 jam.",
+    "progression_tips": "Mulai dengan resistensi minimal setelah nyeri diam terkontrol; naikkan ketebalan karet secara bertahap selama beberapa minggu.",
+    "default_sets": 3,
+    "default_reps": 12,
+    "default_hold_seconds": 3,
+    "default_rest_seconds": 45,
+    "default_frequency": "1x/hari",
+    "evidence_level": "B",
+    "evidence_source": "Huisstede BM et al. Arch Phys Med Rehabil 2018 (evidence-based guideline hand/wrist conditions incl. De Quervain's); Goel R, Abzug JM. Curr Rev Musculoskelet Med 2015",
+    "tags": [
+      "de quervain",
+      "thumb",
+      "eccentric",
+      "wrist"
+    ]
+  },
+  {
+    "slug": "trigger-finger-tendon-glide",
+    "name": "A1 Pulley Tendon Glide (Trigger Finger)",
+    "name_id": "Luncur Tendon Pulley A1 (Trigger Finger)",
+    "body_region": "Hand",
+    "category": "Neck & Upper",
+    "difficulty": "Beginner",
+    "movement_type": "Mobility",
+    "starting_position": "Sitting",
+    "target_muscles": "Tendon fleksor jari pada level pulley A1 (pangkal jari)",
+    "equipment_needed": [],
+    "description": "Latihan luncur dan peregangan lembut untuk trigger finger (stenosing tenosynovitis), membantu mengurangi 'tersangkut'nya tendon di pulley A1.",
+    "description_en": "Gliding and gentle stretching drill for trigger finger (stenosing tenosynovitis), helping reduce tendon catching at the A1 pulley.",
+    "instructions": "1. Duduk dengan tangan rileks di depan tubuh.\n2. Tekuk jari yang terkena perlahan menuju telapak tangan sejauh nyaman, tahan sebentar.\n3. Gunakan tangan sehat untuk membantu meluruskan sendi pangkal jari (MCP) sepenuhnya bila terasa tersangkut.\n4. Pijat lembut area pangkal telapak tangan (dasar jari) searah tendon sebelum dan sesudah gerakan.\n5. Ulangi perlahan, hindari memaksakan gerakan bila nyeri tajam muncul.",
+    "instructions_en": "1. Sit with the hand relaxed in front of the body.\n2. Slowly bend the affected finger toward the palm as far as comfortable, hold briefly.\n3. Use the healthy hand to help fully straighten the base joint (MCP) if it feels caught.\n4. Gently massage the base of the palm (finger base) along the tendon before and after the movement.\n5. Repeat slowly, avoid forcing the movement if sharp pain occurs.",
+    "contraindications": "Hentikan bila jari terkunci total (locked trigger finger) tanpa bisa diluruskan - rujuk ke dokter untuk injeksi/pertimbangan operasi. Hindari pada infeksi aktif atau pasca operasi tanpa izin.",
+    "progression_tips": "Kombinasikan dengan splint ekstensi malam hari pada kasus ringan-sedang, dan modifikasi aktivitas menggenggam berulang.",
+    "default_sets": 3,
+    "default_reps": 10,
+    "default_hold_seconds": 3,
+    "default_rest_seconds": 20,
+    "default_frequency": "3-4x/hari",
+    "evidence_level": "C",
+    "evidence_source": "Makkouk AH et al. Curr Rev Musculoskelet Med 2008 (trigger finger conservative management); praktik terapi tangan",
+    "tags": [
+      "trigger finger",
+      "hand",
+      "mobility",
+      "tendon glide"
+    ]
+  },
+  {
+    "slug": "thumb-cmc-opposition-strengthening",
+    "name": "Thumb CMC Opposition Strengthening",
+    "name_id": "Penguatan Oposisi Sendi CMC Ibu Jari",
+    "body_region": "Hand",
+    "category": "Neck & Upper",
+    "difficulty": "Beginner",
+    "movement_type": "Strength",
+    "starting_position": "Sitting",
+    "target_muscles": "Opponens pollicis, abductor pollicis brevis, otot intrinsik ibu jari",
+    "equipment_needed": [
+      "Karet gelang kecil (opsional)"
+    ],
+    "description": "Penguatan otot intrinsik ibu jari untuk osteoartritis sendi carpometacarpal (CMC) ibu jari, membantu mengurangi nyeri saat mencubit/menjepit.",
+    "description_en": "Intrinsic thumb muscle strengthening for thumb carpometacarpal (CMC) joint osteoarthritis, helping reduce pain with pinching/gripping.",
+    "instructions": "1. Duduk dengan tangan rileks, telapak menghadap ke atas.\n2. Sentuhkan ujung ibu jari ke ujung jari kelingking, bentuk 'O' yang bulat sempurna.\n3. Tahan posisi sambil merasakan kontraksi di pangkal ibu jari, hindari menekuk sendi ujung ibu jari berlebihan.\n4. Lepaskan perlahan, ulangi dengan jari manis, tengah, dan telunjuk secara bergantian.\n5. Tambahkan tahanan ringan dari karet gelang di sekitar ibu jari-kelingking bila nyeri terkontrol.",
+    "instructions_en": "1. Sit with the hand relaxed, palm facing up.\n2. Touch the tip of the thumb to the tip of the little finger, forming a perfectly round 'O'.\n3. Hold while feeling the contraction at the base of the thumb, avoiding excessive bending of the thumb tip joint.\n4. Release slowly, repeat with the ring, middle, and index fingers in turn.\n5. Add light resistance from a small rubber band around the thumb and little finger once pain is controlled.",
+    "contraindications": "Hindari intensitas tinggi pada fase inflamasi aktif (sendi bengkak/panas). Hentikan bila nyeri tajam pada sendi CMC.",
+    "progression_tips": "Gabungkan dengan splint stabilisasi CMC saat aktivitas berat dan modifikasi teknik menjepit/mencubit dalam aktivitas sehari-hari.",
+    "default_sets": 3,
+    "default_reps": 10,
+    "default_hold_seconds": 5,
+    "default_rest_seconds": 20,
+    "default_frequency": "1x/hari",
+    "evidence_level": "B",
+    "evidence_source": "Erickson et al. Hand Pain and Sensory Deficits CPG, JOSPT 2019;49(5):CPG1-CPG85; Villafañe JH et al. J Chiropr Med 2013 (thumb CMC OA exercise)",
+    "tags": [
+      "thumb",
+      "CMC osteoarthritis",
+      "strength",
+      "hand"
+    ]
+  },
+  {
+    "slug": "isometric-wrist-flexion-extension",
+    "name": "Isometric Wrist Flexion-Extension",
+    "name_id": "Isometrik Fleksi-Ekstensi Pergelangan Tangan",
+    "body_region": "Wrist",
+    "category": "Neck & Upper",
+    "difficulty": "Beginner",
+    "movement_type": "Strength",
+    "starting_position": "Sitting",
+    "target_muscles": "Fleksor dan ekstensor pergelangan tangan",
+    "equipment_needed": [
+      "Meja"
+    ],
+    "description": "Kontraksi isometrik lembut pergelangan tangan, dosis awal setelah imobilisasi fraktur/pasca operasi sebelum gerakan aktif penuh diizinkan.",
+    "description_en": "Gentle isometric wrist contractions, an early-dose exercise after fracture immobilisation/surgery before full active movement is permitted.",
+    "instructions": "1. Duduk dengan lengan bawah bertumpu di meja, pergelangan dalam posisi netral.\n2. Tekan telapak tangan ke bawah meja tanpa gerakan pergelangan (kontraksi fleksor isometrik).\n3. Tahan 5-8 detik, lepaskan perlahan.\n4. Balikkan tangan, tekan punggung tangan ke meja (kontraksi ekstensor isometrik), tahan 5-8 detik.\n5. Lakukan dengan intensitas nyaman, tanpa nyeri tajam.",
+    "instructions_en": "1. Sit with the forearm supported on a table, wrist in neutral.\n2. Press the palm down into the table without any wrist movement (isometric flexor contraction).\n3. Hold 5-8 seconds, release slowly.\n4. Turn the hand over, press the back of the hand into the table (isometric extensor contraction), hold 5-8 seconds.\n5. Perform at a comfortable intensity, without sharp pain.",
+    "contraindications": "Ikuti izin dokter/ahli bedah setelah fraktur atau operasi - jangan mulai sebelum konsolidasi cukup. Hentikan bila nyeri tajam atau bengkak bertambah.",
+    "progression_tips": "Setelah nyaman dan diizinkan, lanjutkan ke lingkup gerak aktif penuh lalu penguatan dinamis dengan band/beban ringan.",
+    "default_sets": 3,
+    "default_reps": 8,
+    "default_hold_seconds": 6,
+    "default_rest_seconds": 20,
+    "default_frequency": "3-4x/hari",
+    "evidence_level": "C",
+    "evidence_source": "Erickson et al. Hand Pain and Sensory Deficits CPG, JOSPT 2019; praktik klinis rehabilitasi pasca fraktur distal radius",
+    "tags": [
+      "wrist",
+      "isometric",
+      "post-fracture",
+      "early phase"
+    ]
+  },
+  {
+    "slug": "ulnar-nerve-flossing-cubital-tunnel",
+    "name": "Ulnar Nerve Flossing at Elbow (Cubital Tunnel)",
+    "name_id": "Luncur Saraf Ulnaris di Siku (Cubital Tunnel)",
+    "body_region": "Elbow",
+    "category": "Neck & Upper",
+    "difficulty": "Intermediate",
+    "movement_type": "Neurodynamic",
+    "starting_position": "Sitting",
+    "target_muscles": "Mobilitas saraf ulnaris melalui cubital tunnel",
+    "equipment_needed": [],
+    "description": "Teknik sliding saraf ulnaris untuk cubital tunnel syndrome (kompresi saraf ulnaris di siku) dengan gejala kesemutan jari manis dan kelingking.",
+    "description_en": "Ulnar nerve sliding technique for cubital tunnel syndrome (ulnar nerve compression at the elbow), presenting with ring and little finger tingling.",
+    "instructions": "1. Duduk tegak, angkat lengan setinggi bahu, tekuk siku sehingga tangan mendekati telinga (posisi 'menelepon terbalik').\n2. Tekuk pergelangan dan jari-jari ke belakang (ekstensi) sambil siku masih tertekuk.\n3. Luruskan siku perlahan sambil pergelangan tetap dalam posisi ekstensi - ini menciptakan gerakan sliding pada saraf ulnaris.\n4. Kembali ke posisi awal, ulangi gerakan secara ritmis dan lembut.\n5. Hentikan bila kesemutan/nyeri tajam menjalar bertambah, bukan sekadar rasa tertarik ringan.",
+    "instructions_en": "1. Sit upright, raise the arm to shoulder height, bend the elbow so the hand approaches the ear ('backwards phone call' position).\n2. Bend the wrist and fingers back (extension) while the elbow stays bent.\n3. Slowly straighten the elbow while the wrist stays extended - this creates a sliding motion on the ulnar nerve.\n4. Return to the start, repeat the motion rhythmically and gently.\n5. Stop if tingling or sharp radiating pain increases, beyond a mild pulling sensation.",
+    "contraindications": "Hindari pada cubital tunnel syndrome berat dengan kelemahan otot progresif (rujuk untuk evaluasi bedah). Hentikan bila gejala memburuk setelah latihan.",
+    "progression_tips": "Kombinasikan dengan modifikasi posisi siku saat tidur/bekerja (hindari fleksi siku lama) dan bantalan siku bila diperlukan.",
+    "default_sets": 3,
+    "default_reps": 10,
+    "default_hold_seconds": 2,
+    "default_rest_seconds": 30,
+    "default_frequency": "2-3x/hari",
+    "evidence_level": "C",
+    "evidence_source": "Coppieters & Butler Man Ther 2008 (neurodynamic sliders); Svernlöv B et al. J Hand Surg Eur 2009 (conservative treatment cubital tunnel syndrome)",
+    "tags": [
+      "cubital tunnel",
+      "ulnar nerve",
+      "neurodynamic",
+      "elbow"
+    ]
   }
 ]

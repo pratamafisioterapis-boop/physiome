@@ -9,7 +9,9 @@
     "movement_type": "Motor control",
     "starting_position": "Supine",
     "target_muscles": "Quadriceps (terutama vastus medialis)",
-    "equipment_needed": ["Handuk gulung"],
+    "equipment_needed": [
+      "Handuk gulung"
+    ],
     "description": "Latihan pertama setelah operasi atau cedera lutut: mengaktifkan quadriceps tanpa menggerakkan sendi.",
     "description_en": "The first exercise after knee surgery or injury: activating the quadriceps without moving the joint.",
     "instructions": "1. Berbaring telentang atau duduk dengan tungkai lurus, letakkan handuk gulung kecil di bawah lutut.\n2. Tekan bagian belakang lutut ke arah handuk sambil mengencangkan otot paha depan.\n3. Tumit boleh sedikit terangkat dari alas.\n4. Tahan 5-10 detik, rasakan otot di atas lutut mengeras, lalu rileks 5 detik.\n5. Ulangi 10-15 kali.",
@@ -23,7 +25,12 @@
     "default_frequency": "3-5x/hari pada fase awal",
     "evidence_level": "A",
     "evidence_source": "Adams et al. JOSPT 2012 (ACL rehab current concepts); Brigham & Women's TKA protocol",
-    "tags": ["post-op", "ACL", "TKA", "quadriceps"]
+    "tags": [
+      "post-op",
+      "ACL",
+      "TKA",
+      "quadriceps"
+    ]
   },
   {
     "slug": "straight-leg-raise",
@@ -35,7 +42,9 @@
     "movement_type": "Strength",
     "starting_position": "Supine",
     "target_muscles": "Quadriceps, iliopsoas",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Penguatan quadriceps tanpa menekuk lutut - aman pada fase awal pasca operasi lutut dan osteoartritis.",
     "description_en": "Quadriceps strengthening without knee bending - safe in early post-operative knee care and osteoarthritis.",
     "instructions": "1. Berbaring telentang dengan satu lutut ditekuk dan kaki menapak; tungkai yang dilatih lurus.\n2. Kencangkan otot paha depan (quad set) terlebih dahulu sampai lutut benar-benar lurus.\n3. Angkat tungkai lurus setinggi sekitar 30 cm.\n4. Tahan 3 detik, turunkan perlahan selama 3 detik.\n5. Lutut tidak boleh menekuk saat mengangkat.",
@@ -49,7 +58,12 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "A",
     "evidence_source": "Adams et al. JOSPT 2012; Brigham & Women's Hospital TKA Protocol",
-    "tags": ["post-op", "quadriceps", "knee OA", "ACL"]
+    "tags": [
+      "post-op",
+      "quadriceps",
+      "knee OA",
+      "ACL"
+    ]
   },
   {
     "slug": "heel-slide",
@@ -61,7 +75,10 @@
     "movement_type": "Mobility",
     "starting_position": "Supine",
     "target_muscles": "Lingkup gerak fleksi lutut",
-    "equipment_needed": ["Matras", "Handuk atau kantong plastik untuk mengurangi gesekan"],
+    "equipment_needed": [
+      "Matras",
+      "Handuk atau kantong plastik untuk mengurangi gesekan"
+    ],
     "description": "Latihan mengembalikan tekukan lutut setelah operasi, imobilisasi, atau cedera.",
     "description_en": "Restores knee flexion after surgery, immobilisation, or injury.",
     "instructions": "1. Berbaring telentang dengan kedua tungkai lurus, letakkan handuk licin di bawah tumit sisi yang dilatih.\n2. Geser tumit ke arah bokong dengan menekuk lutut sejauh yang nyaman.\n3. Tahan 5 detik pada ujung gerak yang terasa tarikan ringan.\n4. Luruskan kembali perlahan.\n5. Ulangi 10-15 kali; catat sudut tekukan yang dicapai.",
@@ -75,7 +92,12 @@
     "default_frequency": "3-4x/hari pada fase awal",
     "evidence_level": "A",
     "evidence_source": "Brigham & Women's Hospital TKA Protocol; Adams et al. JOSPT 2012 (ACL)",
-    "tags": ["post-op", "ROM", "TKA", "ACL"]
+    "tags": [
+      "post-op",
+      "ROM",
+      "TKA",
+      "ACL"
+    ]
   },
   {
     "slug": "short-arc-quad",
@@ -87,7 +109,9 @@
     "movement_type": "Strength",
     "starting_position": "Supine",
     "target_muscles": "Quadriceps",
-    "equipment_needed": ["Handuk gulung besar atau bantal guling"],
+    "equipment_needed": [
+      "Handuk gulung besar atau bantal guling"
+    ],
     "description": "Penguatan quadriceps pada rentang gerak akhir yang paling sering lemah setelah operasi lutut.",
     "description_en": "Quadriceps strengthening through the terminal range that is most often weak after knee surgery.",
     "instructions": "1. Berbaring telentang dengan handuk gulung besar di bawah lutut sehingga lutut menekuk sekitar 30 derajat.\n2. Luruskan lutut dengan mengangkat tumit dari alas, paha tetap menempel handuk.\n3. Tahan 3-5 detik pada posisi lurus penuh.\n4. Turunkan perlahan selama 3 detik.\n5. Ulangi 12-15 kali.",
@@ -101,7 +125,12 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "A",
     "evidence_source": "Adams et al. JOSPT 2012; Escamilla et al. JOSPT 2012 (patellofemoral joint loading)",
-    "tags": ["post-op", "quadriceps", "TKA", "PFP"]
+    "tags": [
+      "post-op",
+      "quadriceps",
+      "TKA",
+      "PFP"
+    ]
   },
   {
     "slug": "terminal-knee-extension-band",
@@ -113,7 +142,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Quadriceps (vastus medialis obliquus)",
-    "equipment_needed": ["Karet elastis"],
+    "equipment_needed": [
+      "Karet elastis"
+    ],
     "description": "Penguatan quadriceps sambil menumpu berat badan, membantu mengembalikan ekstensi lutut penuh saat berjalan.",
     "description_en": "Weight-bearing quadriceps strengthening that helps restore full knee extension during gait.",
     "instructions": "1. Ikat karet elastis setinggi lutut pada tiang; lingkarkan pada bagian belakang lutut yang dilatih.\n2. Berdiri menghadap titik ikat, mundur sampai karet tegang, lutut sedikit menekuk.\n3. Luruskan lutut melawan tahanan karet sampai benar-benar lurus.\n4. Tahan 3 detik sambil mengencangkan paha depan.\n5. Kembali perlahan ke posisi menekuk. Ulangi 15 kali.",
@@ -127,7 +158,11 @@
     "default_frequency": "3-5x/minggu",
     "evidence_level": "B",
     "evidence_source": "Adams et al. JOSPT 2012 (ACL rehab); Logerstedt et al. Knee Ligament Sprain CPG, JOSPT 2017",
-    "tags": ["ACL", "quadriceps", "post-op"]
+    "tags": [
+      "ACL",
+      "quadriceps",
+      "post-op"
+    ]
   },
   {
     "slug": "wall-squat-slide",
@@ -139,7 +174,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Quadriceps, gluteus",
-    "equipment_needed": ["Dinding"],
+    "equipment_needed": [
+      "Dinding"
+    ],
     "description": "Squat terbimbing dinding dengan kontrol kedalaman, cocok untuk osteoartritis lutut dan tahap menengah rehabilitasi.",
     "description_en": "Wall-guided squat with controlled depth, suitable for knee osteoarthritis and mid-stage rehabilitation.",
     "instructions": "1. Berdiri menempel dinding dengan kaki 40-50 cm dari dinding, selebar bahu.\n2. Geser punggung turun sampai lutut menekuk 45-60 derajat.\n3. Tahan 3-5 detik pada posisi bawah.\n4. Geser kembali ke atas dengan mendorong melalui tumit.\n5. Ulangi 10-12 kali.",
@@ -153,7 +190,11 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "A",
     "evidence_source": "Willy et al. Patellofemoral Pain CPG, JOSPT 2019; Fransen et al. Cochrane 2015 (knee OA exercise)",
-    "tags": ["knee OA", "quadriceps", "PFP"]
+    "tags": [
+      "knee OA",
+      "quadriceps",
+      "PFP"
+    ]
   },
   {
     "slug": "step-down-eccentric",
@@ -165,7 +206,10 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Quadriceps (eksentrik), gluteus medius",
-    "equipment_needed": ["Step 10-20 cm", "Pegangan"],
+    "equipment_needed": [
+      "Step 10-20 cm",
+      "Pegangan"
+    ],
     "description": "Latihan kontrol eksentrik quadriceps dan panggul, sekaligus tes fungsional untuk nyeri lutut anterior.",
     "description_en": "Eccentric quadriceps and hip control exercise that doubles as a functional test for anterior knee pain.",
     "instructions": "1. Berdiri di atas step dengan satu kaki, kaki lainnya menggantung di depan.\n2. Pegang pegangan ringan bila perlu.\n3. Tekuk lutut tumpu perlahan selama 3-4 detik sampai tumit kaki yang menggantung menyentuh lantai ringan.\n4. Jangan biarkan lutut jatuh ke dalam atau panggul turun ke sisi berlawanan.\n5. Kembali naik dan ulangi 8-12 kali per sisi.",
@@ -179,7 +223,12 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "A",
     "evidence_source": "Willy et al. Patellofemoral Pain CPG, JOSPT 2019; Logerstedt et al. JOSPT 2017",
-    "tags": ["PFP", "quadriceps", "eccentric", "advanced"]
+    "tags": [
+      "PFP",
+      "quadriceps",
+      "eccentric",
+      "advanced"
+    ]
   },
   {
     "slug": "spanish-squat",
@@ -191,7 +240,10 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Quadriceps, tendon patella",
-    "equipment_needed": ["Karet elastis tebal", "Tiang kokoh"],
+    "equipment_needed": [
+      "Karet elastis tebal",
+      "Tiang kokoh"
+    ],
     "description": "Latihan isometrik khusus untuk tendinopati patella - memberi beban tinggi pada tendon dengan nyeri minimal.",
     "description_en": "Targeted isometric for patellar tendinopathy - high tendon load with minimal pain.",
     "instructions": "1. Ikat karet elastis tebal setinggi lutut pada tiang kokoh dan lingkarkan di belakang kedua lutut.\n2. Mundur sampai karet tegang, berdiri tegak.\n3. Turun ke posisi squat sekitar 60-70 derajat sambil bersandar ke belakang pada karet, badan tetap tegak vertikal.\n4. Tahan 30-45 detik.\n5. Ulangi 5 kali dengan istirahat 1-2 menit.",
@@ -205,7 +257,11 @@
     "default_frequency": "1x/hari",
     "evidence_level": "B",
     "evidence_source": "Rio et al. Br J Sports Med 2015; Kongsgaard et al. Scand J Med Sci Sports 2009 (heavy slow resistance)",
-    "tags": ["patellar tendinopathy", "isometric", "jumper's knee"]
+    "tags": [
+      "patellar tendinopathy",
+      "isometric",
+      "jumper's knee"
+    ]
   },
   {
     "slug": "hamstring-curl-prone",
@@ -217,7 +273,10 @@
     "movement_type": "Strength",
     "starting_position": "Prone",
     "target_muscles": "Hamstring",
-    "equipment_needed": ["Matras", "Beban pergelangan kaki atau karet elastis (opsional)"],
+    "equipment_needed": [
+      "Matras",
+      "Beban pergelangan kaki atau karet elastis (opsional)"
+    ],
     "description": "Penguatan hamstring terisolasi untuk cedera hamstring, rehabilitasi ACL, dan keseimbangan otot paha.",
     "description_en": "Isolated hamstring strengthening for hamstring injury, ACL rehabilitation, and thigh muscle balance.",
     "instructions": "1. Tengkurap dengan kedua tungkai lurus dan panggul menempel matras.\n2. Tekuk satu lutut membawa tumit ke arah bokong sejauh nyaman.\n3. Jangan mengangkat panggul dari matras.\n4. Tahan 2 detik, turunkan perlahan selama 3 detik.\n5. Ulangi 12-15 kali per sisi.",
@@ -231,7 +290,11 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "B",
     "evidence_source": "Logerstedt et al. Knee Ligament Sprain CPG, JOSPT 2017; Askling et al. Br J Sports Med 2013",
-    "tags": ["hamstring", "ACL", "strength"]
+    "tags": [
+      "hamstring",
+      "ACL",
+      "strength"
+    ]
   },
   {
     "slug": "nordic-hamstring-curl",
@@ -243,7 +306,10 @@
     "movement_type": "Strength",
     "starting_position": "Quadruped",
     "target_muscles": "Hamstring (eksentrik)",
-    "equipment_needed": ["Matras", "Partner atau alat penahan pergelangan kaki"],
+    "equipment_needed": [
+      "Matras",
+      "Partner atau alat penahan pergelangan kaki"
+    ],
     "description": "Latihan eksentrik hamstring yang terbukti menurunkan risiko cedera hamstring hingga sekitar 50% pada atlet.",
     "description_en": "Eccentric hamstring exercise shown to cut hamstring injury risk by roughly half in athletes.",
     "instructions": "1. Berlutut di matras dengan badan tegak; minta partner menahan kuat kedua pergelangan kaki.\n2. Kencangkan perut dan bokong sehingga badan lurus dari lutut ke kepala.\n3. Turunkan badan ke depan SELAMBAT mungkin, tahan dengan hamstring.\n4. Tangkap badan dengan tangan saat sudah tidak bisa menahan.\n5. Dorong dengan tangan untuk kembali ke posisi awal (fase mengangkat tidak dilatih).",
@@ -257,7 +323,12 @@
     "default_frequency": "1-3x/minggu sesuai fase",
     "evidence_level": "A",
     "evidence_source": "Petersen et al. Am J Sports Med 2011;39(11):2296-2303; van Dyk et al. Br J Sports Med 2019 (meta-analysis)",
-    "tags": ["hamstring", "prevention", "eccentric", "sports"]
+    "tags": [
+      "hamstring",
+      "prevention",
+      "eccentric",
+      "sports"
+    ]
   },
   {
     "slug": "patellar-mobilization",
@@ -283,7 +354,11 @@
     "default_frequency": "2-3x/hari",
     "evidence_level": "B",
     "evidence_source": "Brigham & Women's Hospital TKA Protocol; Adams et al. JOSPT 2012",
-    "tags": ["post-op", "TKA", "mobility"]
+    "tags": [
+      "post-op",
+      "TKA",
+      "mobility"
+    ]
   },
   {
     "slug": "stationary-cycling",
@@ -295,7 +370,9 @@
     "movement_type": "Aerobic",
     "starting_position": "Sitting",
     "target_muscles": "Quadriceps, hamstring, betis, sistem kardiovaskular",
-    "equipment_needed": ["Sepeda statis"],
+    "equipment_needed": [
+      "Sepeda statis"
+    ],
     "description": "Latihan aerobik dengan beban sendi rendah, sekaligus mengembalikan lingkup gerak lutut secara bertahap.",
     "description_en": "Low-joint-load aerobic exercise that also progressively restores knee range of motion.",
     "instructions": "1. Atur tinggi sadel sehingga lutut sedikit menekuk (sekitar 15-20 derajat) saat pedal di posisi terbawah.\n2. Bila lutut belum bisa memutar penuh, lakukan gerakan maju-mundur setengah putaran terlebih dahulu.\n3. Kayuh dengan tahanan ringan selama 5-10 menit sebagai awalan.\n4. Intensitas sedang: masih bisa berbicara tetapi tidak bisa bernyanyi (RPE 11-13 dari skala Borg 6-20).\n5. Tingkatkan durasi 2-5 menit per minggu sampai 20-30 menit.",
@@ -309,7 +386,12 @@
     "default_frequency": "3-5x/minggu",
     "evidence_level": "A",
     "evidence_source": "ACSM's Guidelines for Exercise Testing and Prescription, 11th ed.; WHO 2020 Physical Activity Guidelines",
-    "tags": ["aerobic", "knee OA", "cardio", "post-op"]
+    "tags": [
+      "aerobic",
+      "knee OA",
+      "cardio",
+      "post-op"
+    ]
   },
   {
     "slug": "prone-knee-hang",
@@ -321,7 +403,9 @@
     "movement_type": "Stretch",
     "starting_position": "Prone",
     "target_muscles": "Kapsul posterior lutut, hamstring",
-    "equipment_needed": ["Meja atau tempat tidur"],
+    "equipment_needed": [
+      "Meja atau tempat tidur"
+    ],
     "description": "Peregangan pasif untuk mengembalikan ekstensi lutut penuh - prioritas utama setelah operasi lutut.",
     "description_en": "Passive stretch to restore full knee extension - a top priority after knee surgery.",
     "instructions": "1. Tengkurap di tempat tidur dengan lutut dan tungkai bawah menggantung di luar tepi.\n2. Biarkan gravitasi meluruskan lutut secara pasif - otot harus rileks total.\n3. Tahan 5-10 menit; boleh tambahkan beban ringan di pergelangan kaki.\n4. Jangan menahan bila timbul nyeri tajam - kurangi beban.\n5. Lakukan 2-3 kali sehari pada fase pemulihan ekstensi.",
@@ -335,6 +419,177 @@
     "default_frequency": "2-3x/hari",
     "evidence_level": "A",
     "evidence_source": "Adams et al. JOSPT 2012 (ACL rehab); Logerstedt et al. JOSPT 2017",
-    "tags": ["post-op", "ACL", "TKA", "extension"]
+    "tags": [
+      "post-op",
+      "ACL",
+      "TKA",
+      "extension"
+    ]
+  },
+  {
+    "slug": "single-leg-hop-distance",
+    "name": "Single-Leg Hop for Distance",
+    "name_id": "Lompat Satu Kaki untuk Jarak",
+    "body_region": "Knee",
+    "category": "Lower Limb",
+    "difficulty": "Advanced",
+    "movement_type": "Strength",
+    "starting_position": "Standing",
+    "target_muscles": "Quadriceps, gluteal, gastrocnemius-soleus (daya ledak dan penyerapan gaya satu tungkai)",
+    "equipment_needed": [
+      "Lantai datar dengan ruang cukup",
+      "Pita pengukur (opsional)"
+    ],
+    "description": "Uji sekaligus latihan pliometrik satu tungkai standar untuk fase akhir rehabilitasi ACL/kembali ke olahraga, sekaligus salah satu dari empat 'hop tests' yang divalidasi.",
+    "description_en": "A standard single-leg plyometric test-and-training drill for late-stage ACL rehabilitation/return to sport, and one of the four validated hop tests.",
+    "instructions": "1. Berdiri seimbang di satu tungkai di belakang garis awal, tangan bebas di samping tubuh.\n2. Lompat sejauh mungkin ke depan menggunakan tungkai yang sama, ayunkan lengan untuk momentum.\n3. Mendarat dengan tungkai yang sama, tekuk lutut untuk menyerap gaya secara terkontrol.\n4. Tahan posisi mendarat stabil selama 2-3 detik tanpa kehilangan keseimbangan.\n5. Hanya dilakukan setelah kekuatan quadriceps mencapai minimal 90% simetri dibanding tungkai sehat (Limb Symmetry Index) dan atas izin terapis.",
+    "instructions_en": "1. Balance on one leg behind a start line, arms free at your sides.\n2. Hop forward as far as possible using the same leg, swinging the arms for momentum.\n3. Land on the same leg, bending the knee to absorb the force with control.\n4. Hold the landing stable for 2-3 seconds without losing balance.\n5. Only performed once quadriceps strength reaches at least 90% symmetry versus the healthy leg (Limb Symmetry Index) and with therapist clearance.",
+    "contraindications": "Jangan lakukan sebelum kriteria kekuatan dan kontrol neuromuskular fase menengah rehabilitasi ACL tercapai. Hentikan bila lutut terasa tidak stabil ('giving way') atau nyeri tajam saat mendarat.",
+    "progression_tips": "Gunakan hasil jarak lompat untuk menghitung Limb Symmetry Index (target >90%) sebelum kembali ke olahraga. Lanjutkan ke triple hop dan crossover hop bila hop tunggal sudah simetris.",
+    "default_sets": 3,
+    "default_reps": 3,
+    "default_hold_seconds": 3,
+    "default_rest_seconds": 60,
+    "default_frequency": "2x/minggu",
+    "evidence_level": "A",
+    "evidence_source": "Grindem et al. Br J Sports Med 2016;50(13):804-808 (Delaware-Oslo ACL cohort, hop tests and return-to-sport criteria); Logerstedt et al. Knee Ligament Sprain CPG, JOSPT 2017;47(11):A1-A47",
+    "tags": [
+      "ACL",
+      "return to sport",
+      "hop test",
+      "plyometric"
+    ]
+  },
+  {
+    "slug": "lateral-bound-skater-hop",
+    "name": "Lateral Bound (Skater Hop)",
+    "name_id": "Lompat Lateral (Skater Hop)",
+    "body_region": "Knee",
+    "category": "Lower Limb",
+    "difficulty": "Advanced",
+    "movement_type": "Strength",
+    "starting_position": "Standing",
+    "target_muscles": "Gluteus medius, quadriceps, peroneal (kontrol frontal plane dan penyerapan gaya lateral)",
+    "equipment_needed": [
+      "Lantai datar dengan ruang cukup"
+    ],
+    "description": "Latihan pliometrik lateral fase akhir rehabilitasi lutut/pergelangan kaki, melatih kontrol frontal plane yang penting untuk olahraga dengan perubahan arah cepat.",
+    "description_en": "A late-stage lateral plyometric drill for knee/ankle rehabilitation, training frontal-plane control important for sports with rapid changes of direction.",
+    "instructions": "1. Berdiri seimbang di satu tungkai, lutut sedikit ditekuk.\n2. Lompat ke samping menuju tungkai yang lain, mendarat dengan tungkai tersebut dan serap gaya dengan menekuk lutut dan pinggul.\n3. Tahan posisi mendarat 1-2 detik, jaga lutut sejajar dengan jari kaki (tidak jatuh ke dalam/valgus).\n4. Segera lompat kembali ke arah berlawanan begitu stabil.\n5. Ulangi bolak-balik seperti gerakan skater es.",
+    "instructions_en": "1. Balance on one leg, knee slightly bent.\n2. Bound sideways toward the other leg, landing on that leg and absorbing the force by bending the knee and hip.\n3. Hold the landing for 1-2 seconds, keeping the knee tracking over the toes (not collapsing inward/valgus).\n4. Immediately bound back the other way once stable.\n5. Repeat back and forth like a speed skater's stride.",
+    "contraindications": "Hanya untuk fase lanjut rehabilitasi dengan kekuatan dan kontrol dinamis lutut/pergelangan kaki memadai. Hentikan bila lutut jatuh ke dalam (valgus) berulang atau nyeri saat mendarat.",
+    "progression_tips": "Mulai dengan jarak lompat pendek dan tahan lebih lama sebelum lompat berikutnya; naikkan jarak dan kecepatan repetisi secara bertahap.",
+    "default_sets": 3,
+    "default_reps": 8,
+    "default_hold_seconds": 2,
+    "default_rest_seconds": 60,
+    "default_frequency": "2x/minggu",
+    "evidence_level": "B",
+    "evidence_source": "Myer GD et al. J Strength Cond Res 2006 (plyometric training and neuromuscular control); Logerstedt et al. Knee Ligament Sprain CPG, JOSPT 2017",
+    "tags": [
+      "ACL",
+      "plyometric",
+      "return to sport",
+      "frontal plane"
+    ]
+  },
+  {
+    "slug": "box-jump-soft-landing",
+    "name": "Box Jump with Soft Landing",
+    "name_id": "Lompat ke Kotak dengan Pendaratan Lembut",
+    "body_region": "Knee",
+    "category": "Lower Limb",
+    "difficulty": "Advanced",
+    "movement_type": "Strength",
+    "starting_position": "Standing",
+    "target_muscles": "Quadriceps, gluteal, gastrocnemius-soleus (daya ledak dua tungkai dan mekanik pendaratan)",
+    "equipment_needed": [
+      "Kotak plyo/bangku stabil rendah"
+    ],
+    "description": "Latihan pliometrik dua tungkai yang menekankan teknik pendaratan lembut, digunakan pada fase akhir rehabilitasi lutut untuk melatih penyerapan gaya yang aman sebelum kembali ke olahraga lompat.",
+    "description_en": "A double-leg plyometric exercise emphasising soft landing technique, used in late-phase knee rehabilitation to train safe force absorption before returning to jumping sports.",
+    "instructions": "1. Berdiri menghadap kotak rendah dengan jarak nyaman, kaki selebar bahu.\n2. Tekuk lutut dan pinggul sedikit, ayunkan lengan, lalu lompat ke atas kotak dengan kedua kaki.\n3. Mendarat di atas kotak dengan lembut - lutut menekuk, pinggul ke belakang, tumit menyentuh permukaan (bukan hanya ujung kaki).\n4. Berdiri tegak sepenuhnya di atas kotak sebelum melangkah turun (bukan melompat turun) untuk repetisi berikutnya.\n5. Fokus pada suara pendaratan sesenyap mungkin sebagai indikator penyerapan gaya yang baik.",
+    "instructions_en": "1. Stand facing a low box at a comfortable distance, feet shoulder-width apart.\n2. Bend the knees and hips slightly, swing the arms, then jump onto the box with both feet.\n3. Land on the box softly - knees bending, hips back, heels touching down (not just the toes).\n4. Stand fully upright on the box before stepping down (not jumping down) for the next repetition.\n5. Focus on landing as quietly as possible as an indicator of good force absorption.",
+    "contraindications": "Hanya untuk fase lanjut rehabilitasi dengan kekuatan dasar dan kontrol lutut memadai. Hindari pada efusi sendi aktif, nyeri patellofemoral yang belum terkontrol, atau osteoartritis lutut berat.",
+    "progression_tips": "Setelah pendaratan dua tungkai konsisten lembut, naikkan tinggi kotak, lalu progres ke pendaratan satu tungkai dan drop jump.",
+    "default_sets": 3,
+    "default_reps": 6,
+    "default_hold_seconds": 2,
+    "default_rest_seconds": 60,
+    "default_frequency": "2x/minggu",
+    "evidence_level": "B",
+    "evidence_source": "Myer GD et al. Br J Sports Med 2006 (plyometric training ACL injury prevention/rehabilitation); Logerstedt et al. JOSPT 2017 Knee Ligament Sprain CPG",
+    "tags": [
+      "plyometric",
+      "landing mechanics",
+      "return to sport"
+    ]
+  },
+  {
+    "slug": "multi-angle-isometric-quad",
+    "name": "Multi-Angle Isometric Quad Sets",
+    "name_id": "Kontraksi Isometrik Quad di Berbagai Sudut",
+    "body_region": "Knee",
+    "category": "Lower Limb",
+    "difficulty": "Beginner",
+    "movement_type": "Strength",
+    "starting_position": "Sitting",
+    "target_muscles": "Quadriceps (vastus medialis obliquus, vastus lateralis, rectus femoris)",
+    "equipment_needed": [
+      "Kursi",
+      "Bantal/gulungan handuk"
+    ],
+    "description": "Kontraksi isometrik quadriceps pada beberapa sudut lutut berbeda, berguna pasca dislokasi patela dan nyeri patellofemoral yang terbatas pada busur gerak tertentu.",
+    "description_en": "Isometric quadriceps contractions at several different knee angles, useful after patellar dislocation and in patellofemoral pain limited to a specific range of the arc of motion.",
+    "instructions": "1. Duduk di kursi dengan lutut ditekuk pada sudut tertentu (misalnya 90, 60, 40, dan 20 derajat secara bergantian di sesi berbeda).\n2. Dorong tumit ke lantai/ke bawah sambil mengencangkan otot paha depan, seolah ingin meluruskan lutut melawan tahanan tak bergerak.\n3. Tahan kontraksi 6-10 detik tanpa menahan napas.\n4. Lepaskan perlahan, istirahat, dan ulangi pada sudut yang sama sebelum berpindah sudut lain.\n5. Hindari sudut yang memicu nyeri tajam patellofemoral - pilih sudut yang nyaman (pain-free arc).",
+    "instructions_en": "1. Sit in a chair with the knee bent at a specific angle (e.g. 90, 60, 40, and 20 degrees, rotating through different sessions).\n2. Push the heel down/into the floor while tightening the front thigh muscle, as if trying to straighten the knee against an immovable resistance.\n3. Hold the contraction 6-10 seconds without holding your breath.\n4. Release slowly, rest, and repeat at the same angle before moving to another angle.\n5. Avoid angles that trigger sharp patellofemoral pain - choose a comfortable (pain-free) arc.",
+    "contraindications": "Ikuti izin dokter/ahli bedah pasca dislokasi patela atau operasi lutut. Hindari sudut yang memicu nyeri tajam atau rasa 'akan lepas' di lutut.",
+    "progression_tips": "Setelah nyaman di beberapa sudut, lanjutkan ke penguatan dinamis busur pendek (short arc quad) lalu lingkup gerak penuh dengan beban.",
+    "default_sets": 3,
+    "default_reps": 8,
+    "default_hold_seconds": 8,
+    "default_rest_seconds": 30,
+    "default_frequency": "1-2x/hari",
+    "evidence_level": "B",
+    "evidence_source": "Willy et al. Patellofemoral Pain CPG, JOSPT 2019;49(9):CPG1-CPG95; Escamilla et al. JOSPT 2012 (patellofemoral joint loading by knee angle)",
+    "tags": [
+      "patellofemoral",
+      "isometric",
+      "quad",
+      "post-dislocation"
+    ]
+  },
+  {
+    "slug": "controlled-partial-squat-meniscus",
+    "name": "Controlled Partial Squat (Meniscus-Safe)",
+    "name_id": "Squat Parsial Terkontrol (Aman untuk Meniskus)",
+    "body_region": "Knee",
+    "category": "Lower Limb",
+    "difficulty": "Beginner",
+    "movement_type": "Strength",
+    "starting_position": "Standing",
+    "target_muscles": "Quadriceps, gluteal (pada busur gerak lutut terbatas 0-60 derajat)",
+    "equipment_needed": [
+      "Kursi sebagai panduan kedalaman"
+    ],
+    "description": "Squat pada busur gerak terbatas yang menghindari fleksi lutut dalam, digunakan pada fase awal-menengah rehabilitasi cedera/perbaikan meniskus untuk membatasi kompresi sendi.",
+    "description_en": "A limited-arc squat avoiding deep knee flexion, used in early-to-mid meniscus injury/repair rehabilitation to limit joint compression.",
+    "instructions": "1. Berdiri dengan kaki selebar bahu, kursi diletakkan di belakang sebagai panduan batas kedalaman.\n2. Turunkan badan perlahan dengan menekuk lutut dan pinggul, jaga lutut tidak melampaui sekitar 60 derajat fleksi (paha belum sejajar lantai).\n3. Jaga lutut sejajar arah jari kaki, berat badan merata di kedua kaki.\n4. Berdiri kembali dengan mendorong melalui tumit.\n5. Hentikan bila terasa 'terjepit' atau nyeri tajam di garis sendi lutut.",
+    "instructions_en": "1. Stand with feet shoulder-width apart, a chair placed behind as a depth guide.\n2. Lower slowly by bending the knees and hips, keeping the knee from going past about 60 degrees of flexion (thigh not yet parallel to the floor).\n3. Keep the knee tracking over the toes, weight even on both feet.\n4. Stand back up by pushing through the heels.\n5. Stop if a 'catching' sensation or sharp pain occurs at the knee joint line.",
+    "contraindications": "Ikuti batasan sudut sesuai instruksi ahli bedah pasca perbaikan meniskus (umumnya hindari fleksi dalam pada 4-6 minggu pertama). Hindari squat dalam pada meniskus robek yang belum stabil.",
+    "progression_tips": "Perdalam sudut squat secara bertahap sesuai izin dan toleransi nyeri, dari busur pendek menuju squat penuh dalam beberapa minggu.",
+    "default_sets": 3,
+    "default_reps": 10,
+    "default_hold_seconds": 2,
+    "default_rest_seconds": 30,
+    "default_frequency": "3x/minggu",
+    "evidence_level": "B",
+    "evidence_source": "Logerstedt et al. Knee Ligament Sprain CPG, JOSPT 2017;47(11):A1-A47 (graded loading principles); Skou & Roos BMC Musculoskelet Disord 2017 (GLA:D progressive loading)",
+    "tags": [
+      "meniscus",
+      "squat",
+      "post-op",
+      "graded loading"
+    ]
   }
 ]

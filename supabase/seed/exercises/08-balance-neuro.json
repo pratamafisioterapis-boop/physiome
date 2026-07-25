@@ -9,7 +9,9 @@
     "movement_type": "Balance",
     "starting_position": "Standing",
     "target_muscles": "Penstabil pergelangan kaki dan pinggul, sistem keseimbangan",
-    "equipment_needed": ["Kursi atau meja untuk pegangan"],
+    "equipment_needed": [
+      "Kursi atau meja untuk pegangan"
+    ],
     "description": "Latihan keseimbangan statis dasar - komponen inti pencegahan jatuh dan rehabilitasi instabilitas pergelangan kaki.",
     "description_en": "Foundational static balance drill - a core component of falls prevention and ankle instability rehabilitation.",
     "instructions": "1. Berdiri di dekat meja atau kursi yang kokoh untuk keamanan.\n2. Angkat satu kaki sehingga tidak menyentuh lantai, lutut sedikit ditekuk.\n3. Jaga panggul sejajar dan pandangan lurus ke depan pada satu titik.\n4. Tahan 30 detik atau selama mampu, lalu ganti kaki.\n5. Kurangi bantuan tangan secara bertahap: dua tangan -> satu tangan -> satu jari -> tanpa pegangan.",
@@ -23,7 +25,12 @@
     "default_frequency": "3-7x/minggu",
     "evidence_level": "A",
     "evidence_source": "Otago Exercise Programme (Campbell et al. BMJ 1997); Martin et al. Ankle Stability CPG, JOSPT 2021",
-    "tags": ["balance", "falls prevention", "ankle instability", "Otago"]
+    "tags": [
+      "balance",
+      "falls prevention",
+      "ankle instability",
+      "Otago"
+    ]
   },
   {
     "slug": "single-leg-stance-foam",
@@ -35,7 +42,10 @@
     "movement_type": "Balance",
     "starting_position": "Standing",
     "target_muscles": "Kontrol neuromuskular pergelangan kaki dan pinggul",
-    "equipment_needed": ["Bantal busa atau wobble board", "Pegangan"],
+    "equipment_needed": [
+      "Bantal busa atau wobble board",
+      "Pegangan"
+    ],
     "description": "Latihan keseimbangan pada permukaan tidak stabil, terbukti menurunkan risiko keseleo ulang pergelangan kaki.",
     "description_en": "Unstable-surface balance training, shown to reduce recurrent ankle sprain risk.",
     "instructions": "1. Letakkan bantal busa atau wobble board di dekat dinding/pegangan.\n2. Berdiri satu kaki di atas permukaan tersebut dengan lutut sedikit ditekuk.\n3. Pertahankan keseimbangan selama 30 detik tanpa kaki lain menyentuh lantai.\n4. Jaga papan tidak menyentuh lantai (bila menggunakan wobble board).\n5. Istirahat 30 detik antar percobaan, ulangi 3-5 kali per sisi.",
@@ -49,7 +59,12 @@
     "default_frequency": "5x/minggu",
     "evidence_level": "A",
     "evidence_source": "Martin et al. Ankle Stability CPG, JOSPT 2021; Wester et al. JOSPT 1996 (wobble board after ankle sprain)",
-    "tags": ["balance", "ankle instability", "proprioception", "advanced"]
+    "tags": [
+      "balance",
+      "ankle instability",
+      "proprioception",
+      "advanced"
+    ]
   },
   {
     "slug": "tandem-stance",
@@ -61,7 +76,9 @@
     "movement_type": "Balance",
     "starting_position": "Standing",
     "target_muscles": "Kontrol postural lateral",
-    "equipment_needed": ["Pegangan"],
+    "equipment_needed": [
+      "Pegangan"
+    ],
     "description": "Latihan keseimbangan dengan basis penopang menyempit - bagian dari Four-Stage Balance Test dan Otago.",
     "description_en": "Narrowed base-of-support balance drill - part of the Four-Stage Balance Test and the Otago programme.",
     "instructions": "1. Berdiri di dekat dinding atau meja untuk keamanan.\n2. Letakkan satu kaki tepat di depan kaki lainnya sehingga tumit depan menyentuh jari kaki belakang.\n3. Jaga pandangan lurus ke depan dan lengan di samping badan.\n4. Tahan 10-30 detik, lalu tukar posisi kaki.\n5. Ulangi 3-5 kali per posisi.",
@@ -75,7 +92,12 @@
     "default_frequency": "3-7x/minggu",
     "evidence_level": "A",
     "evidence_source": "Otago Exercise Programme; CDC STEADI Four-Stage Balance Test",
-    "tags": ["balance", "falls prevention", "geriatric", "Otago"]
+    "tags": [
+      "balance",
+      "falls prevention",
+      "geriatric",
+      "Otago"
+    ]
   },
   {
     "slug": "tandem-walk",
@@ -87,7 +109,9 @@
     "movement_type": "Balance",
     "starting_position": "Standing",
     "target_muscles": "Kontrol keseimbangan dinamis",
-    "equipment_needed": ["Koridor dengan dinding di samping"],
+    "equipment_needed": [
+      "Koridor dengan dinding di samping"
+    ],
     "description": "Latihan keseimbangan berjalan dengan basis sempit, komponen Otago untuk pencegahan jatuh.",
     "description_en": "Narrow-base dynamic balance walking, an Otago component for falls prevention.",
     "instructions": "1. Berdiri di koridor dengan dinding di satu sisi untuk pegangan darurat.\n2. Berjalan lurus dengan meletakkan tumit kaki depan tepat menyentuh jari kaki belakang setiap langkah.\n3. Pandangan lurus ke depan, bukan ke bawah.\n4. Berjalan 10 langkah, berbalik dengan hati-hati, lalu kembali.\n5. Ulangi 4 kali bolak-balik.",
@@ -101,7 +125,12 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "A",
     "evidence_source": "Otago Exercise Programme (Campbell et al. BMJ 1997; Robertson et al. BMJ 2001)",
-    "tags": ["balance", "falls prevention", "gait", "Otago"]
+    "tags": [
+      "balance",
+      "falls prevention",
+      "gait",
+      "Otago"
+    ]
   },
   {
     "slug": "sideways-walking",
@@ -113,7 +142,9 @@
     "movement_type": "Balance",
     "starting_position": "Standing",
     "target_muscles": "Abduktor pinggul, kontrol postural lateral",
-    "equipment_needed": ["Dinding atau meja panjang"],
+    "equipment_needed": [
+      "Dinding atau meja panjang"
+    ],
     "description": "Latihan berjalan lateral untuk kekuatan abduktor pinggul dan keseimbangan samping, bagian dari Otago.",
     "description_en": "Lateral walking for hip abductor strength and side-to-side balance, an Otago component.",
     "instructions": "1. Berdiri di samping meja panjang atau dinding, tangan dapat menyentuh ringan.\n2. Melangkah ke samping dengan satu kaki, lalu ikuti dengan kaki lainnya.\n3. Jaga badan menghadap lurus ke depan dan jari kaki tidak berputar.\n4. Lakukan 10 langkah ke satu arah, lalu 10 langkah kembali.\n5. Ulangi 4 kali bolak-balik.",
@@ -127,7 +158,12 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "A",
     "evidence_source": "Otago Exercise Programme (Campbell et al. BMJ 1997)",
-    "tags": ["balance", "falls prevention", "Otago", "hip"]
+    "tags": [
+      "balance",
+      "falls prevention",
+      "Otago",
+      "hip"
+    ]
   },
   {
     "slug": "backward-walking",
@@ -139,7 +175,9 @@
     "movement_type": "Balance",
     "starting_position": "Standing",
     "target_muscles": "Kontrol keseimbangan, quadriceps, gluteus",
-    "equipment_needed": ["Koridor dengan pegangan"],
+    "equipment_needed": [
+      "Koridor dengan pegangan"
+    ],
     "description": "Latihan berjalan mundur yang menantang kontrol postural dan strategi langkah, bagian dari Otago.",
     "description_en": "Backward walking, challenging postural control and stepping strategy - an Otago component.",
     "instructions": "1. Berdiri di koridor dengan dinding atau pegangan di samping.\n2. Berjalan mundur perlahan 10 langkah, meletakkan ujung kaki terlebih dahulu.\n3. Jangan menoleh ke belakang - pastikan jalur sudah aman terlebih dahulu.\n4. Berbalik dan ulangi.\n5. Lakukan 4 kali bolak-balik.",
@@ -153,7 +191,12 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "A",
     "evidence_source": "Otago Exercise Programme (Campbell et al. BMJ 1997)",
-    "tags": ["balance", "falls prevention", "Otago", "gait"]
+    "tags": [
+      "balance",
+      "falls prevention",
+      "Otago",
+      "gait"
+    ]
   },
   {
     "slug": "gaze-stabilization-x1-horizontal",
@@ -165,7 +208,9 @@
     "movement_type": "Balance",
     "starting_position": "Sitting",
     "target_muscles": "Refleks vestibulo-okular (VOR)",
-    "equipment_needed": ["Kartu dengan huruf/target kecil"],
+    "equipment_needed": [
+      "Kartu dengan huruf/target kecil"
+    ],
     "description": "Latihan adaptasi VOR utama untuk hipofungsi vestibular unilateral - dasar rehabilitasi vestibular.",
     "description_en": "The primary VOR adaptation exercise for unilateral vestibular hypofunction - the cornerstone of vestibular rehabilitation.",
     "instructions": "1. Duduk dan pegang kartu bertuliskan huruf kecil sejauh lengan, setinggi mata.\n2. Fokuskan pandangan pada huruf tersebut - huruf harus tetap TERBACA JELAS sepanjang latihan.\n3. Gerakkan KEPALA ke kanan dan kiri sekitar 30 derajat, sementara kartu tetap diam.\n4. Gerakkan kepala secepat mungkin selama huruf masih terlihat jelas.\n5. Lakukan 1-2 menit, istirahat, lalu ulangi. Total minimal 12 menit per hari terbagi dalam 3 sesi.",
@@ -179,7 +224,12 @@
     "default_frequency": "3-5x/hari",
     "evidence_level": "A",
     "evidence_source": "Hall et al. Vestibular Rehabilitation for Peripheral Vestibular Hypofunction CPG (Updated), J Neurol Phys Ther 2022;46(2):118-177",
-    "tags": ["vestibular", "dizziness", "VOR", "gaze stabilization"]
+    "tags": [
+      "vestibular",
+      "dizziness",
+      "VOR",
+      "gaze stabilization"
+    ]
   },
   {
     "slug": "gaze-stabilization-x1-vertical",
@@ -191,7 +241,9 @@
     "movement_type": "Balance",
     "starting_position": "Sitting",
     "target_muscles": "Refleks vestibulo-okular (bidang vertikal)",
-    "equipment_needed": ["Kartu dengan huruf kecil"],
+    "equipment_needed": [
+      "Kartu dengan huruf kecil"
+    ],
     "description": "Versi vertikal dari latihan adaptasi VOR untuk melengkapi latihan horizontal.",
     "description_en": "Vertical version of the VOR adaptation exercise, complementing the horizontal drill.",
     "instructions": "1. Duduk memegang kartu bertuliskan huruf kecil sejauh lengan.\n2. Fokuskan pandangan pada huruf.\n3. Anggukkan kepala ke atas dan bawah sekitar 30 derajat sementara kartu tetap diam.\n4. Jaga huruf tetap terbaca jelas; perlambat bila mulai kabur.\n5. Lakukan 1-2 menit per sesi.",
@@ -205,7 +257,11 @@
     "default_frequency": "3-5x/hari",
     "evidence_level": "A",
     "evidence_source": "Hall et al. J Neurol Phys Ther 2022;46(2):118-177",
-    "tags": ["vestibular", "dizziness", "VOR"]
+    "tags": [
+      "vestibular",
+      "dizziness",
+      "VOR"
+    ]
   },
   {
     "slug": "brandt-daroff",
@@ -217,7 +273,9 @@
     "movement_type": "Balance",
     "starting_position": "Sitting",
     "target_muscles": "Habituasi sistem vestibular",
-    "equipment_needed": ["Tempat tidur atau matras"],
+    "equipment_needed": [
+      "Tempat tidur atau matras"
+    ],
     "description": "Latihan mandiri untuk vertigo posisi (BPPV) dan habituasi pusing yang dipicu perubahan posisi.",
     "description_en": "Home exercise for positional vertigo (BPPV) and habituation of position-triggered dizziness.",
     "instructions": "1. Duduk di tepi tempat tidur dengan kaki menjuntai.\n2. Berbaring cepat ke sisi kanan dengan kepala menoleh 45 derajat ke atas/kiri; tunggu sampai pusing hilang atau 30 detik.\n3. Duduk kembali dan tunggu 30 detik.\n4. Ulangi ke sisi kiri dengan kepala menoleh ke kanan.\n5. Lakukan 5 siklus per sesi, 3 sesi per hari sampai bebas gejala selama 2 hari.",
@@ -231,7 +289,12 @@
     "default_frequency": "3x/hari",
     "evidence_level": "B",
     "evidence_source": "Bhattacharyya et al. BPPV Clinical Practice Guideline Update, Otolaryngol Head Neck Surg 2017;156(3_suppl):S1-S47",
-    "tags": ["BPPV", "vertigo", "vestibular", "dizziness"]
+    "tags": [
+      "BPPV",
+      "vertigo",
+      "vestibular",
+      "dizziness"
+    ]
   },
   {
     "slug": "sit-to-stand-amplitude",
@@ -243,7 +306,9 @@
     "movement_type": "Motor control",
     "starting_position": "Sitting",
     "target_muscles": "Quadriceps, gluteus, ekstensor batang tubuh",
-    "equipment_needed": ["Kursi kokoh"],
+    "equipment_needed": [
+      "Kursi kokoh"
+    ],
     "description": "Latihan gerakan berlebihan (amplitude training) untuk penyakit Parkinson, prinsip inti pendekatan LSVT BIG.",
     "description_en": "Oversized-movement (amplitude) training for Parkinson's disease, the core principle of the LSVT BIG approach.",
     "instructions": "1. Duduk di tepi kursi dengan kaki menapak lantai.\n2. Julurkan kedua lengan LEBAR ke depan dan atas sambil berdiri dengan gerakan sebesar dan seluas mungkin.\n3. Berdiri tegak penuh dengan dada terbuka dan lengan terentang, tahan 2 detik.\n4. Duduk kembali dengan gerakan besar dan terkontrol.\n5. Lakukan dengan usaha maksimal dan hitungan suara keras; ini bagian dari terapi.",
@@ -257,7 +322,12 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "A",
     "evidence_source": "Ebersbach et al. Mov Disord 2010;25(12):1902-1908 (LSVT BIG RCT); Osborne et al. Parkinson Disease CPG, JNPT 2022",
-    "tags": ["Parkinson", "LSVT BIG", "amplitude", "neuro"]
+    "tags": [
+      "Parkinson",
+      "LSVT BIG",
+      "amplitude",
+      "neuro"
+    ]
   },
   {
     "slug": "big-forward-step-and-reach",
@@ -269,7 +339,10 @@
     "movement_type": "Motor control",
     "starting_position": "Standing",
     "target_muscles": "Tungkai, batang tubuh, koordinasi lengan-tungkai",
-    "equipment_needed": ["Ruang bebas hambatan", "Pegangan bila perlu"],
+    "equipment_needed": [
+      "Ruang bebas hambatan",
+      "Pegangan bila perlu"
+    ],
     "description": "Latihan amplitudo langkah untuk penyakit Parkinson: melawan langkah kecil dan gerakan yang mengecil.",
     "description_en": "Step amplitude training for Parkinson's disease, counteracting shortened steps and shrinking movements.",
     "instructions": "1. Berdiri tegak dengan ruang bebas di depan.\n2. Langkahkan satu kaki ke depan SEJAUH mungkin sambil menjulurkan lengan berlawanan ke depan-atas.\n3. Tahan posisi selebar mungkin selama 2 detik.\n4. Kembali ke posisi berdiri dan ulangi dengan kaki lainnya.\n5. Hitung keras setiap repetisi dengan suara lantang.",
@@ -283,7 +356,12 @@
     "default_frequency": "1x/hari",
     "evidence_level": "A",
     "evidence_source": "Ebersbach et al. Mov Disord 2010; Osborne et al. Parkinson Disease CPG, JNPT 2022;46(4):240-269",
-    "tags": ["Parkinson", "LSVT BIG", "gait", "neuro"]
+    "tags": [
+      "Parkinson",
+      "LSVT BIG",
+      "gait",
+      "neuro"
+    ]
   },
   {
     "slug": "seated-trunk-rotation",
@@ -295,7 +373,9 @@
     "movement_type": "Motor control",
     "starting_position": "Sitting",
     "target_muscles": "Otot batang tubuh, kontrol postural duduk",
-    "equipment_needed": ["Kursi kokoh"],
+    "equipment_needed": [
+      "Kursi kokoh"
+    ],
     "description": "Latihan kontrol batang tubuh duduk untuk rehabilitasi stroke tahap awal dan kontrol postural.",
     "description_en": "Seated trunk control drill for early stroke rehabilitation and postural control.",
     "instructions": "1. Duduk tegak di kursi kokoh dengan kedua kaki menapak lantai.\n2. Julurkan satu lengan menyilang ke arah lutut berlawanan.\n3. Kembali ke posisi tegak dan julurkan ke arah samping-atas berlawanan.\n4. Jaga bokong tetap menempel kursi.\n5. Ulangi 10 kali per arah, bergantian sisi.",
@@ -309,7 +389,12 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "Winstein et al. AHA/ASA Adult Stroke Rehabilitation and Recovery Guideline, Stroke 2016;47(6):e98-e169",
-    "tags": ["stroke", "trunk control", "neuro", "seated"]
+    "tags": [
+      "stroke",
+      "trunk control",
+      "neuro",
+      "seated"
+    ]
   },
   {
     "slug": "step-over-obstacle",
@@ -321,7 +406,9 @@
     "movement_type": "Balance",
     "starting_position": "Standing",
     "target_muscles": "Fleksor pinggul, dorsofleksor pergelangan kaki, kontrol keseimbangan",
-    "equipment_needed": ["Rintangan rendah 5-15 cm (buku, kerucut, gulungan handuk)"],
+    "equipment_needed": [
+      "Rintangan rendah 5-15 cm (buku, kerucut, gulungan handuk)"
+    ],
     "description": "Latihan mengangkat kaki melewati rintangan untuk mencegah tersandung, penting pada lansia dan pasien neurologis.",
     "description_en": "Obstacle-clearance training to prevent trips, important for older adults and neurological patients.",
     "instructions": "1. Letakkan rintangan rendah (5-15 cm) di lantai; berdiri di dekat pegangan.\n2. Melangkah melewati rintangan dengan mengangkat lutut cukup tinggi.\n3. Berhenti sejenak dengan satu kaki di seberang untuk melatih kontrol.\n4. Selesaikan langkah dan berbalik dengan hati-hati.\n5. Ulangi 10 kali; tingkatkan tinggi rintangan bertahap.",
@@ -335,7 +422,12 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "B",
     "evidence_source": "Sherrington et al. Br J Sports Med 2017 (exercise for falls prevention); Otago Exercise Programme",
-    "tags": ["balance", "falls prevention", "gait", "geriatric"]
+    "tags": [
+      "balance",
+      "falls prevention",
+      "gait",
+      "geriatric"
+    ]
   },
   {
     "slug": "walking-program",
@@ -347,7 +439,9 @@
     "movement_type": "Aerobic",
     "starting_position": "Standing",
     "target_muscles": "Sistem kardiovaskular, otot tungkai",
-    "equipment_needed": ["Sepatu yang nyaman"],
+    "equipment_needed": [
+      "Sepatu yang nyaman"
+    ],
     "description": "Program berjalan bertahap sebagai dasar aktivitas fisik pada hampir semua kondisi kronis.",
     "description_en": "Progressive walking program forming the base of physical activity across most chronic conditions.",
     "instructions": "1. Mulai dengan berjalan 10 menit dengan kecepatan nyaman.\n2. Intensitas sedang: napas sedikit lebih cepat, masih dapat berbicara tetapi tidak dapat bernyanyi.\n3. Tambahkan 2-5 menit per minggu sesuai toleransi.\n4. Target: 30 menit per hari, 5 hari per minggu (total 150 menit/minggu).\n5. Boleh dipecah menjadi sesi 10 menit; totalnya yang penting.",
@@ -361,6 +455,177 @@
     "default_frequency": "5x/minggu",
     "evidence_level": "A",
     "evidence_source": "WHO Guidelines on Physical Activity and Sedentary Behaviour 2020; ACSM's Guidelines 11th ed.",
-    "tags": ["aerobic", "general health", "cardio", "walking"]
+    "tags": [
+      "aerobic",
+      "general health",
+      "cardio",
+      "walking"
+    ]
+  },
+  {
+    "slug": "frenkel-heel-to-shin",
+    "name": "Frenkel's Exercise - Heel-to-Shin Slide",
+    "name_id": "Latihan Frenkel - Luncur Tumit ke Tulang Kering",
+    "body_region": "Balance",
+    "category": "Balance & Neuro",
+    "difficulty": "Beginner",
+    "movement_type": "Motor control",
+    "starting_position": "Supine",
+    "target_muscles": "Koordinasi tungkai, kontrol serebelar",
+    "equipment_needed": [
+      "Matras"
+    ],
+    "description": "Latihan koordinasi klasik Frenkel untuk ataksia serebelar, membantu pasien mempelajari kembali gerakan halus dan terarah menggunakan input visual sebagai kompensasi.",
+    "description_en": "A classic Frenkel coordination exercise for cerebellar ataxia, helping patients relearn smooth, purposeful movement using visual input as compensation.",
+    "instructions": "1. Berbaring telentang dengan kedua tungkai lurus.\n2. Angkat satu tungkai, lalu letakkan tumit tepat di atas lutut tungkai yang lain sambil melihat gerakan tersebut.\n3. Luncurkan tumit perlahan dan terkontrol menyusuri tulang kering menuju pergelangan kaki.\n4. Luncurkan kembali ke atas menuju lutut dengan kecepatan yang sama, terkontrol.\n5. Fokus pada kehalusan gerakan, bukan kecepatan - berhenti bila gerakan menjadi kasar/gemetar berlebihan.",
+    "instructions_en": "1. Lie on your back with both legs straight.\n2. Lift one leg, then place the heel exactly on top of the other leg's knee while watching the movement.\n3. Slide the heel slowly and with control down the shin toward the ankle.\n4. Slide back up toward the knee at the same controlled speed.\n5. Focus on smoothness, not speed - stop if the movement becomes jerky/excessively shaky.",
+    "contraindications": "Sesuaikan intensitas pada kelelahan berat (mis. pada multiple sclerosis fase eksaserbasi). Hentikan bila muncul pusing berat atau mual.",
+    "progression_tips": "Setelah lancar dengan mata terbuka, coba dengan mata tertutup untuk mengurangi ketergantungan kompensasi visual, sesuai toleransi.",
+    "default_sets": 3,
+    "default_reps": 8,
+    "default_hold_seconds": 0,
+    "default_rest_seconds": 30,
+    "default_frequency": "1-2x/hari",
+    "evidence_level": "B",
+    "evidence_source": "Cameron MH, Nilsagard Y. Handb Clin Neurol 2018;159:237-250 (gait and balance rehabilitation in MS/ataxia); klasik Frenkel HS coordination exercises",
+    "tags": [
+      "ataxia",
+      "cerebellar",
+      "coordination",
+      "multiple sclerosis"
+    ]
+  },
+  {
+    "slug": "frenkel-heel-tapping",
+    "name": "Frenkel's Exercise - Seated Heel Tapping",
+    "name_id": "Latihan Frenkel - Ketuk Tumit Duduk",
+    "body_region": "Balance",
+    "category": "Balance & Neuro",
+    "difficulty": "Beginner",
+    "movement_type": "Motor control",
+    "starting_position": "Sitting",
+    "target_muscles": "Koordinasi tungkai bawah, kontrol serebelar",
+    "equipment_needed": [
+      "Kursi",
+      "Tanda di lantai (opsional)"
+    ],
+    "description": "Latihan koordinasi Frenkel posisi duduk untuk melatih penempatan kaki yang presisi, digunakan pada ataksia akibat gangguan serebelar atau proprioseptif.",
+    "description_en": "A seated Frenkel coordination exercise to train precise foot placement, used in ataxia from cerebellar or proprioceptive dysfunction.",
+    "instructions": "1. Duduk tegak di kursi dengan kedua kaki menggantung bebas atau menyentuh lantai.\n2. Tandai sebuah titik target di lantai (atau bayangkan titik tersebut).\n3. Ketukkan tumit ke titik target tersebut dengan gerakan terkontrol, lalu angkat kembali.\n4. Ulangi dengan mengetuk titik target yang berbeda-beda di sekitar area (depan, samping) sesuai instruksi.\n5. Perhatikan akurasi penempatan, bukan kecepatan gerakan.",
+    "instructions_en": "1. Sit tall in a chair with both feet hanging free or touching the floor.\n2. Mark a target point on the floor (or imagine one).\n3. Tap the heel onto that target point with a controlled movement, then lift back up.\n4. Repeat, tapping different target points around the area (front, side) as instructed.\n5. Focus on placement accuracy, not speed of movement.",
+    "contraindications": "Sesuaikan pada kelemahan berat atau kelelahan signifikan. Hentikan bila pusing atau nyeri muncul.",
+    "progression_tips": "Perbanyak jumlah titik target dan perbesar jarak antar titik seiring perbaikan koordinasi.",
+    "default_sets": 3,
+    "default_reps": 10,
+    "default_hold_seconds": 0,
+    "default_rest_seconds": 20,
+    "default_frequency": "1-2x/hari",
+    "evidence_level": "B",
+    "evidence_source": "Cameron MH, Nilsagard Y. Handb Clin Neurol 2018;159:237-250; klasik Frenkel HS coordination exercises for tabes dorsalis/ataxia",
+    "tags": [
+      "ataxia",
+      "coordination",
+      "multiple sclerosis",
+      "proprioception"
+    ]
+  },
+  {
+    "slug": "dual-task-walking-cognitive",
+    "name": "Dual-Task Walking with Cognitive Challenge",
+    "name_id": "Berjalan Tugas Ganda dengan Tantangan Kognitif",
+    "body_region": "Balance",
+    "category": "Balance & Neuro",
+    "difficulty": "Intermediate",
+    "movement_type": "Balance",
+    "starting_position": "Standing",
+    "target_muscles": "Kontrol postural dinamis, integrasi kognitif-motorik",
+    "equipment_needed": [
+      "Lorong berjalan yang aman"
+    ],
+    "description": "Latihan berjalan sambil melakukan tugas kognitif bersamaan, melatih kemampuan mempertahankan keseimbangan saat perhatian terbagi - relevan untuk pencegahan jatuh pada lansia dan pasca stroke.",
+    "description_en": "Walking while performing a simultaneous cognitive task, training the ability to maintain balance under divided attention - relevant for fall prevention in older adults and after stroke.",
+    "instructions": "1. Berjalan pada lintasan lurus yang aman dengan kecepatan nyaman, didampingi bila risiko jatuh tinggi.\n2. Sambil berjalan, lakukan tugas kognitif seperti menghitung mundur dari 100 dengan kelipatan 3, atau menyebutkan nama hewan bergantian huruf.\n3. Jaga agar berjalan tetap menjadi prioritas - jika keseimbangan terganggu, hentikan tugas kognitif sejenak.\n4. Tempuh jarak/waktu yang ditentukan.\n5. Tingkatkan kesulitan tugas kognitif secara bertahap seiring perbaikan kemampuan.",
+    "instructions_en": "1. Walk along a safe straight path at a comfortable pace, supervised if fall risk is high.\n2. While walking, perform a cognitive task such as counting backward from 100 by 3s, or naming animals alternating letters.\n3. Keep walking as the priority - if balance is disturbed, pause the cognitive task briefly.\n4. Cover the prescribed distance/time.\n5. Increase the cognitive task difficulty gradually as ability improves.",
+    "contraindications": "Selalu dampingi pasien dengan risiko jatuh tinggi. Hentikan bila pasien tampak sangat goyah atau kebingungan meningkat.",
+    "progression_tips": "Tambahkan rintangan fisik ringan (mis. melangkahi objek) bersamaan dengan tugas kognitif untuk latihan tugas ganda yang lebih menantang.",
+    "default_sets": 3,
+    "default_reps": 1,
+    "default_hold_seconds": 60,
+    "default_rest_seconds": 60,
+    "default_frequency": "3x/minggu",
+    "evidence_level": "B",
+    "evidence_source": "Silsupadol P et al. Arch Phys Med Rehabil 2009;90(3):381-387 (dual-task training for balance in older adults); Sherrington et al. Br J Sports Med 2017 (falls prevention meta-analysis)",
+    "tags": [
+      "falls prevention",
+      "dual task",
+      "cognitive",
+      "stroke"
+    ]
+  },
+  {
+    "slug": "vor-x2-viewing",
+    "name": "VOR x2 Viewing (Vestibular)",
+    "name_id": "Latihan VOR x2 Viewing (Vestibular)",
+    "body_region": "Balance",
+    "category": "Balance & Neuro",
+    "difficulty": "Intermediate",
+    "movement_type": "Balance",
+    "starting_position": "Sitting",
+    "target_muscles": "Refleks vestibulo-okular (VOR), adaptasi vestibular",
+    "equipment_needed": [
+      "Dua target visual kecil dengan tulisan"
+    ],
+    "description": "Latihan adaptasi refleks vestibulo-okular tingkat lanjut menggunakan dua target visual bergerak berlawanan arah, untuk hipofungsi vestibular yang tidak membaik dengan gaze stabilisation x1 standar.",
+    "description_en": "An advanced vestibulo-ocular reflex adaptation exercise using two visual targets moving in opposite directions, for vestibular hypofunction not improving with standard x1 gaze stabilisation.",
+    "instructions": "1. Duduk tegak dengan dua target bertuliskan huruf/angka, satu dipegang di tangan kiri satu di tangan kanan, sejajar pandangan.\n2. Gerakkan kedua tangan (dan target) ke arah berlawanan (satu ke kiri, satu ke kanan) secara bersamaan.\n3. Gerakkan kepala ke arah berlawanan dengan salah satu target sambil mata tetap fokus membaca target tersebut.\n4. Lakukan gerakan horizontal terlebih dahulu, lalu vertikal setelah dikuasai.\n5. Tingkatkan kecepatan gerakan kepala secara bertahap selama target masih terbaca jelas (tidak buram).",
+    "instructions_en": "1. Sit upright with two targets each showing letters/numbers, one held in the left hand and one in the right, at eye level.\n2. Move both hands (and targets) in opposite directions (one left, one right) at the same time.\n3. Move the head in the opposite direction to one of the targets while the eyes stay focused on reading that target.\n4. Perform horizontal movements first, then vertical once mastered.\n5. Gradually increase head movement speed as long as the target remains clearly readable (not blurred).",
+    "contraindications": "Hanya dilakukan setelah gaze stabilisation x1 viewing dikuasai tanpa gejala berat. Hentikan bila mual/pusing berat muncul; istirahat sejenak lalu lanjutkan dengan intensitas lebih rendah.",
+    "progression_tips": "Lanjutkan ke latihan berjalan sambil melakukan gaze stabilisation setelah versi duduk dikuasai dengan baik.",
+    "default_sets": 3,
+    "default_reps": 1,
+    "default_hold_seconds": 60,
+    "default_rest_seconds": 30,
+    "default_frequency": "3-5x/hari",
+    "evidence_level": "A",
+    "evidence_source": "Hall et al. Vestibular Rehabilitation for Peripheral Vestibular Hypofunction: Updated CPG, J Neurol Phys Ther 2022;46(2):118-177",
+    "tags": [
+      "vestibular",
+      "VOR",
+      "gaze stabilisation",
+      "dizziness"
+    ]
+  },
+  {
+    "slug": "standing-balance-eyes-closed",
+    "name": "Standing Balance Eyes Closed (Romberg Progression)",
+    "name_id": "Keseimbangan Berdiri Mata Tertutup (Progresi Romberg)",
+    "body_region": "Balance",
+    "category": "Balance & Neuro",
+    "difficulty": "Intermediate",
+    "movement_type": "Balance",
+    "starting_position": "Standing",
+    "target_muscles": "Sistem somatosensori dan vestibular (kompensasi hilangnya input visual)",
+    "equipment_needed": [
+      "Dinding di dekatnya untuk keamanan"
+    ],
+    "description": "Latihan keseimbangan yang menghilangkan input visual untuk memaksa sistem somatosensori dan vestibular bekerja lebih dominan, digunakan pada gangguan keseimbangan perifer dan sentral.",
+    "description_en": "A balance exercise removing visual input to force the somatosensory and vestibular systems to work harder, used in peripheral and central balance disorders.",
+    "instructions": "1. Berdiri dengan kaki rapat di dekat dinding untuk keamanan, mata terbuka terlebih dahulu untuk membangun kepercayaan diri posisi.\n2. Tutup mata perlahan, pertahankan posisi berdiri stabil.\n3. Tahan selama waktu yang ditoleransi, buka mata bila keseimbangan mulai goyah signifikan.\n4. Selalu ada pendamping/dinding dalam jangkauan untuk mencegah jatuh.\n5. Catat durasi bertahan sebagai tolok ukur kemajuan.",
+    "instructions_en": "1. Stand with feet together near a wall for safety, eyes open first to build confidence in the position.\n2. Close the eyes slowly, maintaining a stable standing position.\n3. Hold for a tolerated duration, opening the eyes if balance becomes significantly unsteady.\n4. Always have a companion/wall within reach to prevent falls.\n5. Record the hold duration as a progress benchmark.",
+    "contraindications": "Selalu awasi pada pasien dengan risiko jatuh tinggi. Jangan lakukan tanpa pengaman pada riwayat jatuh berulang atau vertigo berat yang belum terkontrol.",
+    "progression_tips": "Setelah stabil di lantai keras, progres ke permukaan busa, lalu ke stance tandem/satu kaki dengan mata tertutup sesuai toleransi.",
+    "default_sets": 3,
+    "default_reps": 1,
+    "default_hold_seconds": 30,
+    "default_rest_seconds": 30,
+    "default_frequency": "1x/hari",
+    "evidence_level": "B",
+    "evidence_source": "Hall et al. Vestibular Rehabilitation CPG, J Neurol Phys Ther 2022;46(2):118-177; CDC STEADI Four-Stage Balance Test",
+    "tags": [
+      "balance",
+      "vestibular",
+      "somatosensory",
+      "falls prevention"
+    ]
   }
 ]

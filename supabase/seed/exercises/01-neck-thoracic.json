@@ -23,7 +23,12 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "A",
     "evidence_source": "Jull et al. Spine 2002; Blanpied et al. Neck Pain CPG, JOSPT 2017;47(7):A1-A83",
-    "tags": ["neck pain", "postural", "deep neck flexor", "cervicogenic headache"]
+    "tags": [
+      "neck pain",
+      "postural",
+      "deep neck flexor",
+      "cervicogenic headache"
+    ]
   },
   {
     "slug": "craniocervical-flexion-supine",
@@ -35,7 +40,10 @@
     "movement_type": "Motor control",
     "starting_position": "Supine",
     "target_muscles": "Longus colli, longus capitis",
-    "equipment_needed": ["Handuk gulung", "Manset tekanan (opsional)"],
+    "equipment_needed": [
+      "Handuk gulung",
+      "Manset tekanan (opsional)"
+    ],
     "description": "Versi bertahap dari latihan fleksor leher dalam sesuai protokol Craniocervical Flexion Test, dengan lima level kedalaman anggukan.",
     "description_en": "Staged deep neck flexor training following the craniocervical flexion test protocol, using five progressive nod levels.",
     "instructions": "1. Berbaring telentang, lutut ditekuk, letakkan handuk gulung tipis di bawah leher.\n2. Angguk kepala pelan (gerakan \"ya\" kecil) sampai level 1 - anggukan paling ringan.\n3. Tahan 10 detik tanpa mengangkat kepala dari alas dan tanpa mengeraskan otot leher depan yang besar.\n4. Ulangi 10 kali, lalu naikkan kedalaman anggukan satu level bila 10 repetisi terasa mudah dan bersih.\n5. Jangan pernah menahan napas selama latihan.",
@@ -49,7 +57,11 @@
     "default_frequency": "1x/hari, 5 hari/minggu",
     "evidence_level": "A",
     "evidence_source": "Jull et al. J Manipulative Physiol Ther 2008;31(7):525-533 (CCFT); Falla et al. 2007",
-    "tags": ["neck pain", "deep neck flexor", "motor control"]
+    "tags": [
+      "neck pain",
+      "deep neck flexor",
+      "motor control"
+    ]
   },
   {
     "slug": "cervical-rotation-arom",
@@ -75,7 +87,11 @@
     "default_frequency": "2-3x/hari",
     "evidence_level": "A",
     "evidence_source": "Blanpied et al. Neck Pain CPG, JOSPT 2017;47(7):A1-A83",
-    "tags": ["neck pain", "mobility", "whiplash"]
+    "tags": [
+      "neck pain",
+      "mobility",
+      "whiplash"
+    ]
   },
   {
     "slug": "upper-trapezius-stretch",
@@ -101,7 +117,11 @@
     "default_frequency": "2x/hari",
     "evidence_level": "B",
     "evidence_source": "Blanpied et al. Neck Pain CPG, JOSPT 2017; Gross et al. Cochrane 2015 (exercise for neck pain)",
-    "tags": ["neck pain", "stretch", "office worker"]
+    "tags": [
+      "neck pain",
+      "stretch",
+      "office worker"
+    ]
   },
   {
     "slug": "levator-scapulae-stretch",
@@ -127,7 +147,10 @@
     "default_frequency": "2x/hari",
     "evidence_level": "B",
     "evidence_source": "Blanpied et al. Neck Pain CPG, JOSPT 2017",
-    "tags": ["neck pain", "stretch"]
+    "tags": [
+      "neck pain",
+      "stretch"
+    ]
   },
   {
     "slug": "cervical-isometric-set",
@@ -153,7 +176,11 @@
     "default_frequency": "1x/hari",
     "evidence_level": "A",
     "evidence_source": "Blanpied et al. Neck Pain CPG, JOSPT 2017; Ylinen et al. JAMA 2003;289(19):2509-2516",
-    "tags": ["neck pain", "isometric", "strength"]
+    "tags": [
+      "neck pain",
+      "isometric",
+      "strength"
+    ]
   },
   {
     "slug": "scapular-retraction",
@@ -179,7 +206,11 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "Cools et al. Br J Sports Med 2014 (scapular rehabilitation); GRASP trial exercise programme, Hopewell et al. Lancet 2021",
-    "tags": ["posture", "scapula", "office worker"]
+    "tags": [
+      "posture",
+      "scapula",
+      "office worker"
+    ]
   },
   {
     "slug": "thoracic-extension-foam-roller",
@@ -191,7 +222,9 @@
     "movement_type": "Mobility",
     "starting_position": "Supine",
     "target_muscles": "Ekstensor thoracic, mobilitas segmen thoracic",
-    "equipment_needed": ["Foam roller atau handuk gulung"],
+    "equipment_needed": [
+      "Foam roller atau handuk gulung"
+    ],
     "description": "Mobilisasi ekstensi thoracic untuk postur membungkuk dan keterbatasan elevasi bahu.",
     "description_en": "Thoracic extension mobilisation for a flexed posture and limited shoulder elevation.",
     "instructions": "1. Letakkan foam roller melintang di bawah punggung atas, lutut ditekuk, kaki menapak.\n2. Sangga kepala dengan kedua tangan di belakang kepala.\n3. Lengkungkan punggung atas ke belakang melewati roller sejauh nyaman, jangan melengkungkan pinggang.\n4. Tahan 5 detik, kembali ke posisi awal.\n5. Geser roller 2-3 cm ke atas atau ke bawah dan ulangi pada 3 titik berbeda.",
@@ -205,7 +238,11 @@
     "default_frequency": "1x/hari",
     "evidence_level": "B",
     "evidence_source": "Blanpied et al. Neck Pain CPG, JOSPT 2017 (thoracic manipulation/mobility adjunct)",
-    "tags": ["posture", "thoracic", "office worker"]
+    "tags": [
+      "posture",
+      "thoracic",
+      "office worker"
+    ]
   },
   {
     "slug": "open-book-thoracic-rotation",
@@ -217,7 +254,9 @@
     "movement_type": "Mobility",
     "starting_position": "Side-lying",
     "target_muscles": "Rotator thoracic, otot dada",
-    "equipment_needed": ["Bantal"],
+    "equipment_needed": [
+      "Bantal"
+    ],
     "description": "Latihan rotasi thoracic berbaring menyamping untuk memperbaiki mobilitas rotasi batang tubuh.",
     "description_en": "Side-lying thoracic rotation drill to restore trunk rotation mobility.",
     "instructions": "1. Berbaring menyamping, lutut ditekuk 90 derajat dan ditumpuk, kepala disangga bantal.\n2. Julurkan kedua lengan lurus ke depan, telapak bertemu.\n3. Buka lengan atas ke arah belakang seperti membuka buku, ikuti dengan pandangan mata.\n4. Jaga lutut tetap menempel; gerakan datang dari punggung atas.\n5. Tahan 3-5 detik di ujung gerak, kembali perlahan.",
@@ -231,7 +270,11 @@
     "default_frequency": "1x/hari",
     "evidence_level": "C",
     "evidence_source": "Konsensus praktik klinis; adjunct pada Neck Pain CPG JOSPT 2017",
-    "tags": ["mobility", "thoracic", "posture"]
+    "tags": [
+      "mobility",
+      "thoracic",
+      "posture"
+    ]
   },
   {
     "slug": "wall-angel",
@@ -243,7 +286,9 @@
     "movement_type": "Motor control",
     "starting_position": "Standing",
     "target_muscles": "Trapezius bawah, serratus anterior, rotator eksternal bahu",
-    "equipment_needed": ["Dinding"],
+    "equipment_needed": [
+      "Dinding"
+    ],
     "description": "Latihan kontrol skapula dan mobilitas bahu di dinding untuk postur bahu membulat.",
     "description_en": "Wall-based scapular control and shoulder mobility drill for rounded-shoulder posture.",
     "instructions": "1. Berdiri menempel dinding: kepala belakang, punggung atas, dan bokong menyentuh dinding, kaki 10 cm dari dinding.\n2. Tempelkan punggung tangan dan siku ke dinding membentuk huruf W.\n3. Geser lengan ke atas membentuk huruf Y sambil menjaga kontak dengan dinding.\n4. Turunkan kembali perlahan ke posisi W.\n5. Berhenti pada titik di mana punggung mulai melengkung dari dinding.",
@@ -257,7 +302,11 @@
     "default_frequency": "1x/hari",
     "evidence_level": "B",
     "evidence_source": "Cools et al. Br J Sports Med 2014; Ludewig & Reynolds JOSPT 2009",
-    "tags": ["posture", "scapula", "shoulder"]
+    "tags": [
+      "posture",
+      "scapula",
+      "shoulder"
+    ]
   },
   {
     "slug": "doorway-pec-stretch",
@@ -269,7 +318,9 @@
     "movement_type": "Stretch",
     "starting_position": "Standing",
     "target_muscles": "Pectoralis major dan minor",
-    "equipment_needed": ["Kusen pintu"],
+    "equipment_needed": [
+      "Kusen pintu"
+    ],
     "description": "Peregangan otot dada yang memendek pada postur bahu membulat dan nyeri leher-bahu.",
     "description_en": "Pectoral stretch for shortened chest muscles in rounded-shoulder posture and neck-shoulder pain.",
     "instructions": "1. Berdiri di ambang pintu, letakkan lengan bawah di kusen dengan siku setinggi bahu (90 derajat).\n2. Langkahkan satu kaki ke depan dan condongkan badan pelan sampai terasa regangan di depan dada.\n3. Jaga bahu tetap turun dan punggung tidak melengkung.\n4. Tahan 30 detik, napas tenang.\n5. Ulangi 3 kali per sisi.",
@@ -283,7 +334,11 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "Cools et al. Br J Sports Med 2014; Rotator cuff related shoulder pain rehabilitation literature",
-    "tags": ["stretch", "posture", "shoulder"]
+    "tags": [
+      "stretch",
+      "posture",
+      "shoulder"
+    ]
   },
   {
     "slug": "median-nerve-glide",
@@ -309,7 +364,11 @@
     "default_frequency": "2-3x/hari",
     "evidence_level": "B",
     "evidence_source": "Ballestero-Perez et al. J Manipulative Physiol Ther 2017 (neural mobilisation CTS); Erickson et al. Hand Pain CPG, JOSPT 2019",
-    "tags": ["carpal tunnel", "nerve glide", "hand"]
+    "tags": [
+      "carpal tunnel",
+      "nerve glide",
+      "hand"
+    ]
   },
   {
     "slug": "ulnar-nerve-glide",
@@ -335,7 +394,11 @@
     "default_frequency": "2x/hari",
     "evidence_level": "C",
     "evidence_source": "Coppieters & Butler Man Ther 2008 (neurodynamic sliders); praktik klinis terapi tangan",
-    "tags": ["nerve glide", "elbow", "cubital tunnel"]
+    "tags": [
+      "nerve glide",
+      "elbow",
+      "cubital tunnel"
+    ]
   },
   {
     "slug": "sitting-posture-reset",
@@ -347,7 +410,9 @@
     "movement_type": "Mobility",
     "starting_position": "Sitting",
     "target_muscles": "Ekstensor thoracic, otot leher, fleksor pinggul",
-    "equipment_needed": ["Kursi"],
+    "equipment_needed": [
+      "Kursi"
+    ],
     "description": "Rangkaian jeda singkat untuk pekerja kantor: berdiri, ekstensi, dan reposisi setiap 30-60 menit.",
     "description_en": "Short microbreak routine for desk workers: stand, extend and reposition every 30-60 minutes.",
     "instructions": "1. Berdiri dari kursi dan tarik napas panjang.\n2. Letakkan kedua tangan di pinggang, lengkungkan punggung ke belakang pelan sebanyak 5 kali.\n3. Rapatkan tulang belikat 5 kali sambil menahan 5 detik.\n4. Lakukan 5 kali tarik dagu (chin tuck).\n5. Berjalan 1-2 menit sebelum kembali duduk.",
@@ -361,6 +426,142 @@
     "default_frequency": "Setiap 30-60 menit kerja",
     "evidence_level": "B",
     "evidence_source": "Waongenngarm et al. Appl Ergon 2018 (interruption of prolonged sitting); WHO 2020 physical activity guidelines",
-    "tags": ["office worker", "posture", "microbreak"]
+    "tags": [
+      "office worker",
+      "posture",
+      "microbreak"
+    ]
+  },
+  {
+    "slug": "deep-neck-flexor-endurance-hold",
+    "name": "Deep Neck Flexor Endurance Hold",
+    "name_id": "Latihan Ketahanan Fleksor Leher Dalam",
+    "body_region": "Neck",
+    "category": "Neck & Upper",
+    "difficulty": "Intermediate",
+    "movement_type": "Motor control",
+    "starting_position": "Supine",
+    "target_muscles": "Longus colli, longus capitis (fleksor leher dalam)",
+    "equipment_needed": [
+      "Kantong tekanan biofeedback (opsional)"
+    ],
+    "description": "Latihan ketahanan isometrik fleksor leher dalam berdasarkan protokol tes ketahanan fleksor kraniocervical, digunakan pada nyeri leher kronis dan whiplash.",
+    "description_en": "Isometric endurance training for the deep neck flexors based on the craniocervical flexion endurance test protocol, used in chronic neck pain and whiplash.",
+    "instructions": "1. Berbaring telentang, lutut ditekuk, dagu sedikit ditarik ke dalam (chin tuck ringan).\n2. Angkat kepala sekitar 1-2 cm dari alas tanpa membiarkan dagu menonjol maju.\n3. Pertahankan posisi tanpa gemetar atau otot leher superfisial (sternocleidomastoid) menegang berlebihan.\n4. Tahan selama waktu yang ditoleransi (mulai 10 detik), turunkan perlahan.\n5. Hentikan set bila teknik mulai rusak (dagu menonjol, leher superfisial dominan).",
+    "instructions_en": "1. Lie on your back, knees bent, chin gently tucked in.\n2. Lift the head about 1-2 cm off the surface without letting the chin poke forward.\n3. Hold the position without shaking or the superficial neck muscles (sternocleidomastoid) taking over.\n4. Hold for a tolerated duration (start at 10 seconds), lower slowly.\n5. Stop the set once technique breaks down (chin pokes forward, superficial muscles dominate).",
+    "contraindications": "Hindari pada cedera leher akut/tidak stabil, pasca operasi cervical tanpa izin, atau bila timbul pusing/nyeri kepala hebat.",
+    "progression_tips": "Naikkan durasi tahan bertahap (10 -> 30 detik) sebelum menambah repetisi. Setelah kuat, lanjutkan ke chin tuck dengan resistensi manual.",
+    "default_sets": 3,
+    "default_reps": 5,
+    "default_hold_seconds": 10,
+    "default_rest_seconds": 30,
+    "default_frequency": "1x/hari",
+    "evidence_level": "A",
+    "evidence_source": "Jull et al. J Manipulative Physiol Ther 2008;31(7):525-533 (craniocervical flexion test/training); Blanpied et al. Neck Pain CPG, JOSPT 2017;47(7):A1-A83",
+    "tags": [
+      "neck pain",
+      "deep neck flexor",
+      "endurance",
+      "whiplash"
+    ]
+  },
+  {
+    "slug": "prone-cobra-thoracic-extension",
+    "name": "Prone Thoracic Extension (Prone Cobra)",
+    "name_id": "Ekstensi Torakal Tengkurap (Prone Cobra)",
+    "body_region": "Thoracic",
+    "category": "Spine & Core",
+    "difficulty": "Intermediate",
+    "movement_type": "Strength",
+    "starting_position": "Prone",
+    "target_muscles": "Ekstensor torakal, trapezius tengah-bawah, rotator cuff posterior",
+    "equipment_needed": [
+      "Matras"
+    ],
+    "description": "Penguatan ekstensor punggung atas dan otot scapular untuk memperbaiki postur membungkuk dan mendukung program nyeri leher/bahu terkait postur.",
+    "description_en": "Upper back and scapular extensor strengthening to correct a forward-slumped posture, supporting posture-related neck and shoulder pain programs.",
+    "instructions": "1. Berbaring tengkurap, dahi di atas handuk gulung, lengan di samping badan dengan ibu jari menghadap ke atas.\n2. Angkat dahi, dada atas, dan lengan sedikit dari matras dengan meremas tulang belikat ke bawah dan ke belakang.\n3. Putar lengan sehingga ibu jari mengarah ke langit-langit (rotasi eksternal bahu).\n4. Tahan posisi, jaga leher tetap netral (pandangan ke bawah).\n5. Turunkan perlahan dan ulangi.",
+    "instructions_en": "1. Lie face down, forehead on a rolled towel, arms at your sides with thumbs pointing up.\n2. Lift the forehead, upper chest, and arms slightly off the mat while squeezing the shoulder blades down and back.\n3. Rotate the arms so the thumbs point toward the ceiling (shoulder external rotation).\n4. Hold the position, keeping the neck neutral (gaze down).\n5. Lower slowly and repeat.",
+    "contraindications": "Hindari pada nyeri punggung bawah yang memburuk dengan ekstensi, spondylolisthesis tidak stabil, atau kehamilan trimester lanjut.",
+    "progression_tips": "Mulai dengan tahan singkat 5-8 detik, tingkatkan durasi dan repetisi. Tambahkan beban ringan di tangan setelah teknik dikuasai.",
+    "default_sets": 3,
+    "default_reps": 10,
+    "default_hold_seconds": 8,
+    "default_rest_seconds": 30,
+    "default_frequency": "1x/hari, 3-5x/minggu",
+    "evidence_level": "B",
+    "evidence_source": "Blanpied et al. Neck Pain CPG, JOSPT 2017;47(7):A1-A83; Cools et al. Br J Sports Med 2014 (scapular rehabilitation)",
+    "tags": [
+      "posture",
+      "thoracic",
+      "extension",
+      "scapular"
+    ]
+  },
+  {
+    "slug": "scalene-stretch-thoracic-outlet",
+    "name": "Scalene Stretch (Thoracic Outlet)",
+    "name_id": "Peregangan Otot Skalenus (Thoracic Outlet)",
+    "body_region": "Neck",
+    "category": "Neck & Upper",
+    "difficulty": "Beginner",
+    "movement_type": "Stretch",
+    "starting_position": "Sitting",
+    "target_muscles": "Otot skalenus anterior dan medius",
+    "equipment_needed": [
+      "Kursi"
+    ],
+    "description": "Peregangan otot skalenus untuk mengurangi kompresi pada thoracic outlet syndrome neurogenik dan nyeri leher-bahu-lengan terkait postur.",
+    "description_en": "Scalene muscle stretch to reduce compression in neurogenic thoracic outlet syndrome and posture-related neck-shoulder-arm pain.",
+    "instructions": "1. Duduk tegak, pegang tepi kursi dengan tangan sisi yang akan diregangkan untuk menahan bahu turun.\n2. Miringkan kepala menjauhi sisi yang diregangkan.\n3. Putar dagu sedikit ke atas dan ke arah bahu yang berlawanan untuk menargetkan skalenus anterior, atau jaga dagu netral untuk skalenus medius.\n4. Tahan hingga terasa regangan ringan di sisi leher, jangan sampai nyeri atau kesemutan.\n5. Kembali ke posisi netral perlahan.",
+    "instructions_en": "1. Sit tall and hold the edge of the chair with the hand on the side to be stretched, to keep that shoulder down.\n2. Tilt the head away from the side being stretched.\n3. Turn the chin slightly up and toward the opposite shoulder to target the anterior scalene, or keep the chin neutral for the middle scalene.\n4. Hold until a mild stretch is felt on the side of the neck, without pain or tingling.\n5. Return slowly to neutral.",
+    "contraindications": "Hentikan segera bila timbul kesemutan/baal menjalar ke lengan (tanda kompresi saraf/pembuluh darah bertambah). Hindari pada diseksi arteri vertebralis yang dicurigai.",
+    "progression_tips": "Gabungkan dengan latihan postur dan mobilisasi saraf brachial plexus setelah gejala neurogenik terkontrol.",
+    "default_sets": 3,
+    "default_reps": 1,
+    "default_hold_seconds": 20,
+    "default_rest_seconds": 20,
+    "default_frequency": "2x/hari",
+    "evidence_level": "C",
+    "evidence_source": "Watson LA et al. Man Ther 2009 (thoracic outlet syndrome conservative management); Hooper TL et al. J Man Manip Ther 2010 (TOS diagnosis and conservative management review)",
+    "tags": [
+      "thoracic outlet",
+      "scalene",
+      "stretch",
+      "neck"
+    ]
+  },
+  {
+    "slug": "cervical-flexion-rotation-mobilisation",
+    "name": "Cervical Flexion-Rotation Self-Mobilisation",
+    "name_id": "Mobilisasi Mandiri Fleksi-Rotasi Servikal",
+    "body_region": "Neck",
+    "category": "Neck & Upper",
+    "difficulty": "Intermediate",
+    "movement_type": "Mobility",
+    "starting_position": "Sitting",
+    "target_muscles": "Sendi C1-C2 (atlantoaxial)",
+    "equipment_needed": [
+      "Kursi dengan sandaran"
+    ],
+    "description": "Mobilisasi mandiri segmen leher atas untuk sakit kepala servikogenik dan keterbatasan rotasi C1-C2 pasca whiplash.",
+    "description_en": "Self-mobilisation of the upper neck segments for cervicogenic headache and C1-C2 rotation restriction after whiplash.",
+    "instructions": "1. Duduk tegak, tekuk leher ke depan (dagu ke dada) sejauh nyaman.\n2. Sambil mempertahankan posisi fleksi, putar kepala perlahan ke arah sisi yang kaku/nyeri.\n3. Tahan di titik akhir gerak yang nyaman (bukan nyeri tajam), rasakan regangan ringan di leher atas.\n4. Tahan 5-10 detik, lalu kembali ke posisi netral.\n5. Ulangi, coba tambah sedikit rotasi tiap repetisi bila toleransi baik.",
+    "instructions_en": "1. Sit upright, bend the neck forward (chin to chest) as far as comfortable.\n2. While maintaining the flexed position, slowly rotate the head toward the stiff/painful side.\n3. Hold at a comfortable end range (not sharp pain), feeling a mild stretch in the upper neck.\n4. Hold 5-10 seconds, then return to neutral.\n5. Repeat, trying to add a little more rotation each repetition if well tolerated.",
+    "contraindications": "Hindari pada red flags vaskular (pusing berat, diplopia, disartria, drop attack) atau ketidakstabilan ligamen servikal atas (mis. Down syndrome, artritis reumatoid berat). Hentikan bila muncul gejala neurologis.",
+    "progression_tips": "Gunakan sebagai bagian program sakit kepala servikogenik bersama latihan fleksor leher dalam dan penguatan scapular.",
+    "default_sets": 2,
+    "default_reps": 8,
+    "default_hold_seconds": 8,
+    "default_rest_seconds": 20,
+    "default_frequency": "1-2x/hari",
+    "evidence_level": "B",
+    "evidence_source": "Hall TM et al. Man Ther 2007 (flexion-rotation test cervicogenic headache); Blanpied et al. Neck Pain CPG, JOSPT 2017",
+    "tags": [
+      "cervicogenic headache",
+      "whiplash",
+      "mobility",
+      "C1-C2"
+    ]
   }
 ]
