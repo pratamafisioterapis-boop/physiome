@@ -153,8 +153,11 @@ const PatientExerciseViewPage = () => {
       <main className="flex-1 overflow-y-auto pb-32">
         <div className="p-4 md:p-6 space-y-6">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-3">{currentExercise.details.name}</h1>
-            
+            <h1 className="text-3xl font-bold text-foreground mb-1">{currentExercise.details.name}</h1>
+            {currentExercise.details.name_id && (
+              <p className="text-muted-foreground mb-3">{currentExercise.details.name_id}</p>
+            )}
+
             <div className="flex flex-wrap gap-3">
               <span className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-lg text-sm font-bold">
                 <Clock className="w-4 h-4" /> 
@@ -179,11 +182,38 @@ const PatientExerciseViewPage = () => {
           />
 
           <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
-            <h3 className="text-lg font-semibold mb-3">Therapist Instructions</h3>
+            <h3 className="text-lg font-semibold mb-3">Cara melakukan</h3>
             <div className="prose prose-sm dark:prose-invert text-muted-foreground whitespace-pre-wrap">
               {currentExercise.details.instructions || 'Follow the guided timer and video demonstration carefully. Focus on form over speed.'}
             </div>
+
+            {currentExercise.details.equipment_needed?.length > 0 && (
+              <div className="mt-5 pt-5 border-t border-border/60">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Alat yang dibutuhkan</h4>
+                <div className="flex flex-wrap gap-2">
+                  {currentExercise.details.equipment_needed.map(item => (
+                    <span key={item} className="bg-muted px-3 py-1 rounded-lg text-sm">{item}</span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
+
+          {currentExercise.notes && (
+            <div className="bg-primary/5 rounded-2xl p-6 border border-primary/20">
+              <h3 className="text-lg font-semibold mb-2">Catatan terapis</h3>
+              <p className="text-muted-foreground whitespace-pre-wrap">{currentExercise.notes}</p>
+            </div>
+          )}
+
+          {currentExercise.details.contraindications && (
+            <div className="bg-destructive/5 rounded-2xl p-6 border border-destructive/20">
+              <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                <ShieldAlert className="w-5 h-5 text-destructive" /> Perhatian &amp; kapan berhenti
+              </h3>
+              <p className="text-muted-foreground whitespace-pre-wrap">{currentExercise.details.contraindications}</p>
+            </div>
+          )}
         </div>
       </main>
 

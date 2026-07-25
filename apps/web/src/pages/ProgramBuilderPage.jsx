@@ -66,12 +66,14 @@ export default function ProgramBuilderPage() {
           }
           // Map exercises dari template ke format canvas
           const exercisesFromTemplate = Array.isArray(data.exercises) ? data.exercises : [];
+          // hold_duration is the field the patient timer reads, so keep that
+          // name end to end (older programs may still carry holdTime).
           const items = exercisesFromTemplate.map(ex => ({
             ...ex,
             uniqueId: Math.random().toString(36).substr(2, 9),
             sets: ex.sets || 3,
-            reps: ex.reps || 10,
-            holdTime: ex.holdTime || 0,
+            reps: ex.reps || ex.repetitions || 10,
+            hold_duration: ex.hold_duration ?? ex.holdTime ?? 0,
             notes: ex.notes || ''
           }));
           setCanvasItems(items);
@@ -90,9 +92,10 @@ export default function ProgramBuilderPage() {
     const newItem = {
       ...ex,
       uniqueId: Math.random().toString(36).substr(2, 9),
-      sets: 3,
-      reps: 10,
-      holdTime: 0,
+      sets: ex.default_sets || 3,
+      reps: ex.default_reps || 10,
+      hold_duration: ex.default_hold_seconds || 0,
+      rest_between_sets: ex.default_rest_seconds || 30,
       notes: ''
     };
     setCanvasItems([...canvasItems, newItem]);
@@ -306,11 +309,11 @@ export default function ProgramBuilderPage() {
                           </div>
                           <div className="space-y-1">
                             <label className="text-xs font-semibold text-muted-foreground uppercase">Hold (sec)</label>
-                            <Input 
-                              type="number" 
-                              value={item.holdTime} 
-                              onChange={e => updateCanvasItem(item.uniqueId, 'holdTime', parseInt(e.target.value) || 0)}
-                              className="h-9 bg-card" 
+                            <Input
+                              type="number"
+                              value={item.hold_duration}
+                              onChange={e => updateCanvasItem(item.uniqueId, 'hold_duration', parseInt(e.target.value) || 0)}
+                              className="h-9 bg-card"
                             />
                           </div>
                         </div>
