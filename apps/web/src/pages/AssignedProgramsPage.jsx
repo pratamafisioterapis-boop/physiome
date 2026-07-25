@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { Smartphone, Eye, MoreHorizontal } from 'lucide-react';
+import { Smartphone, Eye, MoreHorizontal, UserPlus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -13,6 +14,7 @@ import { toast } from 'sonner';
 
 export default function AssignedProgramsPage() {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,6 +34,22 @@ export default function AssignedProgramsPage() {
     fetchAssignments();
   }, [currentUser]);
 
+  const handleViewDetails = (assignment) => {
+    if (!assignment.patient_id) {
+      toast.error('Patient record not found for this assignment');
+      return;
+    }
+    navigate(`/patients/${assignment.patient_id}/programs`);
+  };
+
+  const handlePreviewPatientApp = () => {
+    if (assignments.length === 0) {
+      toast.error('No active assignments to preview yet');
+      return;
+    }
+    navigate(`/patient/programs/${assignments[0].id}`);
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row">
       <Sidebar />
@@ -41,9 +59,14 @@ export default function AssignedProgramsPage() {
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <h2 className="text-3xl font-bold text-foreground tracking-tight">Active Assignments</h2>
-            <Button variant="outline" className="rounded-full shrink-0">
-              <Smartphone className="w-4 h-4 mr-2" /> Patient App Preview
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button className="rounded-full shrink-0" onClick={() => navigate('/exercise-programs')}>
+                <UserPlus className="w-4 h-4 mr-2" /> Prescribe Exercise
+              </Button>
+              <Button variant="outline" className="rounded-full shrink-0" onClick={handlePreviewPatientApp}>
+                <Smartphone className="w-4 h-4 mr-2" /> Patient App Preview
+              </Button>
+            </div>
           </div>
 
           <Card className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
@@ -83,7 +106,7 @@ export default function AssignedProgramsPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" className="h-8 text-primary hover:bg-primary/10">
+                      <Button variant="ghost" size="sm" className="h-8 text-primary hover:bg-primary/10" onClick={() => handleViewDetails(a)}>
                         <Eye className="w-4 h-4 mr-2" /> View
                       </Button>
                     </TableCell>
@@ -117,7 +140,7 @@ export default function AssignedProgramsPage() {
                       <div className="bg-primary h-1.5 rounded-full" style={{ width: `${a.adherence_rate || 0}%` }} />
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="w-full text-primary border-primary/20 hover:bg-primary/5">
+                  <Button variant="outline" size="sm" className="w-full text-primary border-primary/20 hover:bg-primary/5" onClick={() => handleViewDetails(a)}>
                     <Eye className="w-4 h-4 mr-2" /> View Details
                   </Button>
                 </div>
