@@ -6,6 +6,7 @@
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
+import webpush from "npm:web-push@3.6.7";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -1771,6 +1772,7 @@ async function createMessage(ctx: AuthCtx, body: Record<string, unknown>) {
     .select()
     .single();
   if (error) throw new HttpError(500, error.message);
+  await notifyNewMessage(patientId, clinicId, senderRole, text.trim());
   return json(data, 201);
 }
 
@@ -1810,6 +1812,108 @@ async function listMessageThreads(ctx: AuthCtx) {
   });
 
   return json([...byPatient.values()].sort((a, b) => new Date(b.last_at).getTime() - new Date(a.last_at).getTime()));
+}
+
+// ---------- web push (chat notifications) ----------
+//
+// Lets a clinician's and a patient's browser get notified about new chat
+// messages even when the app isn't open. VAPID_PUBLIC_KEY/VAPID_PRIVATE_KEY
+// are Edge Function secrets (never sent to the client, unlike the public
+// key which is served over /push/vapid-public-key); if they're not set,
+// every push operation below becomes a silent no-op instead of an error so
+// chat itself keeps working without notifications configured.
+
+const VAPID_PUBLIC_KEY = Deno.env.get("VAPID_PUBLIC_KEY") || "";
+const VAPID_PRIVATE_KEY = Deno.env.get("VAPID_PRIVATE_KEY") || "";
+const VAPID_SUBJECT = Deno.env.get("VAPID_SUBJECT") || "mailto:support@physiome.app";
+const pushConfigured = Boolean(VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY);
+
+if (pushConfigured) webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+
+async function getVapidPublicKey() {
+  if (!pushConfigured) return err(503, "Push notifications are not configured");
+  return json({ publicKey: VAPID_PUBLIC_KEY });
+}
+
+async function subscribePush(ctx: AuthCtx, body: Record<string, unknown>) {
+  const endpoint = body?.endpoint as string | undefined;
+  const keys = body?.keys as { p256dh?: string; auth?: string } | undefined;
+  if (!endpoint || !keys?.p256dh || !keys?.auth) bad("A valid push subscription (endpoint + keys) is required");
+
+  const { error } = await admin
+    .from("push_subscriptions")
+    .upsert({ user_id: ctx.userId, endpoint, p256dh: keys.p256dh, auth: keys.auth }, { onConflict: "endpoint" });
+  if (error) throw new HttpError(500, error.message);
+  return json({ success: true });
+}
+
+async function unsubscribePush(ctx: AuthCtx, body: Record<string, unknown>) {
+  const endpoint = (body as Record<string, string>)?.endpoint;
+  if (!endpoint) bad("endpoint is required");
+  await admin.from("push_subscriptions").delete().eq("user_id", ctx.userId).eq("endpoint", endpoint);
+  return json({ success: true });
+}
+
+// Best-effort fan-out to every subscribed device for the given users. A
+// subscription the push service reports as gone (404/410) is pruned; any
+// other failure is logged and swallowed so a broken subscription never
+// blocks the chat message that triggered it.
+async function sendChatPush(userIds: string[], payload: { title: string; body: string; url: string; tag: string }) {
+  if (!pushConfigured || userIds.length === 0) return;
+
+  const { data: subs } = await admin.from("push_subscriptions").select("*").in("user_id", userIds);
+  if (!subs || subs.length === 0) return;
+
+  const message = JSON.stringify(payload);
+  await Promise.all(subs.map(async (sub: Record<string, any>) => {
+    try {
+      await webpush.sendNotification(
+        { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+        message,
+      );
+    } catch (e) {
+      const status = (e as { statusCode?: number })?.statusCode;
+      if (status === 404 || status === 410) {
+        await admin.from("push_subscriptions").delete().eq("id", sub.id);
+      } else {
+        console.error("Push send failed:", e);
+      }
+    }
+  }));
+}
+
+// Notifies the other side of a chat thread about a new message: a patient's
+// message notifies every clinician (therapist/admin) in their clinic; a
+// clinician's message notifies that patient. Failures here must never break
+// message sending, so this is only ever called fire-and-forget with its own
+// try/catch.
+async function notifyNewMessage(patientId: string, clinicId: string | null, senderRole: string, text: string) {
+  try {
+    const { data: patient } = await admin.from("patients").select("name, userId").eq("id", patientId).single();
+    const preview = text.length > 120 ? `${text.slice(0, 117)}...` : text;
+
+    if (senderRole === "patient") {
+      if (!clinicId) return;
+      const { data: recipients } = await admin.from("users").select("id").eq("clinic_id", clinicId).in("role", ["therapist", "admin"]);
+      const ids = (recipients ?? []).map((u: { id: string }) => u.id);
+      await sendChatPush(ids, {
+        title: `New message from ${patient?.name || "a patient"}`,
+        body: preview,
+        url: `/messages?patient_id=${patientId}`,
+        tag: `chat-${patientId}`,
+      });
+    } else {
+      if (!patient?.userId) return;
+      await sendChatPush([patient.userId], {
+        title: "New message from your care team",
+        body: preview,
+        url: "/patient/messages",
+        tag: `chat-${patientId}`,
+      });
+    }
+  } catch (e) {
+    console.error("notifyNewMessage failed:", e);
+  }
 }
 
 // ---------- PROMs (patient-reported outcome measures) ----------
@@ -2013,6 +2117,12 @@ Deno.serve(async (req: Request) => {
       if (segments[1] === "threads" && method === "GET") return await listMessageThreads(ctx);
       if (method === "GET" && segments.length === 1) return await listMessages(ctx, url);
       if (method === "POST" && segments.length === 1) return await createMessage(ctx, await body());
+    }
+
+    if (segments[0] === "push") {
+      if (segments[1] === "vapid-public-key" && method === "GET") return await getVapidPublicKey();
+      if (segments[1] === "subscribe" && method === "POST") return await subscribePush(ctx, await body());
+      if (segments[1] === "unsubscribe" && method === "POST") return await unsubscribePush(ctx, await body());
     }
 
     if (segments[0] === "prom-responses") {

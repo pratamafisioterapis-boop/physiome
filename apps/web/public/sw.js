@@ -44,6 +44,48 @@ self.addEventListener('message', (event) => {
   if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
 
+// Chat push notifications: the "api" Edge Function sends { title, body, url,
+// tag } (see notifyNewMessage in supabase/functions/api/index.ts). Tapping
+// the notification focuses an already-open tab and hands it the target URL,
+// or opens a new one — either way landing straight in the chat thread.
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+  let payload;
+  try {
+    payload = event.data.json();
+  } catch {
+    return;
+  }
+
+  const { title, body, url, tag } = payload;
+  event.waitUntil(
+    self.registration.showNotification(title || 'New message', {
+      body,
+      tag: tag || 'chat-message',
+      icon: '/icons/icon-192.png',
+      badge: '/icons/favicon-48.png',
+      data: { url: url || '/' },
+    }),
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = event.notification.data?.url || '/';
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      for (const client of clients) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          client.postMessage({ type: 'NAVIGATE', url: targetUrl });
+          return client.focus();
+        }
+      }
+      return self.clients.openWindow(targetUrl);
+    }),
+  );
+});
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;

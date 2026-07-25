@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Sidebar from '@/components/Sidebar.jsx';
 import Header from '@/components/Header.jsx';
@@ -12,9 +13,11 @@ import ChatThread from '@/components/messages/ChatThread.jsx';
 const initials = (name = '') => name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase() || '?';
 
 const TherapistMessagesPage = () => {
+  const [searchParams] = useSearchParams();
+  const requestedPatientId = searchParams.get('patient_id');
   const [threads, setThreads] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(requestedPatientId);
 
   const loadThreads = useCallback(async ({ silent } = {}) => {
     try {

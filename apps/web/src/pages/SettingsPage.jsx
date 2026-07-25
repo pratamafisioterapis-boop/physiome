@@ -12,9 +12,39 @@ import { toast } from 'sonner';
 import Header from '@/components/Header.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
 import InviteCodeManager from '@/components/admin/InviteCodeManager.jsx';
+import { getChatPushStatus, enableChatPushNotifications, disableChatPushNotifications, isPushSupported } from '@/lib/push.js';
 
 export default function SettingsPage() {
   const { currentUser } = useAuth();
+  const [chatPushEnabled, setChatPushEnabled] = React.useState(false);
+  const [chatPushBusy, setChatPushBusy] = React.useState(false);
+
+  React.useEffect(() => {
+    getChatPushStatus().then((status) => setChatPushEnabled(status === 'subscribed'));
+  }, []);
+
+  const handleToggleChatPush = async (checked) => {
+    if (!isPushSupported()) {
+      toast.error('This browser does not support push notifications');
+      return;
+    }
+    setChatPushBusy(true);
+    try {
+      if (checked) {
+        await enableChatPushNotifications();
+        setChatPushEnabled(true);
+        toast.success('Patient message notifications enabled');
+      } else {
+        await disableChatPushNotifications();
+        setChatPushEnabled(false);
+        toast.success('Patient message notifications disabled');
+      }
+    } catch (error) {
+      toast.error(error.message || 'Failed to update notification settings');
+    } finally {
+      setChatPushBusy(false);
+    }
+  };
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -171,10 +201,10 @@ export default function SettingsPage() {
                           Patient Messages
                         </Label>
                         <p className="text-sm text-muted-foreground">
-                          Alert when a patient sends a new message.
+                          Get a push notification when a patient sends a new message, even when the app is closed.
                         </p>
                       </div>
-                      <Switch defaultChecked />
+                      <Switch checked={chatPushEnabled} disabled={chatPushBusy} onCheckedChange={handleToggleChatPush} />
                     </div>
 
                     <Button onClick={handleSave}>
