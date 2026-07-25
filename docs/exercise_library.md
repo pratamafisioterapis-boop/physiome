@@ -2,7 +2,7 @@
 
 <!-- GENERATED FILE - regenerate with: node tools/seed/build-exercise-library.mjs -->
 
-Global library shipped with Physiome: **125 exercises** and **35 protocol templates**.
+Global library shipped with Physiome: **173 exercises** and **35 protocol templates**.
 
 Every entry is written from a published clinical practice guideline or trial, and stores that
 source in `evidence_source`. Patient-facing text (`instructions`, `contraindications`,
@@ -64,7 +64,7 @@ updates rows in place rather than creating duplicates.
 
 ## Exercises by body region
 
-### Ankle (11)
+### Ankle (14)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
@@ -79,8 +79,11 @@ updates rows in place rather than creating duplicates.
 | Resisted Ankle Eversion | Beginner | Strength | 3 set × 15 rep × tahan 2s × 1x/hari | A — Martin et al. Ankle Stability CPG, JOSPT 2021;51(4):CPG1-CPG80 |
 | Resisted Ankle Dorsiflexion | Beginner | Strength | 3 set × 15 rep × tahan 2s × 1x/hari | B — Martin et al. Ankle Stability CPG, JOSPT 2021; AHA/ASA Stroke Rehabilitation Guideline 2016 |
 | Knee-to-Wall Dorsiflexion Mobilisation | Beginner | Mobility | 3 set × 12 rep × tahan 3s × 1-2x/hari | B — Martin et al. Ankle Stability CPG, JOSPT 2021; Bennell et al. Aust J Physiother 1998 (weight-bearing lunge test) |
+| Star Excursion Balance Reach Training | Intermediate | Balance | 3 set × 5 rep × 3-5x/minggu | A — Gribble PA et al. J Athl Train 2012 (Star Excursion Balance Test selection criteria); Martin et al. Ankle Stability and Movement Coordination Impairments CPG, JOSPT 2021;51(4):CPG1-CPG80 |
+| Seated Calf Raise (Soleus Focus) | Beginner | Strength | 3 set × 15 rep × tahan 3s × 1x/hari | B — Martin et al. Achilles Pain CPG, JOSPT 2018;48(5):A1-A38; Silbernagel KG et al. Am J Sports Med 2007 (Achilles tendon rehabilitation protocol) |
+| Single-Leg Balance with Functional Reach | Intermediate | Balance | 3 set × 8 rep × 3-5x/minggu | B — Martin et al. Ankle Stability and Movement Coordination Impairments CPG, JOSPT 2021;51(4):CPG1-CPG80 |
 
-### Balance (12)
+### Balance (17)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
@@ -96,8 +99,13 @@ updates rows in place rather than creating duplicates.
 | Big Sit-to-Stand (Amplitude Training) | Intermediate | Motor control | 3 set × 10 rep × tahan 2s × 1-2x/hari | A — Ebersbach et al. Mov Disord 2010;25(12):1902-1908 (LSVT BIG RCT); Osborne et al. Parkinson Disease CPG, JNPT 2022 |
 | Big Forward Step and Reach | Intermediate | Motor control | 3 set × 10 rep × tahan 2s × 1x/hari | A — Ebersbach et al. Mov Disord 2010; Osborne et al. Parkinson Disease CPG, JNPT 2022;46(4):240-269 |
 | Step Over Obstacle | Intermediate | Balance | 3 set × 10 rep × tahan 2s × 3x/minggu | B — Sherrington et al. Br J Sports Med 2017 (exercise for falls prevention); Otago Exercise Programme |
+| Frenkel's Exercise - Heel-to-Shin Slide | Beginner | Motor control | 3 set × 8 rep × 1-2x/hari | B — Cameron MH, Nilsagard Y. Handb Clin Neurol 2018;159:237-250 (gait and balance rehabilitation in MS/ataxia); klasik Frenkel HS coordination exercises |
+| Frenkel's Exercise - Seated Heel Tapping | Beginner | Motor control | 3 set × 10 rep × 1-2x/hari | B — Cameron MH, Nilsagard Y. Handb Clin Neurol 2018;159:237-250; klasik Frenkel HS coordination exercises for tabes dorsalis/ataxia |
+| Dual-Task Walking with Cognitive Challenge | Intermediate | Balance | 3 set × 1 rep × tahan 60s × 3x/minggu | B — Silsupadol P et al. Arch Phys Med Rehabil 2009;90(3):381-387 (dual-task training for balance in older adults); Sherrington et al. Br J Sports Med 2017 (falls prevention meta-analysis) |
+| VOR x2 Viewing (Vestibular) | Intermediate | Balance | 3 set × 1 rep × tahan 60s × 3-5x/hari | A — Hall et al. Vestibular Rehabilitation for Peripheral Vestibular Hypofunction: Updated CPG, J Neurol Phys Ther 2022;46(2):118-177 |
+| Standing Balance Eyes Closed (Romberg Progression) | Intermediate | Balance | 3 set × 1 rep × tahan 30s × 1x/hari | B — Hall et al. Vestibular Rehabilitation CPG, J Neurol Phys Ther 2022;46(2):118-177; CDC STEADI Four-Stage Balance Test |
 
-### Chest (4)
+### Chest (7)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
@@ -105,8 +113,11 @@ updates rows in place rather than creating duplicates.
 | Pursed Lip Breathing | Beginner | Breathing | 3 set × 10 rep × Sesuai kebutuhan + 2x/hari latihan | A — Spruit et al. ATS/ERS Statement on Pulmonary Rehabilitation, 2013; GOLD Report 2024 |
 | Active Cycle of Breathing Technique (ACBT) | Intermediate | Breathing | 3 set × 4 rep × tahan 3s × 2-3x/hari | A — Spruit et al. ATS/ERS Statement 2013; McIlwaine et al. Eur Respir J 2017 (airway clearance) |
 | Thoracic Expansion Exercise | Beginner | Breathing | 3 set × 5 rep × tahan 3s × Setiap 1-2 jam pasca operasi | B — Spruit et al. ATS/ERS Statement 2013; Boden et al. BMJ 2018 (preoperative breathing exercise) |
+| Incentive Spirometry | Beginner | Breathing | 3 set × 10 rep × tahan 4s × Setiap 1-2 jam pasca operasi | A — Restrepo RD et al. Respir Care 2011;56(10):1600-1604 (AARC Clinical Practice Guideline: Incentive Spirometry); Boden et al. BMJ 2018 (preoperative breathing exercise training) |
+| Autogenic Drainage (Airway Clearance) | Advanced | Breathing | 3 set × 6 rep × tahan 3s × 1-2x/hari | A — McIlwaine M et al. Eur Respir J 2017 (airway clearance techniques in cystic fibrosis systematic review); Spruit et al. ATS/ERS Statement on Pulmonary Rehabilitation, 2013 |
+| Segmental Breathing (Lateral Costal Expansion) | Beginner | Breathing | 3 set × 8 rep × tahan 3s × Setiap 1-2 jam pasca operasi, lalu 3x/hari | B — Spruit et al. ATS/ERS Statement on Pulmonary Rehabilitation, Am J Respir Crit Care Med 2013;188(8):e13-e64; Boden et al. BMJ 2018 (preoperative breathing exercise) |
 
-### Core (8)
+### Core (10)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
@@ -116,10 +127,12 @@ updates rows in place rather than creating duplicates.
 | McGill Curl-Up | Intermediate | Strength | 3 set × 6 rep × tahan 10s × 1x/hari | B — McGill SM. Low Back Disorders, 3rd ed.; Callaghan et al. Clin Biomech 1998 |
 | Side Plank (Knees Bent) | Intermediate | Strength | 3 set × 3 rep × tahan 15s × 3-5x/minggu | B — McGill SM. Low Back Disorders, 3rd ed.; Ekstrom et al. JOSPT 2007 (core muscle EMG) |
 | Front Plank (Forearm) | Intermediate | Strength | 3 set × 1 rep × tahan 30s × 3-5x/minggu | B — Ekstrom et al. JOSPT 2007; George et al. Low Back Pain CPG, JOSPT 2021 |
+| Pallof Press (Anti-Rotation) | Intermediate | Strength | 3 set × 10 rep × tahan 3s × 3x/minggu | B — McGill SM. Low Back Disorders, 3rd ed. (anti-rotation core training); George et al. Low Back Pain CPG, JOSPT 2021;51(11):CPG1-CPG60 |
+| Suitcase Carry (Loaded Carry) | Intermediate | Strength | 3 set × 1 rep × tahan 40s × 2-3x/minggu | C — McGill SM. Low Back Disorders, 3rd ed. (loaded carry for trunk stability); George et al. Low Back Pain CPG, JOSPT 2021 (functional restoration principle) |
 | Seated Trunk Rotation and Reach | Beginner | Motor control | 2 set × 10 rep × tahan 2s × 1-2x/hari | B — Winstein et al. AHA/ASA Adult Stroke Rehabilitation and Recovery Guideline, Stroke 2016;47(6):e98-e169 |
 | Postpartum Core Connection Breathing | Beginner | Motor control | 3 set × 10 rep × tahan 4s × 1-2x/hari | B — ACOG Committee Opinion 804: Physical Activity and Exercise During Pregnancy and the Postpartum Period (2020); Dumoulin et al. Cochrane 2018 |
 
-### Elbow (4)
+### Elbow (6)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
@@ -127,16 +140,20 @@ updates rows in place rather than creating duplicates.
 | Eccentric Wrist Extension (Tyler Twist) | Intermediate | Strength | 3 set × 15 rep × tahan 4s × 1x/hari, 5 hari/minggu | A — Tyler et al. J Shoulder Elbow Surg 2010;19(6):917-922; Lucado et al. Lateral Elbow Tendinopathy CPG, JOSPT 2022;52(12):CPG1-CPG111 |
 | Eccentric Wrist Extension with Weight | Beginner | Strength | 3 set × 15 rep × tahan 4s × 1x/hari | A — Lucado et al. Lateral Elbow Tendinopathy CPG, JOSPT 2022; Croisier et al. Br J Sports Med 2007 |
 | Forearm Pronation-Supination with Weight | Intermediate | Strength | 3 set × 15 rep × tahan 2s × 3-5x/minggu | B — Lucado et al. Lateral Elbow Tendinopathy CPG, JOSPT 2022 |
+| Eccentric Wrist Flexion (Golfer's Elbow) | Intermediate | Strength | 3 set × 15 rep × tahan 4s × 1x/hari, 5 hari/minggu | B — Lucado et al. Lateral Elbow Tendinopathy CPG, JOSPT 2022 (eccentric loading principle); Kisner & Colby, Therapeutic Exercise 7th ed. (medial epicondylalgia management) |
+| Ulnar Nerve Flossing at Elbow (Cubital Tunnel) | Intermediate | Neurodynamic | 3 set × 10 rep × tahan 2s × 2-3x/hari | C — Coppieters & Butler Man Ther 2008 (neurodynamic sliders); Svernlöv B et al. J Hand Surg Eur 2009 (conservative treatment cubital tunnel syndrome) |
 
-### Foot (3)
+### Foot (5)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
 | Heel Raise with Towel under Toes (High-Load) | Intermediate | Strength | 3 set × 12 rep × tahan 2s × Selang sehari (setiap 2 hari) | A — Rathleff et al. Scand J Med Sci Sports 2015;25(3):e292-e300; Martin et al. Heel Pain CPG, JOSPT 2023 |
 | Plantar Fascia-Specific Stretch | Beginner | Stretch | 3 set × 10 rep × tahan 10s × 3x/hari | A — DiGiovanni et al. J Bone Joint Surg Am 2003;85(7):1270-1277; Martin et al. Heel Pain CPG, JOSPT 2023 |
 | Short Foot Exercise (Arch Doming) | Intermediate | Motor control | 3 set × 12 rep × tahan 8s × 1x/hari | B — Mulligan & Cook Man Ther 2013; McKeon et al. Br J Sports Med 2015 (foot core system) |
+| Toe Spread / Intrinsic Foot Strengthening | Beginner | Strength | 3 set × 10 rep × tahan 5s × 1-2x/hari | C — McKeon et al. Br J Sports Med 2015 (foot core system); praktik klinis manajemen konservatif neuroma Morton |
+| Towel Scrunches (Intrinsic Foot Strengthening) | Beginner | Strength | 3 set × 8 rep × 1x/hari | C — Martin et al. Heel Pain - Plantar Fasciitis CPG, JOSPT 2023;53(12):CPG1-CPG39 (foot intrinsic strengthening adjunct); McKeon et al. Br J Sports Med 2015 |
 
-### General (5)
+### General (6)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
@@ -145,16 +162,19 @@ updates rows in place rather than creating duplicates.
 | Whole-Body Resistance Circuit | Intermediate | Strength | 3 set × 10 rep × 2-3x/minggu | A — ACSM's Guidelines for Exercise Testing and Prescription, 11th ed.; WHO Guidelines on Physical Activity 2020 |
 | Progressive Loaded Squat (Bone Loading) | Advanced | Strength | 5 set × 5 rep × 2x/minggu | A — Watson et al. J Bone Miner Res 2018;33(2):211-220 (LIFTMOR RCT) |
 | Heel Drop (Bone Impact Loading) | Intermediate | Strength | 2 set × 15 rep × 4-5x/minggu | B — Watson et al. J Bone Miner Res 2018 (LIFTMOR); Zhao et al. Osteoporos Int 2015 (impact exercise meta-analysis) |
+| Six-Minute Walk Progressive Training | Beginner | Aerobic | 1 set × 1 rep × 3-5x/minggu | A — Dibben et al. Cochrane 2021;11:CD001800 (exercise-based cardiac rehabilitation); Spruit et al. ATS/ERS Statement on Pulmonary Rehabilitation, 2013 (6MWT-based walking prescription) |
 
-### Hand (3)
+### Hand (5)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
 | Grip Strengthening (Ball Squeeze) | Beginner | Strength | 3 set × 12 rep × tahan 5s × 1-2x/hari | B — Erickson et al. Hand Pain and Sensory Deficits CPG, JOSPT 2019;49(5):CPG1-CPG85 |
 | Tendon Gliding Exercises | Beginner | Mobility | 3 set × 10 rep × tahan 3s × 3x/hari | B — Kim SD. J Phys Ther Sci 2015 (tendon/nerve gliding CTS review); Erickson et al. JOSPT 2019 |
 | Finger Extension with Rubber Band | Beginner | Strength | 3 set × 15 rep × tahan 3s × 1x/hari | C — Praktik terapi tangan; Erickson et al. Hand Pain CPG, JOSPT 2019 |
+| A1 Pulley Tendon Glide (Trigger Finger) | Beginner | Mobility | 3 set × 10 rep × tahan 3s × 3-4x/hari | C — Makkouk AH et al. Curr Rev Musculoskelet Med 2008 (trigger finger conservative management); praktik terapi tangan |
+| Thumb CMC Opposition Strengthening | Beginner | Strength | 3 set × 10 rep × tahan 5s × 1x/hari | B — Erickson et al. Hand Pain and Sensory Deficits CPG, JOSPT 2019;49(5):CPG1-CPG85; Villafañe JH et al. J Chiropr Med 2013 (thumb CMC OA exercise) |
 
-### Hip (14)
+### Hip (18)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
@@ -172,8 +192,21 @@ updates rows in place rather than creating duplicates.
 | Standing Hip Extension | Beginner | Strength | 3 set × 12 rep × tahan 2s × 3x/minggu | A — Otago Exercise Programme (Campbell et al. BMJ 1997); Fransen et al. Cochrane 2014 (hip OA exercise) |
 | Standing Hip Abduction | Beginner | Strength | 3 set × 12 rep × tahan 2s × 3x/minggu | A — Otago Exercise Programme (Campbell et al. BMJ 1997; Robertson et al. BMJ 2001) |
 | Copenhagen Adduction (Modified) | Advanced | Strength | 2 set × 8 rep × tahan 3s × 2-3x/minggu | A — Harøy et al. Br J Sports Med 2019;53(3):150-157 (adductor strengthening groin injury prevention) |
+| 90/90 Hip Stretch | Intermediate | Stretch | 3 set × 1 rep × tahan 30s × 1-2x/hari | C — Griffin DR et al. Br J Sports Med 2016;50(19):1169-1176 (Warwick Agreement FAI syndrome consensus); Kisner & Colby, Therapeutic Exercise 7th ed. |
+| Standing Hip Circles (FAI Mobility) | Beginner | Mobility | 2 set × 8 rep × 1x/hari | C — Griffin DR et al. Br J Sports Med 2016 (Warwick Agreement FAI syndrome); Cibulka et al. Hip Pain and Mobility Deficits CPG, JOSPT 2017;47(6):A1-A37 |
+| Adductor Squeeze (Ball Between Knees) | Beginner | Strength | 3 set × 10 rep × tahan 6s × 1-2x/hari | A — Harøy et al. Br J Sports Med 2019;53(3):150-157 (Copenhagen adduction/groin injury prevention programme); Mosler AB et al. Br J Sports Med 2018 (groin injury clinical guideline) |
+| Seated Piriformis Stretch | Beginner | Stretch | 3 set × 1 rep × tahan 30s × 2-3x/hari | C — Kisner & Colby, Therapeutic Exercise 7th ed.; George et al. Low Back Pain CPG, JOSPT 2021 (adjunct for radicular symptoms) |
 
-### Knee (17)
+### Jaw (4)
+
+| Exercise | Difficulty | Type | Default dose | Evidence |
+| --- | --- | --- | --- | --- |
+| TMJ Rest Position (Tongue-to-Palate) | Beginner | Motor control | 1 set × 1 rep × Sepanjang hari, cek berkala | B — Armijo-Olivo S et al. Phys Ther 2016;96(1):9-25 (manual therapy and exercise for TMD systematic review); McNeely ML et al. Phys Ther 2006;86(5):710-725 |
+| Controlled Mouth Opening (Rocabado 6x6) | Intermediate | Mobility | 2 set × 6 rep × tahan 3s × 6x/hari | B — McNeely ML et al. Phys Ther 2006;86(5):710-725 (systematic review effectiveness of physical therapy for TMD); Rocabado M. Cranio 1983 (6x6 exercise programme) |
+| TMJ Isometric Exercises (4-Way) | Beginner | Strength | 2 set × 4 rep × tahan 5s × 1-2x/hari | B — Armijo-Olivo S et al. Phys Ther 2016;96(1):9-25 (exercise therapy for TMD); Shaffer SM et al. J Orthop Sports Phys Ther 2014 (TMD evaluation and management) |
+| Chin Tuck with Tongue-Up Swallow (TMJ/Cervical Integration) | Beginner | Motor control | 3 set × 8 rep × tahan 3s × 2-3x/hari | C — Shaffer SM et al. J Orthop Sports Phys Ther 2014;44(2):A1-A18 (temporomandibular disorders: management including cervical spine); Armijo-Olivo S et al. Phys Ther 2016 |
+
+### Knee (22)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
@@ -194,8 +227,13 @@ updates rows in place rather than creating duplicates.
 | Patellar Mobilisation (Self) | Beginner | Mobility | 1 set × 4 rep × tahan 20s × 2-3x/hari | B — Brigham & Women's Hospital TKA Protocol; Adams et al. JOSPT 2012 |
 | Stationary Cycling | Beginner | Aerobic | 1 set × 1 rep × 3-5x/minggu | A — ACSM's Guidelines for Exercise Testing and Prescription, 11th ed.; WHO 2020 Physical Activity Guidelines |
 | Prone Knee Hang (Extension Stretch) | Beginner | Stretch | 2 set × 1 rep × tahan 300s × 2-3x/hari | A — Adams et al. JOSPT 2012 (ACL rehab); Logerstedt et al. JOSPT 2017 |
+| Single-Leg Hop for Distance | Advanced | Strength | 3 set × 3 rep × tahan 3s × 2x/minggu | A — Grindem et al. Br J Sports Med 2016;50(13):804-808 (Delaware-Oslo ACL cohort, hop tests and return-to-sport criteria); Logerstedt et al. Knee Ligament Sprain CPG, JOSPT 2017;47(11):A1-A47 |
+| Lateral Bound (Skater Hop) | Advanced | Strength | 3 set × 8 rep × tahan 2s × 2x/minggu | B — Myer GD et al. J Strength Cond Res 2006 (plyometric training and neuromuscular control); Logerstedt et al. Knee Ligament Sprain CPG, JOSPT 2017 |
+| Box Jump with Soft Landing | Advanced | Strength | 3 set × 6 rep × tahan 2s × 2x/minggu | B — Myer GD et al. Br J Sports Med 2006 (plyometric training ACL injury prevention/rehabilitation); Logerstedt et al. JOSPT 2017 Knee Ligament Sprain CPG |
+| Multi-Angle Isometric Quad Sets | Beginner | Strength | 3 set × 8 rep × tahan 8s × 1-2x/hari | B — Willy et al. Patellofemoral Pain CPG, JOSPT 2019;49(9):CPG1-CPG95; Escamilla et al. JOSPT 2012 (patellofemoral joint loading by knee angle) |
+| Controlled Partial Squat (Meniscus-Safe) | Beginner | Strength | 3 set × 10 rep × tahan 2s × 3x/minggu | B — Logerstedt et al. Knee Ligament Sprain CPG, JOSPT 2017;47(11):A1-A47 (graded loading principles); Skou & Roos BMC Musculoskelet Disord 2017 (GLA:D progressive loading) |
 
-### Lower back (9)
+### Lower back (12)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
@@ -208,8 +246,11 @@ updates rows in place rather than creating duplicates.
 | Child's Pose (Prayer Stretch) | Beginner | Stretch | 3 set × 1 rep × tahan 45s × 1-2x/hari | C — Praktik klinis; sejalan dengan preferensi arah fleksi pada stenosis (Ammendolia et al. Cochrane 2013) |
 | Sciatic Nerve Glide (Slider) | Beginner | Neurodynamic | 3 set × 12 rep × tahan 2s × 2-3x/hari | B — Coppieters & Butler Man Ther 2008 (sliders vs tensioners); Basson et al. JOSPT 2017 (neural mobilisation meta-analysis) |
 | Hip Hinge Pattern Training | Intermediate | Motor control | 3 set × 12 rep × tahan 2s × 3x/minggu | B — George et al. Low Back Pain CPG, JOSPT 2021; Steele et al. 2015 (lumbar extensor training) |
+| Schroth Rotational Angular Breathing | Advanced | Breathing | 3 set × 8 rep × tahan 5s × 1x/hari | B — Kuru T et al. Clin Rehabil 2016;30(2):181-190 (RCT Schroth exercises in adolescent idiopathic scoliosis); Otman S et al. Turk J Med Sci 2005 |
+| Quadruped Rock Back (Segmental Control) | Beginner | Motor control | 3 set × 10 rep × tahan 2s × 1x/hari | C — McGill SM. Low Back Disorders, 3rd ed. (hip-spine dissociation training); George et al. Low Back Pain CPG, JOSPT 2021 |
+| Prone Hip Extension with Neutral Spine | Intermediate | Motor control | 3 set × 12 rep × tahan 3s × 3-5x/minggu | B — George et al. Low Back Pain CPG, JOSPT 2021;51(11):CPG1-CPG60; McGill SM. Low Back Disorders, 3rd ed. (gluteal dominance training for spine sparing) |
 
-### Neck (6)
+### Neck (9)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
@@ -219,16 +260,20 @@ updates rows in place rather than creating duplicates.
 | Upper Trapezius Stretch | Beginner | Stretch | 3 set × 1 rep × tahan 30s × 2x/hari | B — Blanpied et al. Neck Pain CPG, JOSPT 2017; Gross et al. Cochrane 2015 (exercise for neck pain) |
 | Levator Scapulae Stretch | Beginner | Stretch | 3 set × 1 rep × tahan 30s × 2x/hari | B — Blanpied et al. Neck Pain CPG, JOSPT 2017 |
 | Cervical Isometrics (4-Way) | Beginner | Strength | 2 set × 5 rep × tahan 8s × 1x/hari | A — Blanpied et al. Neck Pain CPG, JOSPT 2017; Ylinen et al. JAMA 2003;289(19):2509-2516 |
+| Deep Neck Flexor Endurance Hold | Intermediate | Motor control | 3 set × 5 rep × tahan 10s × 1x/hari | A — Jull et al. J Manipulative Physiol Ther 2008;31(7):525-533 (craniocervical flexion test/training); Blanpied et al. Neck Pain CPG, JOSPT 2017;47(7):A1-A83 |
+| Scalene Stretch (Thoracic Outlet) | Beginner | Stretch | 3 set × 1 rep × tahan 20s × 2x/hari | C — Watson LA et al. Man Ther 2009 (thoracic outlet syndrome conservative management); Hooper TL et al. J Man Manip Ther 2010 (TOS diagnosis and conservative management review) |
+| Cervical Flexion-Rotation Self-Mobilisation | Intermediate | Mobility | 2 set × 8 rep × tahan 8s × 1-2x/hari | B — Hall TM et al. Man Ther 2007 (flexion-rotation test cervicogenic headache); Blanpied et al. Neck Pain CPG, JOSPT 2017 |
 
-### Pelvic floor (3)
+### Pelvic floor (4)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
 | Pelvic Floor Muscle Training - Slow Holds | Beginner | Strength | 3 set × 10 rep × tahan 8s × 3x/hari | A — Dumoulin et al. Cochrane Database Syst Rev 2018;10:CD005654; NICE NG123 Urinary Incontinence 2019 |
 | Pelvic Floor Quick Flicks | Beginner | Strength | 3 set × 10 rep × tahan 1s × 3x/hari | A — Dumoulin et al. Cochrane 2018; Miller et al. J Am Geriatr Soc 1998 (The Knack) |
 | The Knack (Pre-Contraction) | Intermediate | Motor control | 1 set × 10 rep × tahan 3s × Setiap hari + saat aktivitas | A — Miller et al. J Am Geriatr Soc 1998;46(7):870-874; Dumoulin et al. Cochrane 2018 |
+| Pelvic Floor Relaxation (Reverse Kegel) | Beginner | Motor control | 3 set × 8 rep × tahan 6s × 1-2x/hari | B — Rosenbaum TY, Owens A. J Sex Med 2008;5(3):513-523 (pelvic floor physical therapy for pain and sexual dysfunction); NICE NG123 Urinary Incontinence and Pelvic Organ Prolapse in Women (2019) |
 
-### Shoulder (19)
+### Shoulder (24)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
@@ -250,17 +295,23 @@ updates rows in place rather than creating duplicates.
 | Cross-Body Adduction Stretch | Beginner | Stretch | 3 set × 1 rep × tahan 30s × 1-2x/hari | B — McClure et al. J Athl Train 2007; Kelley et al. Adhesive Capsulitis CPG, JOSPT 2013 |
 | Seated Row with Band | Beginner | Strength | 3 set × 12 rep × tahan 2s × 3x/minggu | B — Hopewell et al. GRASP trial, Lancet 2021; Gross et al. Cochrane 2015 |
 | Wall Push-Up | Beginner | Strength | 3 set × 12 rep × 3x/minggu | B — ACSM's Guidelines for Exercise Testing and Prescription, 11th ed.; GRASP programme 2021 |
+| Brachial Plexus Nerve Glide (Median Bias) | Intermediate | Neurodynamic | 3 set × 10 rep × tahan 2s × 2-3x/hari | C — Coppieters & Butler Man Ther 2008 (neurodynamic sliders vs tensioners); Watson LA et al. Man Ther 2009 (thoracic outlet syndrome) |
+| 90/90 External Rotation with Band | Advanced | Strength | 3 set × 12 rep × tahan 1s × 3x/minggu | B — Cools et al. Br J Sports Med 2014 (scapular and rotator cuff rehabilitation exercise selection); Wilk KE et al. Am J Sports Med 2011 (throwing athlete rehabilitation) |
+| Plyometric Chest Pass (Medicine Ball) | Advanced | Strength | 3 set × 10 rep × 2-3x/minggu | B — Wilk KE et al. Am J Sports Med 2011 (throwing athlete return-to-sport progression); Cools et al. Br J Sports Med 2014 |
+| Latissimus Dorsi Stretch | Beginner | Stretch | 3 set × 1 rep × tahan 30s × 1-2x/hari | C — Kelley et al. Adhesive Capsulitis CPG, JOSPT 2013;43(5):A1-A31; Kisner & Colby, Therapeutic Exercise 7th ed. |
+| Rhythmic Stabilization (Shoulder) | Advanced | Motor control | 3 set × 1 rep × tahan 15s × 2-3x/minggu | C — Wilk KE et al. Am J Sports Med 2011 (throwing athlete rehabilitation); Cools et al. Br J Sports Med 2014 |
 | Unsupported Arm Raises | Beginner | Strength | 3 set × 12 rep × tahan 2s × 3x/minggu | A — Spruit et al. ATS/ERS Statement on Pulmonary Rehabilitation, Am J Respir Crit Care Med 2013 |
 
-### Thoracic (3)
+### Thoracic (4)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
 | Thoracic Extension over Roller | Beginner | Mobility | 2 set × 8 rep × tahan 5s × 1x/hari | B — Blanpied et al. Neck Pain CPG, JOSPT 2017 (thoracic manipulation/mobility adjunct) |
 | Open Book Thoracic Rotation | Beginner | Mobility | 2 set × 10 rep × tahan 5s × 1x/hari | C — Konsensus praktik klinis; adjunct pada Neck Pain CPG JOSPT 2017 |
 | Seated Posture Reset (Microbreak) | Beginner | Mobility | 1 set × 5 rep × tahan 5s × Setiap 30-60 menit kerja | B — Waongenngarm et al. Appl Ergon 2018 (interruption of prolonged sitting); WHO 2020 physical activity guidelines |
+| Prone Thoracic Extension (Prone Cobra) | Intermediate | Strength | 3 set × 10 rep × tahan 8s × 1x/hari, 3-5x/minggu | B — Blanpied et al. Neck Pain CPG, JOSPT 2017;47(7):A1-A83; Cools et al. Br J Sports Med 2014 (scapular rehabilitation) |
 
-### Wrist (4)
+### Wrist (6)
 
 | Exercise | Difficulty | Type | Default dose | Evidence |
 | --- | --- | --- | --- | --- |
@@ -268,3 +319,5 @@ updates rows in place rather than creating duplicates.
 | Wrist Extensor Stretch | Beginner | Stretch | 3 set × 1 rep × tahan 40s × 2-3x/hari | B — Lucado et al. Lateral Elbow Tendinopathy CPG, JOSPT 2022 |
 | Wrist Flexor Stretch | Beginner | Stretch | 3 set × 1 rep × tahan 40s × 2-3x/hari | B — Lucado et al. JOSPT 2022; Vicenzino Man Ther 2003 |
 | Wrist Active Range of Motion | Beginner | Mobility | 2 set × 10 rep × tahan 3s × 3-4x/hari | B — Erickson et al. Hand Pain and Sensory Deficits CPG, JOSPT 2019 |
+| Thumb Eccentric Loading (De Quervain's) | Beginner | Strength | 3 set × 12 rep × tahan 3s × 1x/hari | B — Huisstede BM et al. Arch Phys Med Rehabil 2018 (evidence-based guideline hand/wrist conditions incl. De Quervain's); Goel R, Abzug JM. Curr Rev Musculoskelet Med 2015 |
+| Isometric Wrist Flexion-Extension | Beginner | Strength | 3 set × 8 rep × tahan 6s × 3-4x/hari | C — Erickson et al. Hand Pain and Sensory Deficits CPG, JOSPT 2019; praktik klinis rehabilitasi pasca fraktur distal radius |

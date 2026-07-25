@@ -9,7 +9,9 @@
     "movement_type": "Stretch",
     "starting_position": "Standing",
     "target_muscles": "Gastrocnemius",
-    "equipment_needed": ["Dinding"],
+    "equipment_needed": [
+      "Dinding"
+    ],
     "description": "Peregangan betis dengan lutut lurus untuk keterbatasan dorsofleksi pergelangan kaki dan nyeri tumit.",
     "description_en": "Straight-knee calf stretch for limited ankle dorsiflexion and heel pain.",
     "instructions": "1. Berdiri menghadap dinding dengan kedua tangan menempel setinggi bahu.\n2. Langkahkan satu kaki ke belakang, lutut belakang LURUS dan tumit menempel lantai.\n3. Tekuk lutut depan dan condongkan badan ke dinding sampai terasa regangan di betis atas kaki belakang.\n4. Jaga jari kaki belakang menghadap lurus ke depan.\n5. Tahan 30-45 detik, ulangi 3 kali per sisi.",
@@ -23,7 +25,12 @@
     "default_frequency": "2x/hari",
     "evidence_level": "A",
     "evidence_source": "Martin et al. Heel Pain - Plantar Fasciitis CPG, JOSPT 2023;53(12):CPG1-CPG39",
-    "tags": ["calf", "stretch", "plantar fasciitis", "ankle"]
+    "tags": [
+      "calf",
+      "stretch",
+      "plantar fasciitis",
+      "ankle"
+    ]
   },
   {
     "slug": "soleus-stretch",
@@ -35,7 +42,9 @@
     "movement_type": "Stretch",
     "starting_position": "Standing",
     "target_muscles": "Soleus",
-    "equipment_needed": ["Dinding"],
+    "equipment_needed": [
+      "Dinding"
+    ],
     "description": "Peregangan otot betis dalam yang penting untuk dorsofleksi saat berjongkok dan menaiki tangga.",
     "description_en": "Deep calf stretch important for dorsiflexion during squatting and stair climbing.",
     "instructions": "1. Berdiri menghadap dinding dengan satu kaki di belakang.\n2. Tekuk lutut belakang sambil menjaga tumit tetap menempel lantai.\n3. Turunkan badan sedikit sampai terasa regangan di betis bagian bawah/dekat tumit.\n4. Tahan 30-45 detik.\n5. Ulangi 3 kali per sisi.",
@@ -49,7 +58,12 @@
     "default_frequency": "2x/hari",
     "evidence_level": "A",
     "evidence_source": "Martin et al. Heel Pain CPG, JOSPT 2023",
-    "tags": ["calf", "stretch", "ankle", "dorsiflexion"]
+    "tags": [
+      "calf",
+      "stretch",
+      "ankle",
+      "dorsiflexion"
+    ]
   },
   {
     "slug": "ankle-pumps",
@@ -75,7 +89,12 @@
     "default_frequency": "Setiap 1-2 jam pada fase awal",
     "evidence_level": "B",
     "evidence_source": "Brigham & Women's Hospital post-operative protocols; Martin et al. Ankle Stability CPG, JOSPT 2021",
-    "tags": ["post-op", "circulation", "ankle", "swelling"]
+    "tags": [
+      "post-op",
+      "circulation",
+      "ankle",
+      "swelling"
+    ]
   },
   {
     "slug": "ankle-alphabet",
@@ -101,7 +120,11 @@
     "default_frequency": "2-3x/hari",
     "evidence_level": "B",
     "evidence_source": "Martin et al. Ankle Stability and Movement Coordination Impairments CPG, JOSPT 2021;51(4):CPG1-CPG80",
-    "tags": ["ankle sprain", "ROM", "post-immobilisation"]
+    "tags": [
+      "ankle sprain",
+      "ROM",
+      "post-immobilisation"
+    ]
   },
   {
     "slug": "double-leg-heel-raise",
@@ -113,7 +136,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Gastrocnemius, soleus",
-    "equipment_needed": ["Pegangan (kursi/dinding)"],
+    "equipment_needed": [
+      "Pegangan (kursi/dinding)"
+    ],
     "description": "Penguatan betis dasar untuk tendinopati Achilles, nyeri tumit, dan pencegahan jatuh.",
     "description_en": "Foundational calf strengthening for Achilles tendinopathy, heel pain and falls prevention.",
     "instructions": "1. Berdiri tegak dengan kaki selebar pinggul, pegang kursi/dinding untuk keseimbangan.\n2. Angkat kedua tumit setinggi mungkin selama 2 detik.\n3. Tahan 2 detik di posisi atas.\n4. Turunkan perlahan selama 3 detik sampai tumit menyentuh lantai.\n5. Ulangi 12-15 kali.",
@@ -127,7 +152,12 @@
     "default_frequency": "3-5x/minggu",
     "evidence_level": "A",
     "evidence_source": "Martin et al. Achilles Pain CPG, JOSPT 2018;48(5):A1-A38; Otago Exercise Programme",
-    "tags": ["calf", "Achilles", "falls prevention", "strength"]
+    "tags": [
+      "calf",
+      "Achilles",
+      "falls prevention",
+      "strength"
+    ]
   },
   {
     "slug": "single-leg-heel-raise",
@@ -139,7 +169,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Gastrocnemius, soleus",
-    "equipment_needed": ["Pegangan"],
+    "equipment_needed": [
+      "Pegangan"
+    ],
     "description": "Penguatan betis satu sisi - standar penilaian dan latihan pada tendinopati Achilles.",
     "description_en": "Unilateral calf strengthening - both an assessment standard and a treatment staple in Achilles tendinopathy.",
     "instructions": "1. Berdiri satu kaki dengan pegangan ringan untuk keseimbangan.\n2. Angkat tumit setinggi mungkin selama 2 detik.\n3. Tahan 2 detik di atas.\n4. Turunkan perlahan selama 3 detik.\n5. Ulangi sampai 15 repetisi atau sampai tidak dapat mempertahankan tinggi angkatan.",
@@ -153,7 +185,11 @@
     "default_frequency": "3-5x/minggu",
     "evidence_level": "A",
     "evidence_source": "Martin et al. Achilles Pain CPG, JOSPT 2018; Silbernagel et al. Am J Sports Med 2007",
-    "tags": ["calf", "Achilles", "strength"]
+    "tags": [
+      "calf",
+      "Achilles",
+      "strength"
+    ]
   },
   {
     "slug": "eccentric-heel-drop-straight-knee",
@@ -165,7 +201,10 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Gastrocnemius, tendon Achilles",
-    "equipment_needed": ["Anak tangga atau step", "Pegangan"],
+    "equipment_needed": [
+      "Anak tangga atau step",
+      "Pegangan"
+    ],
     "description": "Komponen utama protokol Alfredson untuk tendinopati Achilles midportion: 3x15 repetisi, dua kali sehari, 12 minggu.",
     "description_en": "Core component of the Alfredson protocol for midportion Achilles tendinopathy: 3x15 repetitions, twice daily, for 12 weeks.",
     "instructions": "1. Berdiri dengan ujung kaki di tepi anak tangga, tumit menggantung di luar tepi, pegang pegangan.\n2. Naik ke posisi jinjit menggunakan KEDUA kaki (atau kaki sehat saja).\n3. Angkat kaki yang sehat, sehingga hanya kaki yang sakit menahan beban.\n4. Turunkan tumit perlahan selama 3 detik sampai di bawah level anak tangga.\n5. Kembali ke atas dengan bantuan kaki sehat - fase naik TIDAK dilatih.",
@@ -179,7 +218,12 @@
     "default_frequency": "2x/hari, 7 hari/minggu",
     "evidence_level": "A",
     "evidence_source": "Alfredson et al. Am J Sports Med 1998;26(3):360-366; Martin et al. Achilles Pain CPG, JOSPT 2018",
-    "tags": ["Achilles", "eccentric", "tendinopathy", "Alfredson"]
+    "tags": [
+      "Achilles",
+      "eccentric",
+      "tendinopathy",
+      "Alfredson"
+    ]
   },
   {
     "slug": "eccentric-heel-drop-bent-knee",
@@ -191,7 +235,10 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Soleus, tendon Achilles",
-    "equipment_needed": ["Anak tangga", "Pegangan"],
+    "equipment_needed": [
+      "Anak tangga",
+      "Pegangan"
+    ],
     "description": "Komponen kedua protokol Alfredson yang menargetkan otot soleus dengan lutut ditekuk.",
     "description_en": "The second Alfredson component, targeting the soleus with the knee bent.",
     "instructions": "1. Berdiri dengan ujung kaki di tepi anak tangga seperti latihan sebelumnya.\n2. Tekuk lutut sekitar 30-45 derajat dan pertahankan tekukan sepanjang gerakan.\n3. Naik ke posisi jinjit dengan kedua kaki.\n4. Angkat kaki sehat dan turunkan tumit kaki yang sakit perlahan selama 3 detik.\n5. Kembali ke atas dengan bantuan kaki sehat.",
@@ -205,7 +252,12 @@
     "default_frequency": "2x/hari, 7 hari/minggu",
     "evidence_level": "A",
     "evidence_source": "Alfredson et al. Am J Sports Med 1998; Stevens & Tan JOSPT 2014 (do-as-tolerated comparison)",
-    "tags": ["Achilles", "eccentric", "soleus", "Alfredson"]
+    "tags": [
+      "Achilles",
+      "eccentric",
+      "soleus",
+      "Alfredson"
+    ]
   },
   {
     "slug": "heel-raise-towel-toes",
@@ -217,7 +269,11 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Gastrocnemius-soleus, fascia plantaris (mekanisme windlass)",
-    "equipment_needed": ["Handuk", "Anak tangga", "Ransel dengan beban (untuk progresi)"],
+    "equipment_needed": [
+      "Handuk",
+      "Anak tangga",
+      "Ransel dengan beban (untuk progresi)"
+    ],
     "description": "Latihan kekuatan beban tinggi untuk plantar fasciitis, terbukti lebih baik daripada peregangan pada 3 bulan.",
     "description_en": "High-load strength training for plantar fasciitis, shown superior to stretching at 3 months.",
     "instructions": "1. Gulung handuk dan letakkan di bawah jari-jari kaki sehingga jari terangkat (ekstensi).\n2. Berdiri dengan ujung kaki di tepi anak tangga, tumit menggantung.\n3. Naik ke posisi jinjit selama 3 detik.\n4. Tahan 2 detik di atas.\n5. Turun perlahan selama 3 detik. Lakukan setiap dua hari sekali.",
@@ -231,7 +287,12 @@
     "default_frequency": "Selang sehari (setiap 2 hari)",
     "evidence_level": "A",
     "evidence_source": "Rathleff et al. Scand J Med Sci Sports 2015;25(3):e292-e300; Martin et al. Heel Pain CPG, JOSPT 2023",
-    "tags": ["plantar fasciitis", "heel pain", "high-load", "Rathleff"]
+    "tags": [
+      "plantar fasciitis",
+      "heel pain",
+      "high-load",
+      "Rathleff"
+    ]
   },
   {
     "slug": "plantar-fascia-specific-stretch",
@@ -257,7 +318,11 @@
     "default_frequency": "3x/hari",
     "evidence_level": "A",
     "evidence_source": "DiGiovanni et al. J Bone Joint Surg Am 2003;85(7):1270-1277; Martin et al. Heel Pain CPG, JOSPT 2023",
-    "tags": ["plantar fasciitis", "heel pain", "stretch"]
+    "tags": [
+      "plantar fasciitis",
+      "heel pain",
+      "stretch"
+    ]
   },
   {
     "slug": "resisted-ankle-eversion",
@@ -269,7 +334,9 @@
     "movement_type": "Strength",
     "starting_position": "Sitting",
     "target_muscles": "Peroneus longus dan brevis",
-    "equipment_needed": ["Karet elastis"],
+    "equipment_needed": [
+      "Karet elastis"
+    ],
     "description": "Penguatan otot peroneal - kunci pencegahan cedera ulang pada keseleo pergelangan kaki sisi luar.",
     "description_en": "Peroneal strengthening - key to preventing re-injury after a lateral ankle sprain.",
     "instructions": "1. Duduk dengan tungkai lurus, lingkarkan karet elastis di sekitar telapak kaki bagian depan.\n2. Ikat ujung karet ke titik tetap di sisi DALAM kaki (atau tahan dengan kaki lainnya).\n3. Dorong kaki ke arah luar melawan tahanan, gerakan datang dari pergelangan kaki saja.\n4. Tahan 2 detik, kembali perlahan selama 3 detik.\n5. Ulangi 15 kali.",
@@ -283,7 +350,11 @@
     "default_frequency": "1x/hari",
     "evidence_level": "A",
     "evidence_source": "Martin et al. Ankle Stability CPG, JOSPT 2021;51(4):CPG1-CPG80",
-    "tags": ["ankle sprain", "peroneal", "strength"]
+    "tags": [
+      "ankle sprain",
+      "peroneal",
+      "strength"
+    ]
   },
   {
     "slug": "resisted-ankle-dorsiflexion",
@@ -295,7 +366,9 @@
     "movement_type": "Strength",
     "starting_position": "Sitting",
     "target_muscles": "Tibialis anterior",
-    "equipment_needed": ["Karet elastis"],
+    "equipment_needed": [
+      "Karet elastis"
+    ],
     "description": "Penguatan otot pengangkat kaki, penting untuk mencegah tersandung dan pada foot drop.",
     "description_en": "Strengthening of the foot-lifting muscle, important for preventing trips and in foot drop.",
     "instructions": "1. Duduk dengan tungkai lurus; ikat karet elastis pada objek di depan dan lingkarkan pada punggung kaki.\n2. Tarik ujung kaki ke arah wajah melawan tahanan karet.\n3. Tahan 2 detik pada posisi tertarik penuh.\n4. Kembalikan perlahan selama 3 detik.\n5. Ulangi 15 kali.",
@@ -309,7 +382,12 @@
     "default_frequency": "1x/hari",
     "evidence_level": "B",
     "evidence_source": "Martin et al. Ankle Stability CPG, JOSPT 2021; AHA/ASA Stroke Rehabilitation Guideline 2016",
-    "tags": ["ankle", "strength", "foot drop", "stroke"]
+    "tags": [
+      "ankle",
+      "strength",
+      "foot drop",
+      "stroke"
+    ]
   },
   {
     "slug": "short-foot-exercise",
@@ -335,7 +413,12 @@
     "default_frequency": "1x/hari",
     "evidence_level": "B",
     "evidence_source": "Mulligan & Cook Man Ther 2013; McKeon et al. Br J Sports Med 2015 (foot core system)",
-    "tags": ["foot", "intrinsic", "plantar fasciitis", "ankle instability"]
+    "tags": [
+      "foot",
+      "intrinsic",
+      "plantar fasciitis",
+      "ankle instability"
+    ]
   },
   {
     "slug": "knee-to-wall-dorsiflexion",
@@ -347,7 +430,9 @@
     "movement_type": "Mobility",
     "starting_position": "Standing",
     "target_muscles": "Sendi talocrural, kompleks betis",
-    "equipment_needed": ["Dinding"],
+    "equipment_needed": [
+      "Dinding"
+    ],
     "description": "Mobilisasi dan pengukuran dorsofleksi pergelangan kaki, keterbatasan yang umum setelah keseleo dan pada nyeri lutut.",
     "description_en": "Ankle dorsiflexion mobilisation and measure - a common restriction after sprains and in knee pain.",
     "instructions": "1. Berdiri menghadap dinding dengan jari kaki sekitar 8-10 cm dari dinding.\n2. Jaga tumit tetap menempel lantai.\n3. Tekuk lutut ke depan mencoba menyentuh dinding tanpa tumit terangkat.\n4. Tahan 3 detik, kembali. Ulangi 10-15 kali.\n5. Bila lutut menyentuh dinding dengan mudah, mundurkan kaki 1 cm dan ulangi.",
@@ -361,6 +446,176 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "Martin et al. Ankle Stability CPG, JOSPT 2021; Bennell et al. Aust J Physiother 1998 (weight-bearing lunge test)",
-    "tags": ["ankle", "mobility", "dorsiflexion"]
+    "tags": [
+      "ankle",
+      "mobility",
+      "dorsiflexion"
+    ]
+  },
+  {
+    "slug": "star-excursion-balance-training",
+    "name": "Star Excursion Balance Reach Training",
+    "name_id": "Latihan Keseimbangan Jangkau Bintang (Star Excursion)",
+    "body_region": "Ankle",
+    "category": "Lower Limb",
+    "difficulty": "Intermediate",
+    "movement_type": "Balance",
+    "starting_position": "Standing",
+    "target_muscles": "Peroneal, tibialis posterior, gluteal (kontrol dinamis satu tungkai multiarah)",
+    "equipment_needed": [
+      "Selotip/kapur untuk menandai garis di lantai"
+    ],
+    "description": "Latihan keseimbangan dinamis satu tungkai berdasarkan Star Excursion Balance Test, digunakan pada instabilitas pergelangan kaki kronis untuk melatih kontrol neuromuskular multiarah.",
+    "description_en": "A dynamic single-leg balance drill based on the Star Excursion Balance Test, used in chronic ankle instability to train multidirectional neuromuscular control.",
+    "instructions": "1. Berdiri seimbang di satu tungkai di tengah garis yang ditandai membentuk bintang (anterior, posterolateral, posteromedial minimal).\n2. Jangkau tungkai yang bebas sejauh mungkin ke arah anterior sambil menjaga tungkai tumpu tetap stabil, sentuh lantai ringan dengan ujung kaki.\n3. Kembali ke posisi tegak tanpa kehilangan keseimbangan atau menyentuh lantai dengan tungkai tumpu.\n4. Ulangi ke arah posteromedial dan posterolateral secara bergantian.\n5. Catat jarak jangkauan untuk memantau perkembangan dan asimetri antar tungkai.",
+    "instructions_en": "1. Balance on one leg at the centre of lines marked in a star pattern (anterior, posterolateral, posteromedial at minimum).\n2. Reach the free leg as far as possible in the anterior direction while keeping the standing leg stable, lightly touching the floor with the toes.\n3. Return to standing without losing balance or the standing foot shifting.\n4. Repeat toward posteromedial and posterolateral in turn.\n5. Record the reach distance to track progress and side-to-side asymmetry.",
+    "contraindications": "Hindari pada instabilitas akut pasca keseleo derajat III yang belum stabil untuk menahan beban penuh. Hentikan bila nyeri tajam atau tungkai tumpu terasa 'goyah' berlebihan.",
+    "progression_tips": "Naikkan jumlah arah jangkauan (hingga 8 arah), lakukan di permukaan tidak stabil, atau tutup mata setelah kontrol dasar tercapai.",
+    "default_sets": 3,
+    "default_reps": 5,
+    "default_hold_seconds": 0,
+    "default_rest_seconds": 30,
+    "default_frequency": "3-5x/minggu",
+    "evidence_level": "A",
+    "evidence_source": "Gribble PA et al. J Athl Train 2012 (Star Excursion Balance Test selection criteria); Martin et al. Ankle Stability and Movement Coordination Impairments CPG, JOSPT 2021;51(4):CPG1-CPG80",
+    "tags": [
+      "chronic ankle instability",
+      "balance",
+      "star excursion",
+      "proprioception"
+    ]
+  },
+  {
+    "slug": "seated-calf-raise",
+    "name": "Seated Calf Raise (Soleus Focus)",
+    "name_id": "Angkat Betis Duduk (Fokus Soleus)",
+    "body_region": "Ankle",
+    "category": "Lower Limb",
+    "difficulty": "Beginner",
+    "movement_type": "Strength",
+    "starting_position": "Sitting",
+    "target_muscles": "Soleus (dominan, dengan lutut tertekuk mengurangi kontribusi gastrocnemius)",
+    "equipment_needed": [
+      "Kursi",
+      "Beban di paha (opsional)"
+    ],
+    "description": "Penguatan betis dengan lutut tertekuk yang menargetkan soleus secara spesifik, digunakan pada fase awal pasca ruptur/perbaikan tendon Achilles saat beban berdiri penuh belum diizinkan.",
+    "description_en": "A bent-knee calf strengthening exercise specifically targeting the soleus, used in early-phase Achilles tendon rupture/repair rehabilitation before full standing load is permitted.",
+    "instructions": "1. Duduk di kursi dengan lutut ditekuk 90 derajat, telapak kaki rata di lantai.\n2. Angkat tumit setinggi mungkin sambil menjaga jari kaki tetap menempel lantai.\n3. Tahan 2-3 detik di puncak gerak, rasakan kontraksi di betis bagian dalam/bawah.\n4. Turunkan perlahan dan terkontrol.\n5. Tambahkan beban ringan di atas paha (dumbel/piring beban) setelah gerakan tanpa beban terasa mudah.",
+    "instructions_en": "1. Sit in a chair with the knee bent 90 degrees, foot flat on the floor.\n2. Raise the heel as high as possible while keeping the toes on the floor.\n3. Hold 2-3 seconds at the top, feeling the contraction in the deep/lower calf.\n4. Lower slowly and with control.\n5. Add light weight on top of the thigh (dumbbell/weight plate) once the unweighted movement feels easy.",
+    "contraindications": "Ikuti batasan beban sesuai izin ahli bedah pasca ruptur/perbaikan Achilles. Hentikan bila nyeri tajam di tendon Achilles atau bengkak bertambah.",
+    "progression_tips": "Setelah beban duduk terasa ringan, progres ke standing double-leg heel raise, lalu single-leg heel raise sesuai protokol fase rehabilitasi Achilles.",
+    "default_sets": 3,
+    "default_reps": 15,
+    "default_hold_seconds": 3,
+    "default_rest_seconds": 30,
+    "default_frequency": "1x/hari",
+    "evidence_level": "B",
+    "evidence_source": "Martin et al. Achilles Pain CPG, JOSPT 2018;48(5):A1-A38; Silbernagel KG et al. Am J Sports Med 2007 (Achilles tendon rehabilitation protocol)",
+    "tags": [
+      "achilles",
+      "post-op",
+      "calf strength",
+      "early phase"
+    ]
+  },
+  {
+    "slug": "toe-spread-intrinsic-strengthening",
+    "name": "Toe Spread / Intrinsic Foot Strengthening",
+    "name_id": "Membuka Jari Kaki / Penguatan Otot Intrinsik Kaki",
+    "body_region": "Foot",
+    "category": "Lower Limb",
+    "difficulty": "Beginner",
+    "movement_type": "Strength",
+    "starting_position": "Sitting",
+    "target_muscles": "Otot intrinsik kaki, abduktor jari kaki (dorsal/plantar interossei)",
+    "equipment_needed": [
+      "Karet gelang (opsional)"
+    ],
+    "description": "Latihan penguatan otot intrinsik kaki untuk mengurangi tekanan berlebih pada bantalan metatarsal, relevan untuk neuroma Morton dan metatarsalgia.",
+    "description_en": "Intrinsic foot muscle strengthening to reduce excess pressure on the metatarsal pad, relevant for Morton's neuroma and metatarsalgia.",
+    "instructions": "1. Duduk dengan kaki rata di lantai, rileks.\n2. Coba lebarkan/regangkan semua jari kaki menjauh satu sama lain tanpa menekuk jari.\n3. Tahan posisi terbuka selama 5 detik, rasakan kontraksi di telapak kaki bagian depan.\n4. Rileks dan ulangi.\n5. Untuk tantangan lebih, lingkarkan karet gelang di sekeliling semua jari kaki sebagai tahanan ringan.",
+    "instructions_en": "1. Sit with the foot flat on the floor, relaxed.\n2. Try to spread/widen all the toes apart from each other without curling them.\n3. Hold the spread position for 5 seconds, feeling the contraction in the front of the foot sole.\n4. Relax and repeat.\n5. For more challenge, loop a rubber band around all the toes as light resistance.",
+    "contraindications": "Hentikan bila kram kaki hebat muncul berulang. Hindari pada fase inflamasi akut sendi metatarsophalangeal.",
+    "progression_tips": "Kombinasikan dengan short foot exercise dan towel scrunches untuk membangun kontrol arkus kaki yang lebih komprehensif.",
+    "default_sets": 3,
+    "default_reps": 10,
+    "default_hold_seconds": 5,
+    "default_rest_seconds": 20,
+    "default_frequency": "1-2x/hari",
+    "evidence_level": "C",
+    "evidence_source": "McKeon et al. Br J Sports Med 2015 (foot core system); praktik klinis manajemen konservatif neuroma Morton",
+    "tags": [
+      "morton's neuroma",
+      "metatarsalgia",
+      "intrinsic foot",
+      "strength"
+    ]
+  },
+  {
+    "slug": "towel-scrunches",
+    "name": "Towel Scrunches (Intrinsic Foot Strengthening)",
+    "name_id": "Meremas Handuk dengan Kaki (Penguatan Kaki Intrinsik)",
+    "body_region": "Foot",
+    "category": "Lower Limb",
+    "difficulty": "Beginner",
+    "movement_type": "Strength",
+    "starting_position": "Sitting",
+    "target_muscles": "Fleksor jari kaki, otot intrinsik plantar",
+    "equipment_needed": [
+      "Handuk kecil"
+    ],
+    "description": "Latihan klasik penguatan otot intrinsik telapak kaki, mendukung arkus kaki pada plantar fasciitis dan kaki datar fungsional.",
+    "description_en": "A classic intrinsic foot sole strengthening exercise, supporting the arch in plantar fasciitis and functional flat foot.",
+    "instructions": "1. Duduk dengan kaki di atas handuk kecil yang terhampar di lantai.\n2. Gunakan jari-jari kaki untuk meremas dan menarik handuk ke arah tumit, seperti meremas kertas dengan jari tangan.\n3. Setelah handuk terkumpul sepenuhnya, luruskan kembali dan ulangi.\n4. Jaga tumit tetap menempel lantai sepanjang gerakan.\n5. Untuk tantangan lebih, letakkan beban ringan di ujung handuk.",
+    "instructions_en": "1. Sit with the foot on a small towel laid flat on the floor.\n2. Use the toes to scrunch and pull the towel toward the heel, like crumpling paper with the fingers.\n3. Once the towel is fully gathered, straighten it out and repeat.\n4. Keep the heel on the floor throughout the movement.\n5. For more challenge, place a light weight at the far end of the towel.",
+    "contraindications": "Hentikan bila kram telapak kaki berulang atau nyeri tajam pada fase akut plantar fasciitis - mulai dengan gerakan lembut lebih dulu.",
+    "progression_tips": "Naikkan beban di ujung handuk secara bertahap. Kombinasikan dengan short foot exercise dan peregangan plantar fascia.",
+    "default_sets": 3,
+    "default_reps": 8,
+    "default_hold_seconds": 0,
+    "default_rest_seconds": 20,
+    "default_frequency": "1x/hari",
+    "evidence_level": "C",
+    "evidence_source": "Martin et al. Heel Pain - Plantar Fasciitis CPG, JOSPT 2023;53(12):CPG1-CPG39 (foot intrinsic strengthening adjunct); McKeon et al. Br J Sports Med 2015",
+    "tags": [
+      "plantar fasciitis",
+      "flat foot",
+      "intrinsic foot",
+      "arch"
+    ]
+  },
+  {
+    "slug": "single-leg-balance-reach-ankle",
+    "name": "Single-Leg Balance with Functional Reach",
+    "name_id": "Keseimbangan Satu Kaki dengan Jangkauan Fungsional",
+    "body_region": "Ankle",
+    "category": "Lower Limb",
+    "difficulty": "Intermediate",
+    "movement_type": "Balance",
+    "starting_position": "Standing",
+    "target_muscles": "Peroneal, otot stabilisator pergelangan kaki, kontrol postural",
+    "equipment_needed": [
+      "Objek kecil untuk diambil (opsional)"
+    ],
+    "description": "Latihan keseimbangan fungsional yang menggabungkan berdiri satu kaki dengan tugas jangkauan, jembatan menuju aktivitas sehari-hari dan olahraga setelah cedera pergelangan kaki.",
+    "description_en": "A functional balance exercise combining single-leg standing with a reaching task, bridging toward everyday activity and sport after ankle injury.",
+    "instructions": "1. Berdiri seimbang di tungkai yang cedera, tungkai lain sedikit terangkat.\n2. Jangkau tangan ke depan untuk mengambil objek kecil dari lantai/meja rendah tanpa menyentuhkan tungkai yang terangkat ke lantai.\n3. Kembali tegak sambil tetap menjaga keseimbangan di satu tungkai.\n4. Ulangi dengan variasi arah jangkauan (depan, samping) sesuai toleransi.\n5. Bila keseimbangan hilang, sentuhkan kaki ke lantai sebentar lalu lanjutkan.",
+    "instructions_en": "1. Balance on the injured leg, the other leg slightly lifted.\n2. Reach forward to pick up a small object from the floor/low table without touching the lifted leg down.\n3. Return upright while still balancing on the single leg.\n4. Repeat with varied reach directions (forward, side) as tolerated.\n5. If balance is lost, briefly touch the foot down then continue.",
+    "contraindications": "Hindari beban penuh pada fase akut keseleo pergelangan kaki dengan nyeri berat saat berdiri. Hentikan bila pergelangan kaki terasa akan 'goyah'/tidak stabil.",
+    "progression_tips": "Tingkatkan jarak jangkauan atau kompleksitas tugas (mis. menangkap bola) setelah keseimbangan dasar stabil.",
+    "default_sets": 3,
+    "default_reps": 8,
+    "default_hold_seconds": 0,
+    "default_rest_seconds": 30,
+    "default_frequency": "3-5x/minggu",
+    "evidence_level": "B",
+    "evidence_source": "Martin et al. Ankle Stability and Movement Coordination Impairments CPG, JOSPT 2021;51(4):CPG1-CPG80",
+    "tags": [
+      "ankle sprain",
+      "balance",
+      "functional",
+      "proprioception"
+    ]
   }
 ]

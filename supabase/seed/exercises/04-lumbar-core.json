@@ -9,7 +9,9 @@
     "movement_type": "Motor control",
     "starting_position": "Supine",
     "target_muscles": "Transversus abdominis, otot perut bawah",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Latihan dasar kesadaran gerak panggul dan aktivasi otot perut dalam, titik awal hampir semua program punggung bawah.",
     "description_en": "Basic pelvic awareness and deep abdominal activation - the starting point of most low back programs.",
     "instructions": "1. Berbaring telentang, lutut ditekuk, kaki menapak lantai selebar pinggul.\n2. Rasakan ada sedikit rongga di bawah pinggang.\n3. Ratakan pinggang ke lantai dengan memutar panggul ke belakang, seperti menarik tulang kemaluan ke arah pusar.\n4. Tahan 5 detik sambil bernapas normal, lalu rileks.\n5. Gerakan kecil saja - jangan mengangkat bokong dari lantai.",
@@ -23,7 +25,11 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "George et al. Low Back Pain CPG, JOSPT 2021;51(11):CPG1-CPG60",
-    "tags": ["low back pain", "motor control", "beginner"]
+    "tags": [
+      "low back pain",
+      "motor control",
+      "beginner"
+    ]
   },
   {
     "slug": "abdominal-bracing",
@@ -35,7 +41,9 @@
     "movement_type": "Motor control",
     "starting_position": "Supine",
     "target_muscles": "Transversus abdominis, otot dasar panggul, multifidus",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Aktivasi kelompok otot penstabil dalam batang tubuh, dasar latihan kontrol motorik untuk nyeri punggung bawah kronis.",
     "description_en": "Activation of the deep trunk stabilisers - the foundation of motor control training for persistent low back pain.",
     "instructions": "1. Berbaring telentang dengan lutut ditekuk.\n2. Letakkan ujung jari 2 cm ke dalam dari tulang panggul depan.\n3. Tarik perut bagian bawah ke dalam dengan lembut (sekitar 20-30% kekuatan), seperti hendak memasang celana ketat.\n4. Rasakan ketegangan halus di bawah jari - perut tidak boleh menonjol atau menahan napas.\n5. Tahan 10 detik sambil bernapas normal, ulangi 10 kali.",
@@ -49,7 +57,11 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "A",
     "evidence_source": "Saragiotto et al. Cochrane 2016 (motor control exercise for CLBP); George et al. JOSPT 2021",
-    "tags": ["low back pain", "core", "motor control"]
+    "tags": [
+      "low back pain",
+      "core",
+      "motor control"
+    ]
   },
   {
     "slug": "bridging",
@@ -61,7 +73,9 @@
     "movement_type": "Strength",
     "starting_position": "Supine",
     "target_muscles": "Gluteus maximus, hamstring, ekstensor lumbal",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Latihan penguatan gluteus dan stabilisasi lumbopelvic yang menjadi tulang punggung program punggung, pinggul, dan lutut.",
     "description_en": "Gluteal strengthening and lumbopelvic stabilisation - a backbone exercise across back, hip and knee programs.",
     "instructions": "1. Berbaring telentang, lutut ditekuk, kaki menapak lantai selebar pinggul, lengan di samping badan.\n2. Kencangkan otot bokong, lalu angkat pinggul sampai badan lurus dari bahu ke lutut.\n3. Jangan melengkungkan pinggang berlebihan - tenaga datang dari bokong, bukan punggung bawah.\n4. Tahan 5 detik, lalu turun perlahan selama 3 detik.\n5. Ulangi 10-15 kali.",
@@ -75,7 +89,12 @@
     "default_frequency": "3-5x/minggu",
     "evidence_level": "A",
     "evidence_source": "George et al. Low Back Pain CPG, JOSPT 2021; Skou & Roos BMC Musculoskelet Disord 2017 (GLA:D/NEMEX)",
-    "tags": ["low back pain", "glutes", "core", "knee"]
+    "tags": [
+      "low back pain",
+      "glutes",
+      "core",
+      "knee"
+    ]
   },
   {
     "slug": "single-leg-bridge",
@@ -87,7 +106,9 @@
     "movement_type": "Strength",
     "starting_position": "Supine",
     "target_muscles": "Gluteus maximus, hamstring, penstabil panggul",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Progresi bridging satu kaki untuk kekuatan gluteus unilateral dan kontrol panggul.",
     "description_en": "Single-leg bridge progression for unilateral gluteal strength and pelvic control.",
     "instructions": "1. Berbaring telentang dengan satu lutut ditekuk dan kaki menapak; luruskan tungkai lainnya.\n2. Kencangkan bokong dan angkat pinggul sampai badan lurus, menumpu pada satu kaki.\n3. Jaga panggul tetap sejajar - jangan sampai satu sisi turun.\n4. Tahan 3-5 detik, turun perlahan.\n5. Selesaikan semua repetisi pada satu sisi lalu ganti.",
@@ -101,7 +122,11 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "B",
     "evidence_source": "Reiman et al. J Sport Rehabil 2012 (gluteal muscle activation); GLA:D exercise progression",
-    "tags": ["glutes", "hip", "advanced"]
+    "tags": [
+      "glutes",
+      "hip",
+      "advanced"
+    ]
   },
   {
     "slug": "bird-dog",
@@ -113,7 +138,9 @@
     "movement_type": "Motor control",
     "starting_position": "Quadruped",
     "target_muscles": "Multifidus, erector spinae, gluteus maximus, core",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Latihan stabilisasi batang tubuh klasik (McGill Big 3) yang melatih kontrol lumbal saat anggota gerak bergerak.",
     "description_en": "Classic trunk stabilisation drill (one of McGill's Big 3) training lumbar control while the limbs move.",
     "instructions": "1. Posisi merangkak: tangan di bawah bahu, lutut di bawah panggul, punggung netral.\n2. Kencangkan perut ringan, lalu julurkan lengan kanan ke depan dan tungkai kiri ke belakang bersamaan.\n3. Jaga panggul tetap sejajar - bayangkan segelas air di punggung bawah tidak boleh tumpah.\n4. Tahan 5-10 detik, kembali perlahan, lalu ganti sisi.\n5. Jangan mengangkat lengan/tungkai lebih tinggi dari badan.",
@@ -127,7 +154,12 @@
     "default_frequency": "1x/hari",
     "evidence_level": "A",
     "evidence_source": "McGill SM. Low Back Disorders, 3rd ed.; Saragiotto et al. Cochrane 2016",
-    "tags": ["low back pain", "core", "motor control", "McGill Big 3"]
+    "tags": [
+      "low back pain",
+      "core",
+      "motor control",
+      "McGill Big 3"
+    ]
   },
   {
     "slug": "dead-bug",
@@ -139,7 +171,9 @@
     "movement_type": "Motor control",
     "starting_position": "Supine",
     "target_muscles": "Transversus abdominis, rectus abdominis, oblique",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Latihan kontrol lumbal dengan beban anggota gerak, aman untuk punggung karena tulang belakang tetap disangga.",
     "description_en": "Lumbar control drill with limb loading, back-friendly because the spine stays supported.",
     "instructions": "1. Berbaring telentang, angkat kedua lengan lurus ke atas dan tekuk pinggul-lutut 90 derajat (posisi meja).\n2. Ratakan pinggang ke lantai dan pertahankan sepanjang latihan.\n3. Turunkan lengan kanan ke belakang kepala dan luruskan tungkai kiri ke depan bersamaan.\n4. Turunkan hanya sejauh pinggang masih menempel lantai, lalu kembali.\n5. Ganti sisi. Bernapas mengalir, jangan menahan napas.",
@@ -153,7 +187,11 @@
     "default_frequency": "1x/hari",
     "evidence_level": "B",
     "evidence_source": "McGill SM. Low Back Disorders, 3rd ed.; Saragiotto et al. Cochrane 2016",
-    "tags": ["core", "low back pain", "motor control"]
+    "tags": [
+      "core",
+      "low back pain",
+      "motor control"
+    ]
   },
   {
     "slug": "mcgill-curl-up",
@@ -165,7 +203,9 @@
     "movement_type": "Strength",
     "starting_position": "Supine",
     "target_muscles": "Rectus abdominis, oblique",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Versi sit-up yang aman bagi tulang belakang: mengaktifkan otot perut tanpa membebani diskus lumbal dengan fleksi berulang.",
     "description_en": "A spine-sparing sit-up variant: it activates the abdominals without repeatedly flexing the lumbar discs.",
     "instructions": "1. Berbaring telentang, satu lutut ditekuk dengan kaki menapak, tungkai lainnya lurus.\n2. Letakkan kedua tangan di bawah pinggang untuk menjaga lengkungan alami.\n3. Angkat kepala dan bahu hanya beberapa sentimeter dari lantai - dagu tidak menempel dada, leher tetap sejalan dengan badan.\n4. Tahan 8-10 detik dengan napas normal, lalu turun perlahan.\n5. Ganti tungkai yang ditekuk setiap set.",
@@ -179,7 +219,11 @@
     "default_frequency": "1x/hari",
     "evidence_level": "B",
     "evidence_source": "McGill SM. Low Back Disorders, 3rd ed.; Callaghan et al. Clin Biomech 1998",
-    "tags": ["core", "low back pain", "McGill Big 3"]
+    "tags": [
+      "core",
+      "low back pain",
+      "McGill Big 3"
+    ]
   },
   {
     "slug": "side-plank-modified",
@@ -191,7 +235,9 @@
     "movement_type": "Strength",
     "starting_position": "Side-lying",
     "target_muscles": "Quadratus lumborum, oblique, gluteus medius",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Latihan penstabil lateral batang tubuh dengan beban yang lebih ringan, bagian dari McGill Big 3.",
     "description_en": "Lower-load lateral trunk stabiliser exercise, part of McGill's Big 3.",
     "instructions": "1. Berbaring menyamping dengan lutut ditekuk 90 derajat, siku tepat di bawah bahu.\n2. Angkat pinggul dari lantai sehingga badan lurus dari kepala ke lutut.\n3. Jaga bahu, panggul, dan lutut dalam satu garis; jangan berputar ke depan atau belakang.\n4. Tahan 10-20 detik, turun perlahan.\n5. Ulangi di sisi lain.",
@@ -205,7 +251,11 @@
     "default_frequency": "3-5x/minggu",
     "evidence_level": "B",
     "evidence_source": "McGill SM. Low Back Disorders, 3rd ed.; Ekstrom et al. JOSPT 2007 (core muscle EMG)",
-    "tags": ["core", "low back pain", "McGill Big 3"]
+    "tags": [
+      "core",
+      "low back pain",
+      "McGill Big 3"
+    ]
   },
   {
     "slug": "front-plank",
@@ -217,7 +267,9 @@
     "movement_type": "Strength",
     "starting_position": "Prone",
     "target_muscles": "Transversus abdominis, rectus abdominis, gluteus",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Latihan daya tahan isometrik batang tubuh untuk stabilitas menyeluruh.",
     "description_en": "Isometric trunk endurance exercise for global stability.",
     "instructions": "1. Tengkurap dengan siku di bawah bahu dan lengan bawah menempel lantai.\n2. Angkat badan bertumpu pada lengan bawah dan ujung kaki (atau lutut untuk versi lebih ringan).\n3. Badan harus lurus dari kepala sampai tumit - jangan biarkan pinggang melorot atau bokong naik.\n4. Kencangkan perut dan bokong, bernapas normal.\n5. Tahan 20-30 detik, ulangi 3 kali.",
@@ -231,7 +283,11 @@
     "default_frequency": "3-5x/minggu",
     "evidence_level": "B",
     "evidence_source": "Ekstrom et al. JOSPT 2007; George et al. Low Back Pain CPG, JOSPT 2021",
-    "tags": ["core", "strength", "endurance"]
+    "tags": [
+      "core",
+      "strength",
+      "endurance"
+    ]
   },
   {
     "slug": "prone-press-up",
@@ -243,7 +299,9 @@
     "movement_type": "Mobility",
     "starting_position": "Prone",
     "target_muscles": "Mobilitas ekstensi lumbal",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Latihan ekstensi lumbal berulang yang sering mengurangi nyeri menjalar pada pasien dengan preferensi arah ekstensi.",
     "description_en": "Repeated lumbar extension that often reduces radiating pain in patients with an extension directional preference.",
     "instructions": "1. Tengkurap dengan telapak tangan di samping bahu, seperti hendak push-up.\n2. Luruskan siku untuk mengangkat dada, biarkan panggul dan tungkai tetap menempel lantai dan otot punggung rileks.\n3. Naik hanya sejauh yang nyaman; tahan 2 detik di atas.\n4. Turun perlahan ke posisi awal.\n5. Perhatikan gejala: nyeri yang \"menarik masuk\" dari tungkai ke punggung adalah tanda baik (sentralisasi).",
@@ -257,7 +315,12 @@
     "default_frequency": "Setiap 2-3 jam pada fase akut",
     "evidence_level": "A",
     "evidence_source": "McKenzie R & May S. The Lumbar Spine: MDT; Long et al. Spine 2004;29(23):2593-2602 (directional preference)",
-    "tags": ["low back pain", "McKenzie", "sciatica", "directional preference"]
+    "tags": [
+      "low back pain",
+      "McKenzie",
+      "sciatica",
+      "directional preference"
+    ]
   },
   {
     "slug": "standing-lumbar-extension",
@@ -283,7 +346,11 @@
     "default_frequency": "Setiap 1-2 jam",
     "evidence_level": "B",
     "evidence_source": "McKenzie R & May S. The Lumbar Spine: MDT; Long et al. Spine 2004",
-    "tags": ["low back pain", "McKenzie", "office worker"]
+    "tags": [
+      "low back pain",
+      "McKenzie",
+      "office worker"
+    ]
   },
   {
     "slug": "knee-to-chest",
@@ -295,7 +362,9 @@
     "movement_type": "Stretch",
     "starting_position": "Supine",
     "target_muscles": "Ekstensor lumbal, gluteus maximus",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Peregangan lembut punggung bawah yang sering meredakan kekakuan pagi hari dan nyeri punggung mekanik.",
     "description_en": "Gentle low back stretch that often eases morning stiffness and mechanical back pain.",
     "instructions": "1. Berbaring telentang dengan kedua lutut ditekuk.\n2. Peluk satu lutut dengan kedua tangan dan tarik ke arah dada sejauh nyaman.\n3. Jaga tungkai lainnya tetap menapak lantai dan punggung rileks.\n4. Tahan 30 detik, lalu turunkan perlahan.\n5. Ulangi ke sisi lain, 3 kali per sisi.",
@@ -309,7 +378,11 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "George et al. Low Back Pain CPG, JOSPT 2021",
-    "tags": ["low back pain", "stretch", "beginner"]
+    "tags": [
+      "low back pain",
+      "stretch",
+      "beginner"
+    ]
   },
   {
     "slug": "lower-trunk-rotation",
@@ -321,7 +394,9 @@
     "movement_type": "Mobility",
     "starting_position": "Supine",
     "target_muscles": "Rotator lumbal, oblique",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Mobilisasi rotasi lumbal yang lembut untuk mengurangi kekakuan dan ketegangan otot punggung.",
     "description_en": "Gentle lumbar rotation mobilisation to reduce stiffness and back muscle tension.",
     "instructions": "1. Berbaring telentang dengan lutut ditekuk dan rapat, kaki menapak lantai.\n2. Rentangkan kedua lengan ke samping untuk stabilitas.\n3. Jatuhkan kedua lutut perlahan ke sisi kanan sejauh nyaman sambil bahu tetap menempel lantai.\n4. Tahan 10-20 detik, kembali ke tengah.\n5. Ulangi ke sisi kiri.",
@@ -335,7 +410,11 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "George et al. Low Back Pain CPG, JOSPT 2021",
-    "tags": ["low back pain", "mobility", "stretch"]
+    "tags": [
+      "low back pain",
+      "mobility",
+      "stretch"
+    ]
   },
   {
     "slug": "cat-cow",
@@ -347,7 +426,9 @@
     "movement_type": "Mobility",
     "starting_position": "Quadruped",
     "target_muscles": "Mobilitas seluruh tulang belakang",
-    "equipment_needed": ["Matras"],
+    "equipment_needed": [
+      "Matras"
+    ],
     "description": "Mobilisasi tulang belakang menyeluruh dengan beban rendah - pemanasan standar sebelum latihan punggung.",
     "description_en": "Low-load whole-spine mobilisation - a standard warm-up before back exercise.",
     "instructions": "1. Posisi merangkak: tangan di bawah bahu, lutut di bawah panggul.\n2. Buang napas sambil membulatkan punggung ke atas dan menundukkan kepala (posisi kucing).\n3. Tarik napas sambil menurunkan perut dan mengangkat dada serta kepala (posisi sapi).\n4. Bergerak perlahan mengikuti napas, tanpa memaksa ujung gerakan.\n5. Ulangi 10-15 siklus.",
@@ -361,7 +442,11 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "McGill SM. Low Back Disorders, 3rd ed. (cat-camel as spine mobility warm-up)",
-    "tags": ["low back pain", "mobility", "warm-up"]
+    "tags": [
+      "low back pain",
+      "mobility",
+      "warm-up"
+    ]
   },
   {
     "slug": "child-pose",
@@ -373,7 +458,10 @@
     "movement_type": "Stretch",
     "starting_position": "Quadruped",
     "target_muscles": "Ekstensor lumbal, latissimus dorsi",
-    "equipment_needed": ["Matras", "Bantal (opsional)"],
+    "equipment_needed": [
+      "Matras",
+      "Bantal (opsional)"
+    ],
     "description": "Peregangan fleksi punggung yang menenangkan, berguna bagi pasien dengan preferensi arah fleksi (misalnya stenosis).",
     "description_en": "Calming flexion-based back stretch, useful for patients with a flexion directional preference such as spinal stenosis.",
     "instructions": "1. Mulai dari posisi merangkak.\n2. Dudukkan bokong ke arah tumit sambil menjulurkan lengan ke depan.\n3. Biarkan dahi menyentuh matras atau bantal.\n4. Bernapas dalam dan rasakan regangan di punggung bawah.\n5. Tahan 30-60 detik.",
@@ -387,7 +475,11 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "C",
     "evidence_source": "Praktik klinis; sejalan dengan preferensi arah fleksi pada stenosis (Ammendolia et al. Cochrane 2013)",
-    "tags": ["low back pain", "stretch", "stenosis"]
+    "tags": [
+      "low back pain",
+      "stretch",
+      "stenosis"
+    ]
   },
   {
     "slug": "sciatic-nerve-glide",
@@ -399,7 +491,9 @@
     "movement_type": "Neurodynamic",
     "starting_position": "Sitting",
     "target_muscles": "Mobilitas saraf skiatik",
-    "equipment_needed": ["Kursi"],
+    "equipment_needed": [
+      "Kursi"
+    ],
     "description": "Teknik meluncurkan saraf skiatik untuk gejala nyeri menjalar tungkai (sciatica) yang sudah tidak akut berat.",
     "description_en": "Sciatic nerve sliding technique for leg-radiating symptoms (sciatica) that are no longer severely acute.",
     "instructions": "1. Duduk di kursi dengan punggung agak membungkuk dan dagu menempel dada.\n2. Luruskan lutut sisi yang bergejala sambil MENGANGKAT kepala (dagu naik) secara bersamaan.\n3. Kembalikan: tekuk lutut sambil menundukkan kepala kembali.\n4. Gerakan harus mengalir dan lembut - tidak boleh menimbulkan nyeri menjalar yang meningkat.\n5. Ulangi 10-15 kali dengan irama pelan.",
@@ -413,7 +507,11 @@
     "default_frequency": "2-3x/hari",
     "evidence_level": "B",
     "evidence_source": "Coppieters & Butler Man Ther 2008 (sliders vs tensioners); Basson et al. JOSPT 2017 (neural mobilisation meta-analysis)",
-    "tags": ["sciatica", "nerve glide", "low back pain"]
+    "tags": [
+      "sciatica",
+      "nerve glide",
+      "low back pain"
+    ]
   },
   {
     "slug": "hip-hinge-pattern",
@@ -425,7 +523,9 @@
     "movement_type": "Motor control",
     "starting_position": "Standing",
     "target_muscles": "Gluteus maximus, hamstring, ekstensor lumbal",
-    "equipment_needed": ["Tongkat/gagang sapu"],
+    "equipment_needed": [
+      "Tongkat/gagang sapu"
+    ],
     "description": "Melatih pola membungkuk yang aman dengan menekuk panggul, bukan melengkungkan pinggang - keterampilan kunci untuk mencegah nyeri punggung berulang.",
     "description_en": "Trains a safe bending pattern from the hips instead of the lumbar spine - a key skill for preventing recurrent back pain.",
     "instructions": "1. Berdiri dengan kaki selebar pinggul, pegang tongkat di belakang badan menyentuh kepala, punggung atas, dan tulang ekor.\n2. Dorong panggul ke belakang sambil menekuk sedikit lutut, badan condong ke depan.\n3. Jaga ketiga titik kontak tongkat sepanjang gerakan - bila salah satu lepas, gerakan terlalu jauh.\n4. Turun sampai terasa regangan di belakang paha, lalu kembali berdiri dengan mendorong panggul ke depan.\n5. Ulangi 10-12 kali.",
@@ -439,6 +539,175 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "B",
     "evidence_source": "George et al. Low Back Pain CPG, JOSPT 2021; Steele et al. 2015 (lumbar extensor training)",
-    "tags": ["low back pain", "motor control", "lifting"]
+    "tags": [
+      "low back pain",
+      "motor control",
+      "lifting"
+    ]
+  },
+  {
+    "slug": "pallof-press-anti-rotation",
+    "name": "Pallof Press (Anti-Rotation)",
+    "name_id": "Pallof Press (Anti-Rotasi)",
+    "body_region": "Core",
+    "category": "Spine & Core",
+    "difficulty": "Intermediate",
+    "movement_type": "Strength",
+    "starting_position": "Standing",
+    "target_muscles": "Obliquus internus/externus, transversus abdominis (kontrol anti-rotasi)",
+    "equipment_needed": [
+      "Resistance band dengan titik jangkar"
+    ],
+    "description": "Latihan anti-rotasi core untuk melatih stabilitas batang tubuh melawan gaya memutar, berguna pada nyeri punggung bawah dan persiapan olahraga rotasional.",
+    "description_en": "An anti-rotation core exercise training trunk stability against a twisting force, useful in low back pain and preparation for rotational sports.",
+    "instructions": "1. Berdiri menyamping ke titik jangkar band, pegang band dengan kedua tangan di depan dada.\n2. Dorong band lurus ke depan menjauhi dada tanpa membiarkan badan berputar mengikuti tarikan band.\n3. Tahan posisi lengan lurus 2-3 detik, jaga panggul dan bahu tetap menghadap lurus ke depan.\n4. Tarik kembali ke dada perlahan.\n5. Selesaikan set, lalu balik badan untuk melatih sisi berlawanan.",
+    "instructions_en": "1. Stand side-on to the band anchor, hold the band with both hands at chest level.\n2. Press the band straight out from the chest without letting the body rotate toward the band's pull.\n3. Hold the arms-extended position for 2-3 seconds, keeping the hips and shoulders facing straight ahead.\n4. Pull back to the chest slowly.\n5. Finish the set, then turn around to train the opposite side.",
+    "contraindications": "Hindari pada nyeri punggung bawah akut yang memburuk dengan beban tegak berdiri. Mulai dengan tahanan ringan bila baru pulih dari cedera.",
+    "progression_tips": "Naikkan tahanan band, jarak berdiri dari jangkar, atau lakukan pada permukaan tidak stabil/setengah berlutut untuk menambah tuntutan.",
+    "default_sets": 3,
+    "default_reps": 10,
+    "default_hold_seconds": 3,
+    "default_rest_seconds": 30,
+    "default_frequency": "3x/minggu",
+    "evidence_level": "B",
+    "evidence_source": "McGill SM. Low Back Disorders, 3rd ed. (anti-rotation core training); George et al. Low Back Pain CPG, JOSPT 2021;51(11):CPG1-CPG60",
+    "tags": [
+      "core",
+      "anti-rotation",
+      "low back pain",
+      "stability"
+    ]
+  },
+  {
+    "slug": "suitcase-carry-loaded",
+    "name": "Suitcase Carry (Loaded Carry)",
+    "name_id": "Suitcase Carry (Angkat Beban Satu Sisi)",
+    "body_region": "Core",
+    "category": "Spine & Core",
+    "difficulty": "Intermediate",
+    "movement_type": "Strength",
+    "starting_position": "Standing",
+    "target_muscles": "Obliquus lateralis, quadratus lumborum (kontrol anti-lateral fleksi)",
+    "equipment_needed": [
+      "Dumbel atau kettlebell"
+    ],
+    "description": "Latihan fungsional membawa beban di satu sisi tubuh untuk melatih stabilitas batang tubuh melawan fleksi lateral, relevan untuk kembali ke aktivitas mengangkat sehari-hari.",
+    "description_en": "A functional single-side loaded carry that trains trunk stability against lateral flexion, relevant for returning to everyday lifting activities.",
+    "instructions": "1. Berdiri tegak, pegang beban di satu tangan di samping tubuh.\n2. Jalan lurus ke depan dengan langkah normal, jaga badan tetap tegak tanpa condong ke sisi beban.\n3. Pertahankan bahu level dan panggul stabil sepanjang langkah.\n4. Tempuh jarak/waktu yang ditentukan, lalu istirahat dan ulangi dengan sisi berlawanan.\n5. Letakkan beban dengan hati-hati bila otot mulai lelah dan postur mulai rusak.",
+    "instructions_en": "1. Stand tall, hold a weight in one hand at your side.\n2. Walk forward with a normal stride, keeping the trunk upright without leaning toward the loaded side.\n3. Keep the shoulders level and the pelvis stable throughout the walk.\n4. Cover the prescribed distance/time, then rest and repeat on the opposite side.\n5. Set the weight down carefully if the muscles fatigue and posture starts to break down.",
+    "contraindications": "Hindari pada nyeri punggung bawah akut yang belum stabil atau hernia dinding perut yang belum dievaluasi. Mulai dengan beban ringan.",
+    "progression_tips": "Naikkan beban atau jarak tempuh secara bertahap. Berguna sebagai jembatan menuju aktivitas mengangkat/membawa belanjaan dalam kehidupan sehari-hari.",
+    "default_sets": 3,
+    "default_reps": 1,
+    "default_hold_seconds": 40,
+    "default_rest_seconds": 45,
+    "default_frequency": "2-3x/minggu",
+    "evidence_level": "C",
+    "evidence_source": "McGill SM. Low Back Disorders, 3rd ed. (loaded carry for trunk stability); George et al. Low Back Pain CPG, JOSPT 2021 (functional restoration principle)",
+    "tags": [
+      "core",
+      "functional",
+      "carry",
+      "low back pain"
+    ]
+  },
+  {
+    "slug": "schroth-rotational-angular-breathing",
+    "name": "Schroth Rotational Angular Breathing",
+    "name_id": "Pernapasan Angular Rotasional Schroth",
+    "body_region": "Lower back",
+    "category": "Spine & Core",
+    "difficulty": "Advanced",
+    "movement_type": "Breathing",
+    "starting_position": "Sitting",
+    "target_muscles": "Otot interkostal pada sisi cekung kurva skoliosis; korektor postur tiga dimensi",
+    "equipment_needed": [
+      "Cermin (untuk umpan balik postur)"
+    ],
+    "description": "Teknik pernapasan terarah dari metode Schroth untuk skoliosis idiopatik, mengarahkan napas ke sisi cekung tulang belakang yang mengalami kolaps untuk mengoreksi bentuk lengkung secara tiga dimensi.",
+    "description_en": "A directed breathing technique from the Schroth method for idiopathic scoliosis, guiding breath into the collapsed concave side of the spinal curve to correct the three-dimensional shape.",
+    "instructions": "1. Duduk atau berdiri dalam posisi koreksi postur yang diarahkan terapis (elongasi tulang belakang, koreksi bahu dan panggul).\n2. Letakkan tangan di sisi cekung tulang rusuk (sisi yang tampak lebih 'masuk' pada kurva).\n3. Tarik napas dalam, arahkan aliran udara secara sadar ke area di bawah tangan tersebut sehingga rusuk mengembang ke sisi itu.\n4. Embuskan napas perlahan sambil mempertahankan koreksi postur, jangan biarkan badan kembali ke pola kurva awal.\n5. Latihan ini idealnya diajarkan dan dipantau langsung oleh terapis bersertifikasi Schroth sebelum dilakukan mandiri.",
+    "instructions_en": "1. Sit or stand in the postural correction position guided by the therapist (spinal elongation, shoulder and pelvis correction).\n2. Place a hand on the concave side of the rib cage (the side that looks more 'caved in' on the curve).\n3. Breathe in deeply, consciously directing airflow into the area under that hand so the ribs expand on that side.\n4. Exhale slowly while maintaining the postural correction, don't let the body collapse back into the original curve pattern.\n5. This exercise is ideally taught and supervised in person by a certified Schroth therapist before being performed independently.",
+    "contraindications": "Harus diajarkan oleh terapis bersertifikasi Schroth - teknik yang salah dapat memperkuat pola kompensasi. Tidak menggantikan pemantauan medis rutin kurva skoliosis (rontgen berkala sesuai anjuran dokter).",
+    "progression_tips": "Setelah pola napas dikuasai, gabungkan dengan latihan koreksi postur aktif dan penguatan otot tulang belakang tiga dimensi sesuai klasifikasi kurva pasien.",
+    "default_sets": 3,
+    "default_reps": 8,
+    "default_hold_seconds": 5,
+    "default_rest_seconds": 20,
+    "default_frequency": "1x/hari",
+    "evidence_level": "B",
+    "evidence_source": "Kuru T et al. Clin Rehabil 2016;30(2):181-190 (RCT Schroth exercises in adolescent idiopathic scoliosis); Otman S et al. Turk J Med Sci 2005",
+    "tags": [
+      "scoliosis",
+      "schroth",
+      "breathing",
+      "postural correction"
+    ]
+  },
+  {
+    "slug": "quadruped-rock-back",
+    "name": "Quadruped Rock Back (Segmental Control)",
+    "name_id": "Rock Back Posisi Merangkak (Kontrol Segmental)",
+    "body_region": "Lower back",
+    "category": "Spine & Core",
+    "difficulty": "Beginner",
+    "movement_type": "Motor control",
+    "starting_position": "Quadruped",
+    "target_muscles": "Kontrol lumbopelvic, otot gluteal, fleksor pinggul (mobilitas terkontrol)",
+    "equipment_needed": [
+      "Matras"
+    ],
+    "description": "Latihan mobilitas lumbopelvic terkontrol yang mengajarkan gerakan pinggul terpisah dari tulang belakang, dasar untuk pola gerak fungsional yang aman pada nyeri punggung bawah.",
+    "description_en": "A controlled lumbopelvic mobility drill that teaches hip movement dissociated from the spine, a foundation for safe functional movement patterns in low back pain.",
+    "instructions": "1. Posisi merangkak (tangan di bawah bahu, lutut di bawah panggul), tulang belakang dalam posisi netral.\n2. Kencangkan otot inti ringan untuk mengunci posisi tulang belakang netral.\n3. Dorong panggul ke belakang menuju tumit, biarkan gerakan terjadi di pinggul - jaga punggung tetap datar/netral, jangan membulat.\n4. Berhenti sebelum punggung mulai membulat atau nyeri muncul, lalu kembali ke posisi awal.\n5. Fokus pada kualitas gerak, bukan jarak/kedalaman.",
+    "instructions_en": "1. Get into a quadruped position (hands under shoulders, knees under hips), spine in a neutral position.\n2. Gently brace the core to lock in the neutral spine position.\n3. Push the hips back toward the heels, letting the movement occur at the hips - keep the back flat/neutral, don't let it round.\n4. Stop before the back starts to round or pain appears, then return to the start.\n5. Focus on movement quality, not distance/depth.",
+    "contraindications": "Hindari beban lutut penuh pada osteoartritis lutut berat - gunakan bantalan lutut. Hentikan bila nyeri punggung tajam muncul saat gerakan.",
+    "progression_tips": "Setelah kontrol baik tercapai, integrasikan pola hip hinge ini ke latihan fungsional seperti deadlift ringan dan mengangkat benda dari lantai.",
+    "default_sets": 3,
+    "default_reps": 10,
+    "default_hold_seconds": 2,
+    "default_rest_seconds": 20,
+    "default_frequency": "1x/hari",
+    "evidence_level": "C",
+    "evidence_source": "McGill SM. Low Back Disorders, 3rd ed. (hip-spine dissociation training); George et al. Low Back Pain CPG, JOSPT 2021",
+    "tags": [
+      "low back pain",
+      "motor control",
+      "hip hinge",
+      "lumbopelvic"
+    ]
+  },
+  {
+    "slug": "prone-hip-extension-neutral-spine",
+    "name": "Prone Hip Extension with Neutral Spine",
+    "name_id": "Ekstensi Pinggul Tengkurap dengan Tulang Belakang Netral",
+    "body_region": "Lower back",
+    "category": "Spine & Core",
+    "difficulty": "Intermediate",
+    "movement_type": "Motor control",
+    "starting_position": "Prone",
+    "target_muscles": "Gluteus maximus (dominan) dengan minimalisasi kompensasi ekstensor lumbal",
+    "equipment_needed": [
+      "Matras"
+    ],
+    "description": "Latihan aktivasi gluteal terisolasi yang menjaga tulang belakang lumbal tetap netral/stabil, penting pada spondylolisthesis dan nyeri punggung bawah dengan pola gerak ekstensi berlebihan.",
+    "description_en": "An isolated gluteal activation exercise that keeps the lumbar spine neutral/stable, important in spondylolisthesis and low back pain with an excessive extension movement pattern.",
+    "instructions": "1. Berbaring tengkurap, dahi bertumpu di tangan yang disusun, kencangkan otot inti ringan.\n2. Angkat satu tungkai lurus ke atas beberapa sentimeter dengan mengontraksikan otot bokong, bukan dengan melengkungkan punggung bawah.\n3. Pastikan gerakan hanya berasal dari pinggul - bila punggung mulai melengkung, kurangi tinggi angkatan.\n4. Tahan 2-3 detik di puncak, turunkan perlahan dan terkontrol.\n5. Ganti tungkai setelah menyelesaikan set.",
+    "instructions_en": "1. Lie face down, forehead resting on stacked hands, gently brace the core.\n2. Lift one straight leg a few centimetres by contracting the buttock muscle, not by arching the lower back.\n3. Make sure the movement comes only from the hip - if the back starts to arch, reduce the lift height.\n4. Hold 2-3 seconds at the top, lower slowly and with control.\n5. Switch legs after completing the set.",
+    "contraindications": "Hindari pada spondylolisthesis simptomatik derajat tinggi atau nyeri punggung yang jelas memburuk dengan ekstensi. Hentikan bila punggung bawah terasa 'terjepit' saat gerakan.",
+    "progression_tips": "Setelah pola gerak bersih (tanpa kompensasi lumbal), tambahkan resistance band di pergelangan kaki atau posisi standing hip extension untuk membebani lebih fungsional.",
+    "default_sets": 3,
+    "default_reps": 12,
+    "default_hold_seconds": 3,
+    "default_rest_seconds": 30,
+    "default_frequency": "3-5x/minggu",
+    "evidence_level": "B",
+    "evidence_source": "George et al. Low Back Pain CPG, JOSPT 2021;51(11):CPG1-CPG60; McGill SM. Low Back Disorders, 3rd ed. (gluteal dominance training for spine sparing)",
+    "tags": [
+      "spondylolisthesis",
+      "gluteal",
+      "low back pain",
+      "motor control"
+    ]
   }
 ]

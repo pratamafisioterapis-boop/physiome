@@ -9,7 +9,9 @@
     "movement_type": "Breathing",
     "starting_position": "Supine",
     "target_muscles": "Diafragma",
-    "equipment_needed": ["Bantal"],
+    "equipment_needed": [
+      "Bantal"
+    ],
     "description": "Latihan pernapasan dasar untuk efisiensi ventilasi, pengendalian sesak, dan relaksasi.",
     "description_en": "Foundational breathing exercise for ventilatory efficiency, breathlessness control and relaxation.",
     "instructions": "1. Berbaring telentang dengan lutut ditekuk dan disangga bantal, atau duduk bersandar.\n2. Letakkan satu tangan di dada dan satu di perut.\n3. Tarik napas perlahan melalui hidung selama 3-4 detik sehingga tangan di PERUT yang naik, tangan di dada tetap diam.\n4. Buang napas perlahan melalui mulut selama 4-6 detik.\n5. Ulangi 10 kali; hentikan bila merasa pusing (hiperventilasi).",
@@ -23,7 +25,12 @@
     "default_frequency": "2-3x/hari",
     "evidence_level": "B",
     "evidence_source": "Spruit et al. ATS/ERS Statement on Pulmonary Rehabilitation, Am J Respir Crit Care Med 2013;188(8):e13-e64",
-    "tags": ["breathing", "COPD", "relaxation", "pulmonary"]
+    "tags": [
+      "breathing",
+      "COPD",
+      "relaxation",
+      "pulmonary"
+    ]
   },
   {
     "slug": "pursed-lip-breathing",
@@ -49,7 +56,12 @@
     "default_frequency": "Sesuai kebutuhan + 2x/hari latihan",
     "evidence_level": "A",
     "evidence_source": "Spruit et al. ATS/ERS Statement on Pulmonary Rehabilitation, 2013; GOLD Report 2024",
-    "tags": ["COPD", "breathing", "dyspnea", "pulmonary"]
+    "tags": [
+      "COPD",
+      "breathing",
+      "dyspnea",
+      "pulmonary"
+    ]
   },
   {
     "slug": "active-cycle-breathing",
@@ -61,7 +73,9 @@
     "movement_type": "Breathing",
     "starting_position": "Sitting",
     "target_muscles": "Otot pernapasan, pembersihan jalan napas",
-    "equipment_needed": ["Tisu/wadah dahak"],
+    "equipment_needed": [
+      "Tisu/wadah dahak"
+    ],
     "description": "Teknik pembersihan jalan napas mandiri untuk pasien dengan produksi dahak berlebih (PPOK, bronkiektasis, pasca operasi).",
     "description_en": "Self-directed airway clearance technique for patients with excess sputum (COPD, bronchiectasis, post-operative).",
     "instructions": "1. KONTROL NAPAS: bernapas tenang dengan diafragma selama 20-30 detik.\n2. EKSPANSI TORAKS: tarik napas dalam 3-4 kali, tahan 2-3 detik di puncak, buang napas rileks.\n3. Ulangi kontrol napas 20-30 detik.\n4. HUFF: tarik napas sedang, lalu hembuskan cepat dengan mulut terbuka seperti mengembunkan kaca (bukan batuk keras).\n5. Ulangi siklus 3-4 kali atau sampai dahak keluar; jangan sampai kelelahan.",
@@ -75,7 +89,12 @@
     "default_frequency": "2-3x/hari",
     "evidence_level": "A",
     "evidence_source": "Spruit et al. ATS/ERS Statement 2013; McIlwaine et al. Eur Respir J 2017 (airway clearance)",
-    "tags": ["COPD", "airway clearance", "breathing", "bronchiectasis"]
+    "tags": [
+      "COPD",
+      "airway clearance",
+      "breathing",
+      "bronchiectasis"
+    ]
   },
   {
     "slug": "thoracic-expansion-exercise",
@@ -101,7 +120,11 @@
     "default_frequency": "Setiap 1-2 jam pasca operasi",
     "evidence_level": "B",
     "evidence_source": "Spruit et al. ATS/ERS Statement 2013; Boden et al. BMJ 2018 (preoperative breathing exercise)",
-    "tags": ["breathing", "post-op", "pulmonary"]
+    "tags": [
+      "breathing",
+      "post-op",
+      "pulmonary"
+    ]
   },
   {
     "slug": "marching-in-place",
@@ -113,7 +136,9 @@
     "movement_type": "Aerobic",
     "starting_position": "Standing",
     "target_muscles": "Fleksor pinggul, tungkai, sistem kardiovaskular",
-    "equipment_needed": ["Kursi untuk pegangan"],
+    "equipment_needed": [
+      "Kursi untuk pegangan"
+    ],
     "description": "Latihan aerobik ringan yang dapat dilakukan di ruang terbatas, cocok untuk pemanasan dan rehabilitasi jantung-paru.",
     "description_en": "Low-load aerobic drill for confined spaces, suitable for warm-up and cardiopulmonary rehabilitation.",
     "instructions": "1. Berdiri tegak di dekat kursi untuk pegangan bila perlu.\n2. Angkat lutut bergantian setinggi nyaman, ayunkan lengan berlawanan.\n3. Pertahankan irama tetap selama 1-3 menit.\n4. Intensitas: masih dapat berbicara kalimat pendek (RPE 11-13 skala Borg 6-20).\n5. Boleh dilakukan duduk bila berdiri tidak memungkinkan.",
@@ -127,7 +152,12 @@
     "default_frequency": "3-5x/minggu",
     "evidence_level": "B",
     "evidence_source": "ACSM's Guidelines 11th ed.; Spruit et al. ATS/ERS Statement 2013",
-    "tags": ["aerobic", "cardiac rehab", "COPD", "warm-up"]
+    "tags": [
+      "aerobic",
+      "cardiac rehab",
+      "COPD",
+      "warm-up"
+    ]
   },
   {
     "slug": "seated-arm-raises-unsupported",
@@ -139,7 +169,9 @@
     "movement_type": "Strength",
     "starting_position": "Sitting",
     "target_muscles": "Deltoid, otot bantu napas",
-    "equipment_needed": ["Beban ringan 0,5-1 kg (opsional)"],
+    "equipment_needed": [
+      "Beban ringan 0,5-1 kg (opsional)"
+    ],
     "description": "Latihan lengan tanpa penyangga untuk PPOK - menargetkan otot yang berperan ganda dalam pernapasan dan aktivitas sehari-hari.",
     "description_en": "Unsupported arm training for COPD - targeting muscles that double as accessory respiratory muscles and are used in daily tasks.",
     "instructions": "1. Duduk tegak di kursi tanpa bersandar pada lengan kursi.\n2. Angkat kedua lengan lurus ke depan setinggi bahu.\n3. Tahan 2 detik, turunkan perlahan.\n4. Gunakan pursed lip breathing: buang napas saat mengangkat.\n5. Ulangi 10-15 kali; hentikan bila sesak mencapai 5-6 dari skala Borg 0-10.",
@@ -153,7 +185,11 @@
     "default_frequency": "3x/minggu",
     "evidence_level": "A",
     "evidence_source": "Spruit et al. ATS/ERS Statement on Pulmonary Rehabilitation, Am J Respir Crit Care Med 2013",
-    "tags": ["COPD", "pulmonary rehab", "arm training"]
+    "tags": [
+      "COPD",
+      "pulmonary rehab",
+      "arm training"
+    ]
   },
   {
     "slug": "pelvic-floor-slow-contraction",
@@ -179,7 +215,12 @@
     "default_frequency": "3x/hari",
     "evidence_level": "A",
     "evidence_source": "Dumoulin et al. Cochrane Database Syst Rev 2018;10:CD005654; NICE NG123 Urinary Incontinence 2019",
-    "tags": ["pelvic floor", "incontinence", "women's health", "postpartum"]
+    "tags": [
+      "pelvic floor",
+      "incontinence",
+      "women's health",
+      "postpartum"
+    ]
   },
   {
     "slug": "pelvic-floor-quick-flicks",
@@ -205,7 +246,11 @@
     "default_frequency": "3x/hari",
     "evidence_level": "A",
     "evidence_source": "Dumoulin et al. Cochrane 2018; Miller et al. J Am Geriatr Soc 1998 (The Knack)",
-    "tags": ["pelvic floor", "incontinence", "women's health"]
+    "tags": [
+      "pelvic floor",
+      "incontinence",
+      "women's health"
+    ]
   },
   {
     "slug": "the-knack",
@@ -231,7 +276,12 @@
     "default_frequency": "Setiap hari + saat aktivitas",
     "evidence_level": "A",
     "evidence_source": "Miller et al. J Am Geriatr Soc 1998;46(7):870-874; Dumoulin et al. Cochrane 2018",
-    "tags": ["pelvic floor", "incontinence", "functional", "women's health"]
+    "tags": [
+      "pelvic floor",
+      "incontinence",
+      "functional",
+      "women's health"
+    ]
   },
   {
     "slug": "postpartum-core-connection",
@@ -243,7 +293,10 @@
     "movement_type": "Motor control",
     "starting_position": "Supine",
     "target_muscles": "Diafragma, transversus abdominis, otot dasar panggul",
-    "equipment_needed": ["Matras", "Bantal"],
+    "equipment_needed": [
+      "Matras",
+      "Bantal"
+    ],
     "description": "Latihan koordinasi napas dan otot inti untuk pemulihan pascamelahirkan, termasuk pada diastasis recti.",
     "description_en": "Breath and deep core coordination for postpartum recovery, including diastasis recti.",
     "instructions": "1. Berbaring telentang dengan lutut ditekuk dan kepala disangga bantal.\n2. Tarik napas melalui hidung, biarkan perut dan dasar panggul melebar/rileks.\n3. Saat membuang napas, kencangkan otot dasar panggul ke atas sambil menarik perut bawah ke dalam dengan lembut.\n4. Tahan 3-5 detik sambil terus membuang napas perlahan.\n5. Rileks sepenuhnya saat menarik napas berikutnya. Ulangi 10 kali.",
@@ -257,7 +310,13 @@
     "default_frequency": "1-2x/hari",
     "evidence_level": "B",
     "evidence_source": "ACOG Committee Opinion 804: Physical Activity and Exercise During Pregnancy and the Postpartum Period (2020); Dumoulin et al. Cochrane 2018",
-    "tags": ["postpartum", "core", "pelvic floor", "diastasis recti", "women's health"]
+    "tags": [
+      "postpartum",
+      "core",
+      "pelvic floor",
+      "diastasis recti",
+      "women's health"
+    ]
   },
   {
     "slug": "resistance-training-major-muscle-groups",
@@ -269,7 +328,10 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Seluruh kelompok otot besar",
-    "equipment_needed": ["Karet elastis atau dumbel", "Kursi"],
+    "equipment_needed": [
+      "Karet elastis atau dumbel",
+      "Kursi"
+    ],
     "description": "Sirkuit latihan beban seluruh tubuh sesuai pedoman ACSM: 2-3 sesi per minggu untuk semua kelompok otot besar.",
     "description_en": "Whole-body resistance circuit per ACSM guidance: 2-3 sessions weekly covering all major muscle groups.",
     "instructions": "1. Lakukan pemanasan 5 menit (jalan di tempat atau sepeda ringan).\n2. Kerjakan 6-8 latihan yang mencakup: dorong (push-up dinding), tarik (row karet), tungkai (sit to stand), engsel pinggul (hip hinge), inti (plank/bird dog), betis (heel raise).\n3. Lakukan 2-3 set 8-12 repetisi untuk tiap latihan dengan beban yang membuat 2-3 repetisi terakhir terasa berat.\n4. Istirahat 60-90 detik antar set.\n5. Naikkan beban sekitar 5% saat 12 repetisi dapat diselesaikan dengan mudah pada semua set.",
@@ -283,7 +345,12 @@
     "default_frequency": "2-3x/minggu",
     "evidence_level": "A",
     "evidence_source": "ACSM's Guidelines for Exercise Testing and Prescription, 11th ed.; WHO Guidelines on Physical Activity 2020",
-    "tags": ["general health", "strength", "ACSM", "conditioning"]
+    "tags": [
+      "general health",
+      "strength",
+      "ACSM",
+      "conditioning"
+    ]
   },
   {
     "slug": "loaded-squat-osteoporosis",
@@ -295,7 +362,10 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Quadriceps, gluteus, ekstensor batang tubuh, tulang belakang dan panggul",
-    "equipment_needed": ["Barbel atau dumbel", "Pengawasan terlatih"],
+    "equipment_needed": [
+      "Barbel atau dumbel",
+      "Pengawasan terlatih"
+    ],
     "description": "Latihan beban tinggi terawasi untuk osteopenia/osteoporosis, mengikuti prinsip protokol HiRIT (LIFTMOR).",
     "description_en": "Supervised heavy resistance training for osteopenia/osteoporosis, following the HiRIT (LIFTMOR) principles.",
     "instructions": "1. WAJIB diawali fase pembelajaran teknik 4-6 minggu dengan beban ringan di bawah pengawasan terlatih.\n2. Berdiri dengan kaki selebar bahu, beban di punggung atas (back squat) atau dipegang di depan.\n3. Turunkan panggul ke belakang dan bawah, jaga punggung netral dan lutut segaris jari kaki.\n4. Turun sampai paha mendekati sejajar lantai atau sedalam yang aman, lalu berdiri kembali.\n5. Dosis protokol: 5 set x 5 repetisi pada beban berat (>80-85% 1RM), 2x/minggu.",
@@ -309,7 +379,13 @@
     "default_frequency": "2x/minggu",
     "evidence_level": "A",
     "evidence_source": "Watson et al. J Bone Miner Res 2018;33(2):211-220 (LIFTMOR RCT)",
-    "tags": ["osteoporosis", "bone health", "strength", "advanced", "supervised"]
+    "tags": [
+      "osteoporosis",
+      "bone health",
+      "strength",
+      "advanced",
+      "supervised"
+    ]
   },
   {
     "slug": "heel-drop-impact-bone",
@@ -321,7 +397,9 @@
     "movement_type": "Strength",
     "starting_position": "Standing",
     "target_muscles": "Pembebanan impak pada tulang panggul dan tulang belakang",
-    "equipment_needed": ["Pegangan"],
+    "equipment_needed": [
+      "Pegangan"
+    ],
     "description": "Pembebanan impak sederhana untuk merangsang pembentukan tulang, komponen program kesehatan tulang.",
     "description_en": "Simple impact loading to stimulate bone formation, a component of bone health programs.",
     "instructions": "1. Berdiri tegak dengan kaki selebar pinggul, pegang meja untuk keseimbangan.\n2. Naik ke posisi jinjit setinggi mungkin.\n3. Jatuhkan tumit ke lantai dengan hentakan terkontrol (tidak melompat).\n4. Tegakkan badan; hentakan harus terasa sampai panggul.\n5. Ulangi 10-20 kali, 1-2 set.",
@@ -335,6 +413,173 @@
     "default_frequency": "4-5x/minggu",
     "evidence_level": "B",
     "evidence_source": "Watson et al. J Bone Miner Res 2018 (LIFTMOR); Zhao et al. Osteoporos Int 2015 (impact exercise meta-analysis)",
-    "tags": ["osteoporosis", "bone health", "impact"]
+    "tags": [
+      "osteoporosis",
+      "bone health",
+      "impact"
+    ]
+  },
+  {
+    "slug": "incentive-spirometry",
+    "name": "Incentive Spirometry",
+    "name_id": "Spirometri Insentif",
+    "body_region": "Chest",
+    "category": "Cardio",
+    "difficulty": "Beginner",
+    "movement_type": "Breathing",
+    "starting_position": "Sitting",
+    "target_muscles": "Otot inspirasi, ekspansi paru volumetrik",
+    "equipment_needed": [
+      "Alat spirometri insentif"
+    ],
+    "description": "Latihan pernapasan volumetrik menggunakan alat untuk mencegah atelektasis dan komplikasi paru pasca operasi abdomen/toraks.",
+    "description_en": "Volumetric breathing training using a device to prevent atelectasis and pulmonary complications after abdominal/thoracic surgery.",
+    "instructions": "1. Duduk tegak, pegang alat spirometri insentif setinggi dada.\n2. Embuskan napas normal terlebih dahulu, lalu letakkan mulut pada corong alat dan tutup rapat dengan bibir.\n3. Tarik napas perlahan dan dalam melalui mulut, usahakan mengangkat penanda/bola pada alat setinggi dan sestabil mungkin.\n4. Tahan napas 3-5 detik di puncak tarikan bila mampu, lalu lepaskan mulut dan embuskan napas normal.\n5. Istirahat beberapa napas normal di antara usaha sebelum mengulang.",
+    "instructions_en": "1. Sit upright, hold the incentive spirometer at chest height.\n2. Breathe out normally first, then place the mouth on the device mouthpiece and seal it with the lips.\n3. Breathe in slowly and deeply through the mouth, trying to raise the marker/ball on the device as high and steadily as possible.\n4. Hold the breath 3-5 seconds at the top if able, then release the mouthpiece and breathe out normally.\n5. Rest for a few normal breaths between attempts before repeating.",
+    "contraindications": "Gunakan dengan hati-hati pada pneumotoraks yang belum ditangani atau nyeri dada tajam yang tidak diketahui penyebabnya. Hentikan bila pusing berlebihan (hiperventilasi).",
+    "progression_tips": "Tingkatkan target volume pada alat secara bertahap sesuai kemampuan; lakukan lebih sering pada periode awal pasca operasi (setiap jam saat terjaga).",
+    "default_sets": 3,
+    "default_reps": 10,
+    "default_hold_seconds": 4,
+    "default_rest_seconds": 30,
+    "default_frequency": "Setiap 1-2 jam pasca operasi",
+    "evidence_level": "A",
+    "evidence_source": "Restrepo RD et al. Respir Care 2011;56(10):1600-1604 (AARC Clinical Practice Guideline: Incentive Spirometry); Boden et al. BMJ 2018 (preoperative breathing exercise training)",
+    "tags": [
+      "post-op",
+      "breathing",
+      "atelectasis prevention",
+      "spirometry"
+    ]
+  },
+  {
+    "slug": "autogenic-drainage",
+    "name": "Autogenic Drainage (Airway Clearance)",
+    "name_id": "Drainase Autogenik (Pembersihan Jalan Napas)",
+    "body_region": "Chest",
+    "category": "Cardio",
+    "difficulty": "Advanced",
+    "movement_type": "Breathing",
+    "starting_position": "Sitting",
+    "target_muscles": "Kontrol volume dan kecepatan aliran napas untuk mobilisasi sekret",
+    "equipment_needed": [],
+    "description": "Teknik pembersihan jalan napas tiga tahap yang menggunakan pernapasan terkontrol pada volume paru berbeda untuk melepaskan dan memindahkan sekret tanpa batuk paksa berlebihan, digunakan pada PPOK dan bronkiektasis/fibrosis kistik.",
+    "description_en": "A three-stage airway clearance technique using controlled breathing at different lung volumes to loosen and move secretions without excessive forced coughing, used in COPD and bronchiectasis/cystic fibrosis.",
+    "instructions": "1. Tahap 'melepaskan': bernapas dengan volume paru rendah (napas dangkal santai) selama beberapa siklus untuk melonggarkan sekret di saluran napas kecil.\n2. Tahap 'mengumpulkan': bernapas dengan volume paru sedang untuk memindahkan sekret ke saluran napas tengah.\n3. Tahap 'mengeluarkan': tarik napas dalam ke volume paru tinggi, lalu embuskan dengan cepat namun terkontrol (bukan batuk paksa) menuju saluran napas besar.\n4. Batukkan sekret keluar hanya setelah terasa di tenggorokan bagian atas, bukan dipaksakan lebih awal.\n5. Teknik ini idealnya diajarkan langsung oleh fisioterapis respirasi sebelum dilakukan mandiri di rumah.",
+    "instructions_en": "1. 'Unstick' phase: breathe at low lung volume (relaxed shallow breathing) for several cycles to loosen secretions in the small airways.\n2. 'Collect' phase: breathe at mid lung volume to move secretions into the middle airways.\n3. 'Evacuate' phase: breathe in deeply to a high lung volume, then breathe out quickly but controlled (not a forced cough) to move secretions into the large airways.\n4. Only cough the secretions out once they are felt in the upper throat, not forced earlier.\n5. This technique is ideally taught in person by a respiratory physiotherapist before being performed independently at home.",
+    "contraindications": "Hindari pada hemoptisis aktif (batuk darah) tanpa evaluasi medis, pneumotoraks yang belum stabil, atau kelelahan pernapasan berat. Harus diajarkan langsung sebelum dilakukan mandiri.",
+    "progression_tips": "Kombinasikan dengan Active Cycle of Breathing Technique dan posisi drainase postural sesuai lokasi sekret yang ditargetkan.",
+    "default_sets": 3,
+    "default_reps": 6,
+    "default_hold_seconds": 3,
+    "default_rest_seconds": 30,
+    "default_frequency": "1-2x/hari",
+    "evidence_level": "A",
+    "evidence_source": "McIlwaine M et al. Eur Respir J 2017 (airway clearance techniques in cystic fibrosis systematic review); Spruit et al. ATS/ERS Statement on Pulmonary Rehabilitation, 2013",
+    "tags": [
+      "airway clearance",
+      "COPD",
+      "bronchiectasis",
+      "breathing"
+    ]
+  },
+  {
+    "slug": "segmental-lateral-costal-breathing",
+    "name": "Segmental Breathing (Lateral Costal Expansion)",
+    "name_id": "Pernapasan Segmental (Ekspansi Kostal Lateral)",
+    "body_region": "Chest",
+    "category": "Cardio",
+    "difficulty": "Beginner",
+    "movement_type": "Breathing",
+    "starting_position": "Sitting",
+    "target_muscles": "Otot interkostal, ekspansi rongga dada bagian bawah-lateral",
+    "equipment_needed": [],
+    "description": "Latihan pernapasan yang menargetkan ekspansi rusuk bagian bawah-samping, membantu meningkatkan ventilasi area paru yang kurang terekspansi pasca operasi toraks atau pada penyakit paru restriktif.",
+    "description_en": "A breathing exercise targeting expansion of the lower-side ribs, helping improve ventilation to underexpanded lung areas after thoracic surgery or in restrictive lung disease.",
+    "instructions": "1. Duduk tegak, letakkan kedua tangan di sisi bawah tulang rusuk (kanan dan kiri) atau tangan terapis/pendamping di sana.\n2. Embuskan napas penuh terlebih dahulu.\n3. Tarik napas dalam melalui hidung, fokuskan aliran udara untuk mendorong rusuk mengembang ke arah samping melawan tangan.\n4. Tahan sebentar di puncak tarikan, lalu embuskan perlahan melalui mulut sambil merasakan rusuk turun kembali.\n5. Ulangi dengan fokus pada satu sisi dada bila salah satu sisi kurang terekspansi (misalnya pasca operasi toraks unilateral).",
+    "instructions_en": "1. Sit upright, place both hands on the lower sides of the rib cage (left and right) or have a therapist/companion's hands there.\n2. Breathe out fully first.\n3. Breathe in deeply through the nose, focusing the airflow to push the ribs to expand sideways against the hands.\n4. Hold briefly at the top, then breathe out slowly through the mouth while feeling the ribs fall back down.\n5. Repeat focusing on one side of the chest if one side is underexpanded (e.g. after unilateral thoracic surgery).",
+    "contraindications": "Hindari tekanan berlebihan pada area luka operasi yang baru. Hentikan bila nyeri tajam atau pusing berlebihan muncul.",
+    "progression_tips": "Kombinasikan dengan thoracic expansion exercise dan mobilisasi dini pasca operasi untuk hasil ventilasi paru yang optimal.",
+    "default_sets": 3,
+    "default_reps": 8,
+    "default_hold_seconds": 3,
+    "default_rest_seconds": 20,
+    "default_frequency": "Setiap 1-2 jam pasca operasi, lalu 3x/hari",
+    "evidence_level": "B",
+    "evidence_source": "Spruit et al. ATS/ERS Statement on Pulmonary Rehabilitation, Am J Respir Crit Care Med 2013;188(8):e13-e64; Boden et al. BMJ 2018 (preoperative breathing exercise)",
+    "tags": [
+      "breathing",
+      "post-op",
+      "thoracic surgery",
+      "lung expansion"
+    ]
+  },
+  {
+    "slug": "pelvic-floor-relaxation-reverse-kegel",
+    "name": "Pelvic Floor Relaxation (Reverse Kegel)",
+    "name_id": "Relaksasi Dasar Panggul (Reverse Kegel)",
+    "body_region": "Pelvic floor",
+    "category": "Women's Health",
+    "difficulty": "Beginner",
+    "movement_type": "Motor control",
+    "starting_position": "Supine",
+    "target_muscles": "Relaksasi otot dasar panggul (kebalikan dari kontraksi Kegel)",
+    "equipment_needed": [
+      "Matras",
+      "Bantal di bawah lutut"
+    ],
+    "description": "Latihan relaksasi dan pemanjangan sadar otot dasar panggul, digunakan pada nyeri panggul kronis, dispareunia, vaginismus, dan dasar panggul yang terlalu tegang (hipertonik).",
+    "description_en": "Conscious relaxation and lengthening of the pelvic floor muscles, used in chronic pelvic pain, dyspareunia, vaginismus, and an overactive (hypertonic) pelvic floor.",
+    "instructions": "1. Berbaring telentang dengan lutut ditekuk dan bantal di bawah lutut, tubuh rileks sepenuhnya.\n2. Tarik napas dalam ke arah perut bawah, bayangkan dasar panggul mengembang dan turun/melebar seperti bunga yang mekar saat udara masuk.\n3. Embuskan napas perlahan tanpa mengencangkan dasar panggul - biarkan tetap rileks memanjang.\n4. Ulangi dengan fokus penuh pada sensasi 'melepaskan' dan bukan pada mengencangkan otot.\n5. Latihan ini sering dikombinasikan dengan edukasi postur dan manajemen stres oleh terapis dasar panggul.",
+    "instructions_en": "1. Lie on your back with knees bent and a pillow under the knees, the body fully relaxed.\n2. Breathe in deeply toward the lower belly, imagining the pelvic floor expanding and dropping/widening like a flower opening as air comes in.\n3. Breathe out slowly without tightening the pelvic floor - let it stay relaxed and lengthened.\n4. Repeat with full focus on the sensation of 'letting go' rather than tightening the muscle.\n5. This exercise is often combined with posture education and stress management by a pelvic floor therapist.",
+    "contraindications": "Bila nyeri panggul justru bertambah atau pasien kesulitan merasakan relaksasi tanpa panduan, rujuk ke fisioterapis dasar panggul untuk biofeedback langsung.",
+    "progression_tips": "Setelah relaksasi dasar tercapai, integrasikan dengan latihan pernapasan diafragma penuh dan posisi fungsional (duduk, berdiri) sehari-hari.",
+    "default_sets": 3,
+    "default_reps": 8,
+    "default_hold_seconds": 6,
+    "default_rest_seconds": 20,
+    "default_frequency": "1-2x/hari",
+    "evidence_level": "B",
+    "evidence_source": "Rosenbaum TY, Owens A. J Sex Med 2008;5(3):513-523 (pelvic floor physical therapy for pain and sexual dysfunction); NICE NG123 Urinary Incontinence and Pelvic Organ Prolapse in Women (2019)",
+    "tags": [
+      "pelvic pain",
+      "hypertonic pelvic floor",
+      "relaxation",
+      "dyspareunia"
+    ]
+  },
+  {
+    "slug": "six-minute-walk-progressive-training",
+    "name": "Six-Minute Walk Progressive Training",
+    "name_id": "Latihan Berjalan Progresif Berbasis 6-Minute Walk",
+    "body_region": "General",
+    "category": "Cardio",
+    "difficulty": "Beginner",
+    "movement_type": "Aerobic",
+    "starting_position": "Standing",
+    "target_muscles": "Kapasitas aerobik keseluruhan, daya tahan kardiorespirasi",
+    "equipment_needed": [
+      "Lintasan datar terukur",
+      "Kursi untuk istirahat"
+    ],
+    "description": "Program latihan jalan progresif berbasis hasil tes 6-minute walk test (6MWT), dasar rehabilitasi jantung dan paru untuk membangun kapasitas fungsional secara aman dan terukur.",
+    "description_en": "A progressive walking program based on the 6-minute walk test (6MWT) result, a foundation of cardiac and pulmonary rehabilitation to safely and measurably build functional capacity.",
+    "instructions": "1. Tentukan jarak awal dari hasil 6-minute walk test atau jarak yang bisa ditempuh dengan sesak napas/kelelahan ringan (skala Borg 3-4/10).\n2. Berjalan dengan kecepatan mandiri senyaman mungkin di lintasan datar, boleh berhenti istirahat duduk bila perlu lalu lanjutkan.\n3. Pantau sesak napas dan kelelahan menggunakan skala Borg; hentikan bila mencapai 7/10 atau muncul nyeri dada/pusing.\n4. Catat total jarak/waktu tempuh setiap sesi.\n5. Tingkatkan jarak atau kecepatan secara bertahap (sekitar 10% per 1-2 minggu) berdasarkan toleransi.",
+    "instructions_en": "1. Establish a starting distance from the 6-minute walk test result or a distance achievable with mild breathlessness/fatigue (Borg scale 3-4/10).\n2. Walk at a self-selected comfortable pace on a flat track, resting seated if needed and then continuing.\n3. Monitor breathlessness and fatigue using the Borg scale; stop if it reaches 7/10 or chest pain/dizziness occurs.\n4. Record the total distance/time covered each session.\n5. Increase the distance or pace gradually (about 10% per 1-2 weeks) based on tolerance.",
+    "contraindications": "Hentikan segera dan cari bantuan medis bila muncul nyeri dada, pusing berat, sesak napas ekstrem, atau denyut jantung tidak beraturan. Dapatkan izin kardiolog/pulmonolog sebelum memulai pada kondisi jantung/paru tidak stabil.",
+    "progression_tips": "Gunakan sebagai batu loncatan menuju program jalan terstruktur (Structured Walking Program) dengan target durasi dan intensitas yang lebih tinggi.",
+    "default_sets": 1,
+    "default_reps": 1,
+    "default_hold_seconds": 0,
+    "default_rest_seconds": 0,
+    "default_frequency": "3-5x/minggu",
+    "evidence_level": "A",
+    "evidence_source": "Dibben et al. Cochrane 2021;11:CD001800 (exercise-based cardiac rehabilitation); Spruit et al. ATS/ERS Statement on Pulmonary Rehabilitation, 2013 (6MWT-based walking prescription)",
+    "tags": [
+      "cardiac rehab",
+      "pulmonary rehab",
+      "walking",
+      "aerobic capacity"
+    ]
   }
 ]
