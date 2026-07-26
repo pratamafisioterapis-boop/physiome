@@ -1,33 +1,39 @@
-
 import React from 'react';
 import Input from '@/components/Input.jsx';
-import { Video } from 'lucide-react';
+import VideoPlayerComponent from '@/components/exercises/VideoPlayerComponent.jsx';
+import { Info } from 'lucide-react';
+import { validateVideoUrl } from '@/lib/videoUpload.js';
 
+/**
+ * Input tautan video untuk form "buat latihan baru".
+ *
+ * Upload berkas tidak tersedia di sini karena latihannya belum punya id —
+ * berkas diunggah lewat tombol video di kartu latihan setelah tersimpan.
+ * Pratinjau memakai player yang sama dengan halaman lain supaya perilakunya
+ * konsisten (YouTube, MP4, WebM, MOV).
+ */
 const VideoUpload = ({ value, onChange }) => {
+  const error = value?.trim() ? validateVideoUrl(value) : null;
+
   return (
     <div className="space-y-2">
-      <Input 
-        label="Video URL (YouTube/Vimeo)" 
-        value={value || ''} 
-        onChange={(e) => onChange(e.target.value)} 
+      <Input
+        label="Tautan video (YouTube / MP4)"
+        value={value || ''}
+        onChange={(e) => onChange(e.target.value)}
         placeholder="https://youtube.com/watch?v=..."
       />
-      {value && (
-        <div className="aspect-video bg-muted rounded-xl flex items-center justify-center border border-border overflow-hidden">
-          {value.includes('youtube.com') || value.includes('youtu.be') ? (
-            <iframe 
-              className="w-full h-full"
-              src={`https://www.youtube.com/embed/${value.split('v=')[1]?.split('&')[0] || value.split('youtu.be/')[1]}`} 
-              allowFullScreen 
-            />
-          ) : (
-            <div className="flex flex-col items-center text-muted-foreground">
-              <Video className="w-8 h-8 mb-2" />
-              <span className="text-sm">Video Preview</span>
-            </div>
-          )}
-        </div>
+
+      {error ? (
+        <p className="text-xs text-destructive">{error}</p>
+      ) : (
+        value?.trim() && <VideoPlayerComponent videoUrl={value.trim()} title="Pratinjau video" />
       )}
+
+      <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
+        <Info className="w-3.5 h-3.5 shrink-0 mt-px" />
+        Ingin mengunggah file video? Simpan latihan ini dulu, lalu gunakan tombol video pada kartunya.
+      </p>
     </div>
   );
 };

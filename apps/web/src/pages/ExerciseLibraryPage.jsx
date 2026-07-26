@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Search, Play, Plus, Dumbbell, Edit2, Trash2, Eye, BookOpen, ShieldAlert, TrendingUp, X, Video } from 'lucide-react';
+import { Search, Play, Plus, Dumbbell, Edit2, Trash2, Eye, BookOpen, ShieldAlert, TrendingUp, X, Video, VideoOff } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -217,7 +217,13 @@ export default function ExerciseLibraryPage() {
                           {/* Global library rows (no clinic_id) are read-only for clinics - only super_admin may edit them. */}
                           {(ex.clinic_id || currentUser?.role === 'super_admin') && (
                             <>
-                              <button onClick={() => setVideoExercise(ex)} className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-white transition-colors" title="Upload Video">
+                              <button
+                                onClick={() => setVideoExercise(ex)}
+                                className={`w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center transition-colors hover:bg-white ${
+                                  ex.video_url ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+                                }`}
+                                title={ex.video_url ? 'Kelola video latihan' : 'Upload video latihan'}
+                              >
                                 <Video className="w-4 h-4" />
                               </button>
                               <button onClick={() => setEditingExercise(ex)} className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-white transition-colors" title="Edit">
@@ -238,6 +244,20 @@ export default function ExerciseLibraryPage() {
                           </Badge>
                         </div>
                       )}
+
+                      {/* Status video dibuat terlihat: tanpa ini tidak ada cara
+                          tahu apakah upload tadi benar-benar tersimpan. */}
+                      <div className="absolute bottom-3 left-3">
+                        {ex.video_url ? (
+                          <Badge className="bg-black/70 text-white border-0 gap-1 backdrop-blur-sm">
+                            <Video className="w-3 h-3" /> Ada video
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="bg-white/80 text-muted-foreground border-border gap-1 backdrop-blur-sm">
+                            <VideoOff className="w-3 h-3" /> Belum ada video
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     <CardContent className="p-5">
                       <h3 className="font-bold text-lg mb-0.5 truncate text-foreground">{ex.name}</h3>
@@ -313,9 +333,12 @@ export default function ExerciseLibraryPage() {
           isOpen={!!videoExercise}
           onClose={() => setVideoExercise(null)}
           exercise={videoExercise}
-          onUpdate={() => {
-            setVideoExercise(null);
-            fetchExercises();
+          onUpdate={(updated) => {
+            if (!updated?.id) return fetchExercises();
+            // Perbarui di tempat supaya kartu langsung memantulkan hasilnya —
+            // termasuk saat modal tetap terbuka setelah video dilepas.
+            setExercises(prev => prev.map(e => (e.id === updated.id ? { ...e, ...updated } : e)));
+            setVideoExercise(prev => (prev && prev.id === updated.id ? { ...prev, ...updated } : prev));
           }}
         />
       )}

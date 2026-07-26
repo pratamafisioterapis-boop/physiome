@@ -619,25 +619,37 @@ async function createExercise(ctx: AuthCtx, body: Record<string, unknown>) {
   return json(data, 201);
 }
 
+// Global templates (clinic_id null) may only be edited by super_admin; clinics
+// may only edit their own rows. Returns the row so callers can inspect it.
+async function requireWritableExercise(ctx: AuthCtx, id: string) {
+  const { data: exercise } = await admin.from("exercises").select("*").eq("id", id).maybeSingle();
+  if (!exercise) notFound("Exercise not found");
+  if (ctx.role !== "super_admin" && exercise.clinic_id !== ctx.clinicId) {
+    throw new HttpError(403, "You do not have permission to edit this exercise. Global templates cannot be modified.");
+  }
+  return exercise as Record<string, any>;
+}
+
 async function updateExercise(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
   if (Object.keys(body).length === 0) bad("No data provided for update");
-  const { data: exercise } = await admin.from("exercises").select("clinic_id").eq("id", id).maybeSingle();
-  if (!exercise) return notFound("Exercise not found");
-  // Global templates (clinic_id null) may only be edited by super_admin; clinics may only edit their own rows.
-  if (ctx.role !== "super_admin" && exercise.clinic_id !== ctx.clinicId) {
-    return err(403, "You do not have permission to edit this exercise. Global templates cannot be modified.");
-  }
+  await requireWritableExercise(ctx, id);
   const { data, error } = await admin.from("exercises").update(body).eq("id", id).select().single();
   if (error) throw new HttpError(500, error.message);
   return json(data);
 }
 
 async function deleteExercise(ctx: AuthCtx, id: string) {
+  const { data: exercise } = await admin.from("exercises").select("video_url, thumbnail_url").eq("id", id).maybeSingle();
+
   if (ctx.role === "super_admin") {
     await admin.from("exercises").delete().eq("id", id);
   } else {
     await admin.from("exercises").delete().eq("id", id).eq("clinic_id", ctx.clinicId);
   }
+
+  // Don't leave the storage objects behind once the row referencing them is gone.
+  await removeVideoAssetIfOrphan(exercise?.video_url);
+  await removeVideoAssetIfOrphan(exercise?.thumbnail_url);
   return json({ message: "Exercise deleted successfully" });
 }
 
@@ -1220,76 +1232,195 @@ async function rtmDashboard(ctx: AuthCtx) {
 
 // ---------- videos ----------
 
+const VIDEO_BUCKET = "videos";
+const VIDEO_PUBLIC_MARKER = `/storage/v1/object/public/${VIDEO_BUCKET}/`;
+
+// super_admin has no clinic, so their uploads live under "global/" and their
+// rows carry clinic_id NULL - the same convention the exercise library uses.
+function videoFolder(ctx: AuthCtx) {
+  return ctx.clinicId ?? "global";
+}
+
+// Rows a caller may read: their own clinic's videos plus the global library.
+function scopeVideoQuery(ctx: AuthCtx, query: any) {
+  return ctx.clinicId ? query.or(`clinic_id.eq.${ctx.clinicId},clinic_id.is.null`) : query.is("clinic_id", null);
+}
+
+async function uploadVideoAsset(ctx: AuthCtx, file: File, fallbackExt: string) {
+  const ext = (file.name.split(".").pop() || fallbackExt).toLowerCase().replace(/[^a-z0-9]/g, "") || fallbackExt;
+  const objectPath = `${videoFolder(ctx)}/${crypto.randomUUID()}.${ext}`;
+  const { error: uploadError } = await admin.storage
+    .from(VIDEO_BUCKET)
+    .upload(objectPath, file, { contentType: file.type || undefined, upsert: false });
+  if (uploadError) throw new HttpError(500, `Upload error: ${uploadError.message}`);
+  return admin.storage.from(VIDEO_BUCKET).getPublicUrl(objectPath).data.publicUrl;
+}
+
+// Only removes files we actually host; external links (YouTube etc.) are left alone.
+async function removeVideoAsset(fileUrl: string | null | undefined) {
+  if (!fileUrl) return;
+  const idx = fileUrl.indexOf(VIDEO_PUBLIC_MARKER);
+  if (idx === -1) return;
+  const objectPath = decodeURIComponent(fileUrl.slice(idx + VIDEO_PUBLIC_MARKER.length).split("?")[0]);
+  await admin.storage.from(VIDEO_BUCKET).remove([objectPath]).catch(() => {});
+}
+
+// A storage object may be referenced by several exercises and/or a library row;
+// only delete it once nothing points at it any more.
+async function removeVideoAssetIfOrphan(fileUrl: string | null | undefined) {
+  if (!fileUrl || fileUrl.indexOf(VIDEO_PUBLIC_MARKER) === -1) return;
+  // Separate .eq() probes rather than one .or() string: the value is a URL and
+  // would have to be escaped for PostgREST's filter grammar.
+  const probes = await Promise.all(
+    (["exercises", "videos"] as const).flatMap((table) =>
+      (["video_url", "thumbnail_url"] as const).map((column) =>
+        admin.from(table).select("id").eq(column, fileUrl).limit(1),
+      ),
+    ),
+  );
+  if (probes.some((p) => (p.data?.length ?? 0) > 0)) return;
+  await removeVideoAsset(fileUrl);
+}
+
 async function listVideos(ctx: AuthCtx) {
-  const { data } = await admin.from("videos").select("*").eq("clinic_id", ctx.clinicId).order("created_at", { ascending: false });
+  const query = scopeVideoQuery(ctx, admin.from("videos").select("*"));
+  const { data } = await query.order("created_at", { ascending: false });
   return json(data ?? []);
 }
 
 async function deleteVideo(ctx: AuthCtx, id: string) {
-  const { data: video } = await admin.from("videos").select("*").eq("id", id).eq("clinic_id", ctx.clinicId).maybeSingle();
+  const { data: video } = await admin.from("videos").select("*").eq("id", id).maybeSingle();
   if (!video) return err(404, "Video not found");
+  // Clinics may only delete their own rows; the global library is super_admin's.
+  if (ctx.role !== "super_admin" && video.clinic_id !== ctx.clinicId) {
+    return err(403, "You do not have permission to delete this video.");
+  }
 
   await admin.from("videos").delete().eq("id", id);
-
-  const removeFromStorage = async (fileUrl: string | null) => {
-    if (!fileUrl) return;
-    const marker = "/storage/v1/object/public/videos/";
-    const idx = fileUrl.indexOf(marker);
-    if (idx === -1) return;
-    const objectPath = fileUrl.slice(idx + marker.length);
-    await admin.storage.from("videos").remove([objectPath]).catch(() => {});
-  };
-  await removeFromStorage(video.video_url);
-  await removeFromStorage(video.thumbnail_url);
+  await removeVideoAssetIfOrphan(video.video_url);
+  await removeVideoAssetIfOrphan(video.thumbnail_url);
 
   return json({ message: "Video deleted successfully" });
 }
 
-async function createVideo(ctx: AuthCtx, req: Request) {
+// Accepts multipart (video_file / thumbnail_file) or JSON (video_url).
+type VideoPayload = {
+  name: string;
+  description: string;
+  duration: number;
+  videoUrl: string | null;
+  thumbnailUrl: string | null;
+  addToLibrary: boolean;
+};
+
+async function readVideoPayload(ctx: AuthCtx, req: Request): Promise<VideoPayload> {
   const contentType = req.headers.get("content-type") || "";
-  let name = "";
-  let description = "";
-  let duration = 0;
-  let videoUrl: string | null = null;
-  let thumbnailUrl: string | null = null;
 
   if (contentType.includes("multipart/form-data")) {
     const form = await req.formData();
-    name = String(form.get("name") || "");
-    description = String(form.get("description") || "");
-    duration = parseInt(String(form.get("duration") || "0")) || 0;
-
     const file = form.get("video_file");
-    if (file instanceof File) {
-      const ext = file.name.split(".").pop() || "mp4";
-      const objectPath = `${ctx.clinicId}/${crypto.randomUUID()}.${ext}`;
-      const { error: uploadError } = await admin.storage.from("videos").upload(objectPath, file, { contentType: file.type });
-      if (uploadError) throw new HttpError(500, `Upload error: ${uploadError.message}`);
-      const { data: pub } = admin.storage.from("videos").getPublicUrl(objectPath);
-      videoUrl = pub.publicUrl;
-    } else {
-      videoUrl = String(form.get("video_url") || "") || null;
-    }
-    thumbnailUrl = String(form.get("thumbnail_url") || "") || null;
-  } else {
-    const body = await req.json().catch(() => ({}));
-    name = body.name;
-    description = body.description;
-    duration = parseInt(body.duration) || 0;
-    videoUrl = body.video_url || null;
-    thumbnailUrl = body.thumbnail_url || null;
+    const thumb = form.get("thumbnail_file");
+
+    const videoUrl = file instanceof File && file.size > 0
+      ? await uploadVideoAsset(ctx, file, "mp4")
+      : String(form.get("video_url") || "").trim() || null;
+
+    const thumbnailUrl = thumb instanceof File && thumb.size > 0
+      ? await uploadVideoAsset(ctx, thumb, "jpg")
+      : String(form.get("thumbnail_url") || "").trim() || null;
+
+    return {
+      name: String(form.get("name") || "").trim(),
+      description: String(form.get("description") || "").trim(),
+      duration: parseInt(String(form.get("duration") || "0")) || 0,
+      videoUrl,
+      thumbnailUrl,
+      addToLibrary: String(form.get("add_to_library") || "") === "true",
+    };
   }
 
-  if (!name) bad("Video name is required");
-  if (!ctx.clinicId) return err(403, "Clinic ID not found in token");
+  const body = await req.json().catch(() => ({} as Record<string, unknown>)) as Record<string, any>;
+  return {
+    name: String(body.name || "").trim(),
+    description: String(body.description || "").trim(),
+    duration: parseInt(body.duration) || 0,
+    videoUrl: body.video_url ? String(body.video_url).trim() : null,
+    thumbnailUrl: body.thumbnail_url ? String(body.thumbnail_url).trim() : null,
+    addToLibrary: body.add_to_library === true,
+  };
+}
 
+async function insertVideoRow(ctx: AuthCtx, payload: VideoPayload) {
   const { data, error } = await admin
     .from("videos")
-    .insert({ name, description, duration, video_url: videoUrl, thumbnail_url: thumbnailUrl, clinic_id: ctx.clinicId })
+    .insert({
+      name: payload.name,
+      description: payload.description,
+      duration: payload.duration,
+      video_url: payload.videoUrl,
+      thumbnail_url: payload.thumbnailUrl,
+      clinic_id: ctx.clinicId,
+      created_by: ctx.userId,
+    })
     .select()
     .single();
   if (error) throw new HttpError(500, error.message);
-  return json(data, 201);
+  return data;
+}
+
+async function createVideo(ctx: AuthCtx, req: Request) {
+  const payload = await readVideoPayload(ctx, req);
+  if (!payload.name) bad("Video name is required");
+  if (!payload.videoUrl) bad("A video file or video URL is required");
+  return json(await insertVideoRow(ctx, payload), 201);
+}
+
+// ---------- exercise video (single-step upload + link) ----------
+
+// One call does the whole job: store the file, link it to the exercise, and
+// clean up whatever the exercise pointed at before. Works for super_admin
+// (global exercises) and for clinics (their own exercises).
+async function setExerciseVideo(ctx: AuthCtx, exerciseId: string, req: Request) {
+  const exercise = await requireWritableExercise(ctx, exerciseId);
+  const payload = await readVideoPayload(ctx, req);
+
+  if (!payload.videoUrl) bad("A video file, library video, or video URL is required");
+
+  const previousVideoUrl = exercise.video_url as string | null;
+  const previousThumbnailUrl = exercise.thumbnail_url as string | null;
+
+  // The poster always travels with the video it belongs to, so a thumbnail from
+  // the previous video can never be left stranded on the card.
+  const update = { video_url: payload.videoUrl, thumbnail_url: payload.thumbnailUrl };
+
+  const { data, error } = await admin.from("exercises").update(update).eq("id", exerciseId).select().single();
+  if (error) throw new HttpError(500, error.message);
+
+  if (payload.addToLibrary) {
+    await insertVideoRow(ctx, { ...payload, name: payload.name || String(exercise.name || "Exercise video") });
+  }
+
+  if (previousVideoUrl && previousVideoUrl !== payload.videoUrl) await removeVideoAssetIfOrphan(previousVideoUrl);
+  if (previousThumbnailUrl && previousThumbnailUrl !== payload.thumbnailUrl) await removeVideoAssetIfOrphan(previousThumbnailUrl);
+
+  return json(data);
+}
+
+async function deleteExerciseVideo(ctx: AuthCtx, exerciseId: string) {
+  const exercise = await requireWritableExercise(ctx, exerciseId);
+
+  const { data, error } = await admin
+    .from("exercises")
+    .update({ video_url: null, thumbnail_url: null })
+    .eq("id", exerciseId)
+    .select()
+    .single();
+  if (error) throw new HttpError(500, error.message);
+
+  await removeVideoAssetIfOrphan(exercise.video_url as string | null);
+  await removeVideoAssetIfOrphan(exercise.thumbnail_url as string | null);
+
+  return json(data);
 }
 
 // ---------- clinics / dashboard ----------
@@ -2021,6 +2152,12 @@ Deno.serve(async (req: Request) => {
     }
 
     if (segments[0] === "exercises") {
+      // /exercises/:id/video - upload a file (multipart) or link a URL (JSON)
+      // and attach it to the exercise in a single call.
+      if (segments.length === 3 && segments[2] === "video") {
+        if (method === "POST" || method === "PUT") return await setExerciseVideo(ctx, segments[1], req);
+        if (method === "DELETE") return await deleteExerciseVideo(ctx, segments[1]);
+      }
       if (method === "GET" && segments.length === 1) return await listExercises(ctx);
       if (method === "GET" && segments.length === 2) return await getExercise(ctx, segments[1]);
       if (method === "POST" && segments.length === 1) return await createExercise(ctx, await body());
