@@ -304,7 +304,6 @@ async function checkCtxPlanLimit(ctx: AuthCtx, kind: "therapist" | "patient") {
 
 // ---------- auth routes ----------
 
-const DAY = 24 * 60 * 60 * 1000;
 
 /** Start a trial for a freshly created subject. Free, and always real: the
  * old flow wrote status "pending" for paid plans, which locked nobody out but
@@ -320,7 +319,7 @@ async function startTrial(
     .maybeSingle();
 
   const days = plan ? (Number(plan.period_days) || 0) + (Number(plan.period_months) || 0) * 30 : 14;
-  const periodEnd = new Date(Date.now() + days * DAY);
+  const periodEnd = new Date(Date.now() + days * DAY_MS);
 
   const { error } = await admin.from("subscriptions").insert({
     clinic_id: subject.clinicId ?? null,
@@ -329,7 +328,7 @@ async function startTrial(
     status: "trialing",
     current_period_start: new Date().toISOString(),
     current_period_end: periodEnd.toISOString(),
-    grace_until: new Date(periodEnd.getTime() + GRACE_DAYS * DAY).toISOString(),
+    grace_until: new Date(periodEnd.getTime() + GRACE_DAYS * DAY_MS).toISOString(),
     source: "trial",
   });
   if (error) console.error("failed to start trial", planCode, error.message);
@@ -2089,7 +2088,7 @@ async function createSelfAssignment(ctx: AuthCtx, body: Record<string, unknown>)
   const durationDays = Number.isFinite(weeks) && weeks > 0 ? weeks * 7 : 28;
 
   const start = new Date();
-  const end = new Date(start.getTime() + durationDays * DAY);
+  const end = new Date(start.getTime() + durationDays * DAY_MS);
 
   const { data, error } = await admin
     .from("program_assignments")
