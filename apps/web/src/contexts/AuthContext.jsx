@@ -152,6 +152,20 @@ export const AuthProvider = ({ children }) => {
     }
   }, [mergeCurrentUser]);
 
+  // Server membalas 402 untuk setiap tulis yang ditolak. Menangkapnya di satu
+  // tempat berarti tombol yang belum memakai WriteGuard tetap memberi pesan
+  // yang benar, dan status langganan di state ikut disegarkan supaya banner
+  // langsung menyesuaikan.
+  useEffect(() => {
+    const handler = (event) => {
+      const detail = event.detail || {};
+      toast.error(detail.message || 'Langganan Anda tidak aktif. Perpanjang untuk melanjutkan.');
+      if (detail.code === 'subscription_required') refreshSubscription();
+    };
+    window.addEventListener('physiome:subscription-required', handler);
+    return () => window.removeEventListener('physiome:subscription-required', handler);
+  }, [refreshSubscription]);
+
   const refreshUser = async () => {
     const token = localStorage.getItem('auth_token');
     if (currentUser && token) {

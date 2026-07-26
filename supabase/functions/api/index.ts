@@ -8,6 +8,14 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { sendWebPush } from "../_shared/push.ts";
 import {
+  canWriteInState,
+  DAY_MS,
+  deriveState,
+  GRACE_DAYS,
+  isWriteGated,
+  type EntitlementState,
+} from "../_shared/subscription.ts";
+import {
   fetchTransactionStatus,
   generateOrderId,
   mapTransactionStatus,
@@ -132,11 +140,6 @@ function unwrap<T>(res: { data: T; error: { message: string } | null }): T {
 // the dashboard turns it on (or back off) with no redeploy.
 const ENFORCEMENT_ENABLED = (Deno.env.get("SUBSCRIPTION_ENFORCEMENT") || "").toLowerCase() === "true";
 
-const GRACE_DAYS = 7;
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-type EntitlementState = "active" | "grace" | "readonly" | "none";
-
 type Entitlement = {
   subjectKind: "clinic" | "user" | "none";
   subjectId: string | null;
@@ -196,9 +199,6 @@ async function resolveSubscriptionRow(ctx: AuthCtx) {
   return clinicSub ?? null;
 }
 
-// `state` is derived from timestamps rather than read off `status`. That is
-// deliberate: if the nightly sweep fails for a week, nobody gets free access
-// and nobody gets wrongly locked out either. `status` is for reporting.
 function computeEntitlement(row: Record<string, unknown> | null): Entitlement {
   if (!row) return { ...NO_ENTITLEMENT };
 
@@ -208,16 +208,7 @@ function computeEntitlement(row: Record<string, unknown> | null): Entitlement {
   const graceUntil = row.grace_until ? new Date(String(row.grace_until)) : null;
   const now = Date.now();
 
-  let state: EntitlementState;
-  if (status === "cancelled" || status === "expired") {
-    state = "readonly";
-  } else if (periodEnd && now <= periodEnd.getTime()) {
-    state = "active";
-  } else if (graceUntil && now <= graceUntil.getTime()) {
-    state = "grace";
-  } else {
-    state = "readonly";
-  }
+  const state: EntitlementState = deriveState(status, periodEnd, graceUntil, now);
 
   return {
     subjectKind: row.clinic_id ? "clinic" : "user",
@@ -231,7 +222,7 @@ function computeEntitlement(row: Record<string, unknown> | null): Entitlement {
     graceUntil: graceUntil ? graceUntil.toISOString() : null,
     daysRemaining: periodEnd ? Math.ceil((periodEnd.getTime() - now) / DAY_MS) : 0,
     daysUntilLockout: graceUntil ? Math.ceil((graceUntil.getTime() - now) / DAY_MS) : 0,
-    canWrite: state === "active" || state === "grace",
+    canWrite: canWriteInState(state),
     enforced: ENFORCEMENT_ENABLED,
     limits: {
       maxTherapists: plan?.max_therapists != null ? Number(plan.max_therapists) : null,
@@ -2935,6 +2926,30 @@ Deno.serve(async (req: Request) => {
 
     // Everything below requires auth
     const ctx = await requireAuth(req);
+
+    // Subscription write gate.
+    //
+    // Keyed on HTTP method, not an enumerated route list. Eight lines cover all
+    // ~70 handlers, it cannot be forgotten when someone adds handler #71, and it
+    // maps exactly onto the rule we promised: existing data stays readable,
+    // nothing new can be created or changed. A route allowlist would need
+    // re-auditing every time the router grows.
+    //
+    // Note listMessages writes read_at inside a GET; because the gate is
+    // method-based that keeps working in read-only mode, which is what we want.
+    if (ENFORCEMENT_ENABLED && isWriteGated(method, path, ctx.role)) {
+      const ent = await getEntitlement(ctx);
+      if (!ent.canWrite) {
+        return errCode(402, "Langganan Anda tidak aktif. Perpanjang untuk melanjutkan.", {
+          code: "subscription_required",
+          state: ent.state,
+          plan_code: ent.planCode,
+          current_period_end: ent.currentPeriodEnd,
+        });
+      }
+      // Reused by the plan-limit checks downstream, so they cost no extra query.
+      ctx.entitlement = ent;
+    }
 
     if (path === "/auth/me" && method === "GET") return await authMe(ctx);
     if (path === "/auth/update-profile" && method === "PATCH") return await authUpdateProfile(ctx, await body());

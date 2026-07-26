@@ -40,6 +40,14 @@ const apiServerClient = {
             error.status = response.status;
             error.code = errorBody.code || null;
             error.body = errorBody;
+
+            // Satu jaring pengaman untuk seluruh aplikasi: tombol tulis mana pun
+            // yang belum memakai WriteGuard tetap memunculkan penjelasan yang
+            // benar, bukan pesan error mentah.
+            if (response.status === 402) {
+                window.dispatchEvent(new CustomEvent('physiome:subscription-required', { detail: errorBody }));
+            }
+
             throw error;
         }
 
