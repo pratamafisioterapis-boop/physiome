@@ -7,6 +7,8 @@ import { useLanguage } from '@/hooks/useLanguage.js';
 import { getExerciseTranslation } from '@/utils/translationHelpers.js';
 import Modal from '@/components/Modal.jsx';
 import VideoPlayerComponent from './VideoPlayerComponent.jsx';
+import ExerciseDemoPhotos from './ExerciseDemoPhotos.jsx';
+import { exerciseCoverImage } from '@/lib/exerciseMedia.js';
 
 const ExerciseCard = ({ exercise, onAdd, isBuilder = false, isAdded = false }) => {
   const { language, t } = useLanguage();
@@ -37,10 +39,12 @@ const ExerciseCard = ({ exercise, onAdd, isBuilder = false, isAdded = false }) =
     <>
     <Card className="overflow-hidden border-border shadow-sm hover:shadow-md transition-all duration-300 group">
       <div className="relative aspect-video bg-muted">
-        {translatedEx.thumbnail_url ? (
-          <img 
-            src={translatedEx.thumbnail_url} 
-            alt={translatedEx.name} 
+        {/* Foto peragaan menggantikan poster video selama videonya belum ada. */}
+        {exerciseCoverImage(translatedEx) ? (
+          <img
+            src={exerciseCoverImage(translatedEx)}
+            alt={translatedEx.name}
+            loading="lazy"
             className="w-full h-full object-cover"
           />
         ) : (
@@ -101,11 +105,15 @@ const ExerciseCard = ({ exercise, onAdd, isBuilder = false, isAdded = false }) =
       size="xl"
     >
       <div className="space-y-6">
-        <VideoPlayerComponent 
-          videoUrl={translatedEx.video_url} 
-          thumbnailUrl={translatedEx.thumbnail_url} 
-          title={translatedEx.name} 
-        />
+        {(translatedEx.video_url || translatedEx.thumbnail_url) && (
+          <VideoPlayerComponent
+            videoUrl={translatedEx.video_url}
+            thumbnailUrl={translatedEx.thumbnail_url}
+            title={translatedEx.name}
+          />
+        )}
+
+        <ExerciseDemoPhotos exercise={translatedEx} language={language} />
         
         {translatedEx.instructions && (
           <div className="bg-muted/30 p-5 rounded-2xl border border-border/50">

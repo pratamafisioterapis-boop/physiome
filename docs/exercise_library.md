@@ -22,6 +22,24 @@ The generator validates required fields, rejects duplicate slugs, and fails if a
 references an exercise slug that does not exist. IDs are derived from the slug, so re-running
 updates rows in place rather than creating duplicates.
 
+## Demonstration media
+
+Written instructions tell a patient what to do; they still need to see the position. Every
+exercise can carry two kinds of demonstration media, and the cards fall back in this order:
+
+1. `video_url` + `thumbnail_url` — a demonstration video (Kelola video latihan).
+2. `demo_photos` — ordered step photos `[{url, caption, caption_en}]` (Foto peragaan).
+3. Neither — the card shows a placeholder icon.
+
+Photos are shot by the clinic and uploaded per exercise from the Exercise Library page
+(camera button on the card). Array order is step order, and it is meant to line up with the
+numbered lines in `instructions` — the upload form pre-fills each caption from the matching
+instruction step. The "Peragaan" filter lists exercises that still have no media at all,
+which is the shot list for a photo session.
+
+`demo_photos` is written only through `/exercises/:id/demo-photos`; that endpoint owns the
+storage objects and deletes the ones a change orphans, so a plain exercise update ignores it.
+
 ## Protocol templates
 
 | Protocol | Indication | Duration | Evidence source |

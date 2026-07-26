@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Search, Play, Plus, Dumbbell, Edit2, Trash2, Eye, BookOpen, ShieldAlert, TrendingUp, X, Video, VideoOff } from 'lucide-react';
+import { Search, Play, Plus, Dumbbell, Edit2, Trash2, Eye, BookOpen, ShieldAlert, TrendingUp, X, Video, VideoOff, Camera, CameraOff } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,8 +15,11 @@ import AddExerciseModal from '@/components/exercises/AddExerciseModal.jsx';
 import EditExerciseModal from '@/components/exercises/EditExerciseModal.jsx';
 import DeleteExerciseConfirmation from '@/components/exercises/DeleteExerciseConfirmation.jsx';
 import VideoManagementModal from '@/components/exercises/VideoManagementModal.jsx';
+import DemoPhotoManagerModal from '@/components/exercises/DemoPhotoManagerModal.jsx';
+import ExerciseDemoPhotos from '@/components/exercises/ExerciseDemoPhotos.jsx';
 import Modal from '@/components/Modal.jsx';
 import VideoPlayerComponent from '@/components/exercises/VideoPlayerComponent.jsx';
+import { exerciseCoverImage, demoPhotosOf } from '@/lib/exerciseMedia.js';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 
@@ -37,12 +40,14 @@ export default function ExerciseLibraryPage() {
   const [category, setCategory] = useState(ALL);
   const [difficulty, setDifficulty] = useState(ALL);
   const [source, setSource] = useState(ALL);
+  const [media, setMedia] = useState(ALL);
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingExercise, setEditingExercise] = useState(null);
   const [deletingExercise, setDeletingExercise] = useState(null);
   const [previewExercise, setPreviewExercise] = useState(null);
   const [videoExercise, setVideoExercise] = useState(null);
+  const [photoExercise, setPhotoExercise] = useState(null);
 
   const fetchExercises = useCallback(async () => {
     if (!currentUser) return;
@@ -77,17 +82,22 @@ export default function ExerciseLibraryPage() {
       if (difficulty !== ALL && e.difficulty !== difficulty) return false;
       if (source === 'library' && e.clinic_id) return false;
       if (source === 'clinic' && !e.clinic_id) return false;
+      if (media === 'video' && !e.video_url) return false;
+      if (media === 'photos' && demoPhotosOf(e).length === 0) return false;
+      // Latihan yang belum punya peragaan apa pun — daftar kerja untuk difoto.
+      if (media === 'none' && (e.video_url || demoPhotosOf(e).length > 0)) return false;
       return true;
     });
-  }, [exercises, search, bodyRegion, category, difficulty, source]);
+  }, [exercises, search, bodyRegion, category, difficulty, source, media]);
 
-  const hasFilters = search || bodyRegion !== ALL || category !== ALL || difficulty !== ALL || source !== ALL;
+  const hasFilters = search || bodyRegion !== ALL || category !== ALL || difficulty !== ALL || source !== ALL || media !== ALL;
   const resetFilters = () => {
     setSearch('');
     setBodyRegion(ALL);
     setCategory(ALL);
     setDifficulty(ALL);
     setSource(ALL);
+    setMedia(ALL);
   };
 
   return (
@@ -127,7 +137,7 @@ export default function ExerciseLibraryPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
                 <Select value={bodyRegion} onValueChange={setBodyRegion}>
                   <SelectTrigger><SelectValue placeholder="Area tubuh" /></SelectTrigger>
                   <SelectContent>
@@ -162,6 +172,18 @@ export default function ExerciseLibraryPage() {
                     <SelectItem value="clinic">Milik klinik</SelectItem>
                   </SelectContent>
                 </Select>
+
+                {/* Menyaring berdasarkan peragaan yang tersedia: ini yang dipakai
+                    untuk menyusun daftar latihan mana yang masih perlu difoto. */}
+                <Select value={media} onValueChange={setMedia}>
+                  <SelectTrigger><SelectValue placeholder="Peragaan" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ALL}>Semua peragaan</SelectItem>
+                    <SelectItem value="video">Sudah ada video</SelectItem>
+                    <SelectItem value="photos">Ada foto peragaan</SelectItem>
+                    <SelectItem value="none">Belum ada peragaan</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {hasFilters && (
@@ -186,11 +208,16 @@ export default function ExerciseLibraryPage() {
               </div>
             ) : filtered.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filtered.map(ex => (
+                {filtered.map(ex => {
+                  // Tanpa video, foto peragaan pertama yang jadi gambar kartu —
+                  // supaya kartu tidak pernah tampil sebagai kotak abu-abu kosong.
+                  const cover = exerciseCoverImage(ex);
+                  const photoCount = demoPhotosOf(ex).length;
+                  return (
                   <Card key={ex.id} className="border border-border shadow-sm overflow-hidden group hover:shadow-md transition-all duration-300 flex flex-col bg-card">
                     <div className="relative aspect-video bg-muted">
-                      {ex.thumbnail_url || ex.gif_url ? (
-                        <img src={ex.thumbnail_url || ex.gif_url} alt={ex.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      {cover ? (
+                        <img src={cover} alt={ex.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-secondary/5 text-muted-foreground">
                           <Play className="w-12 h-12 opacity-20" />
@@ -226,6 +253,15 @@ export default function ExerciseLibraryPage() {
                               >
                                 <Video className="w-4 h-4" />
                               </button>
+                              <button
+                                onClick={() => setPhotoExercise(ex)}
+                                className={`w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center transition-colors hover:bg-white ${
+                                  photoCount > 0 ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+                                }`}
+                                title={photoCount > 0 ? `Kelola ${photoCount} foto peragaan` : 'Upload foto peragaan'}
+                              >
+                                <Camera className="w-4 h-4" />
+                              </button>
                               <button onClick={() => setEditingExercise(ex)} className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-white transition-colors" title="Edit">
                                 <Edit2 className="w-4 h-4" />
                               </button>
@@ -247,7 +283,7 @@ export default function ExerciseLibraryPage() {
 
                       {/* Status video dibuat terlihat: tanpa ini tidak ada cara
                           tahu apakah upload tadi benar-benar tersimpan. */}
-                      <div className="absolute bottom-3 left-3">
+                      <div className="absolute bottom-3 left-3 flex flex-wrap gap-1.5">
                         {ex.video_url ? (
                           <Badge className="bg-black/70 text-white border-0 gap-1 backdrop-blur-sm">
                             <Video className="w-3 h-3" /> Ada video
@@ -255,6 +291,15 @@ export default function ExerciseLibraryPage() {
                         ) : (
                           <Badge variant="outline" className="bg-white/80 text-muted-foreground border-border gap-1 backdrop-blur-sm">
                             <VideoOff className="w-3 h-3" /> Belum ada video
+                          </Badge>
+                        )}
+                        {photoCount > 0 ? (
+                          <Badge className="bg-black/70 text-white border-0 gap-1 backdrop-blur-sm">
+                            <Camera className="w-3 h-3" /> {photoCount} foto
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="bg-white/80 text-muted-foreground border-border gap-1 backdrop-blur-sm">
+                            <CameraOff className="w-3 h-3" /> Belum ada foto
                           </Badge>
                         )}
                       </div>
@@ -289,7 +334,8 @@ export default function ExerciseLibraryPage() {
                       </div>
                     </CardContent>
                   </Card>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-card rounded-2xl border border-dashed border-border">
@@ -343,6 +389,20 @@ export default function ExerciseLibraryPage() {
         />
       )}
 
+      {photoExercise && (
+        <DemoPhotoManagerModal
+          isOpen={!!photoExercise}
+          onClose={() => setPhotoExercise(null)}
+          exercise={photoExercise}
+          onUpdate={(updated) => {
+            if (!updated?.id) return fetchExercises();
+            setExercises(prev => prev.map(e => (e.id === updated.id ? { ...e, ...updated } : e)));
+            setPhotoExercise(prev => (prev && prev.id === updated.id ? { ...prev, ...updated } : prev));
+            setPreviewExercise(prev => (prev && prev.id === updated.id ? { ...prev, ...updated } : prev));
+          }}
+        />
+      )}
+
       {previewExercise && (
         <Modal
           isOpen={!!previewExercise}
@@ -358,6 +418,8 @@ export default function ExerciseLibraryPage() {
                 title={previewExercise.name}
               />
             )}
+
+            <ExerciseDemoPhotos exercise={previewExercise} />
 
             <div className="flex flex-wrap gap-2">
               {previewExercise.body_region && <Badge variant="secondary" className="bg-secondary/10 text-secondary border-0">{previewExercise.body_region}</Badge>}

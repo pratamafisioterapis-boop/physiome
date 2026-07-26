@@ -6,6 +6,8 @@ import Sidebar from '@/components/Sidebar.jsx';
 import Button from '@/components/Button.jsx';
 import DifficultyBadge from '@/components/exercises/DifficultyBadge.jsx';
 import VideoPlayerComponent from '@/components/exercises/VideoPlayerComponent.jsx';
+import ExerciseDemoPhotos from '@/components/exercises/ExerciseDemoPhotos.jsx';
+import { exerciseCoverImage, hasDemoPhotos } from '@/lib/exerciseMedia.js';
 import VideoManagementModal from '@/components/exercises/VideoManagementModal.jsx';
 import { ArrowLeft, Plus, Activity, Info, AlertTriangle, ArrowUpCircle, Video } from 'lucide-react';
 import apiServerClient from '@/lib/apiServerClient.js';
@@ -53,8 +55,8 @@ const ExerciseDetailPage = () => {
           <Header />
           <main className="flex-1 overflow-y-auto">
             <div className="w-full h-[30vh] min-h-[250px] relative bg-muted">
-              <img 
-                src={exercise.thumbnail_url || 'https://images.unsplash.com/photo-1623200216581-969d9479cf7d'} 
+              <img
+                src={exerciseCoverImage(exercise) || 'https://images.unsplash.com/photo-1623200216581-969d9479cf7d'}
                 alt={exercise.name}
                 className="w-full h-full object-cover"
               />
@@ -91,14 +93,24 @@ const ExerciseDetailPage = () => {
 
             <div className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
               
-              <div className="mb-8">
-                <h3 className="text-xl font-semibold mb-4">Demonstration Video</h3>
-                <VideoPlayerComponent 
-                  videoUrl={videoUrl} 
-                  thumbnailUrl={exercise.thumbnail_url} 
-                  title={exercise.name} 
-                />
-              </div>
+              {/* Video kalau ada; kalau belum, foto peragaan yang mengambil
+                  alih supaya halaman ini tidak pernah tanpa peragaan. */}
+              {videoUrl ? (
+                <div className="mb-8">
+                  <h3 className="text-xl font-semibold mb-4">Demonstration Video</h3>
+                  <VideoPlayerComponent
+                    videoUrl={videoUrl}
+                    thumbnailUrl={exercise.thumbnail_url}
+                    title={exercise.name}
+                  />
+                </div>
+              ) : null}
+
+              {hasDemoPhotos(exercise) && (
+                <div className="mb-8 bg-card p-5 rounded-xl border border-border shadow-sm">
+                  <ExerciseDemoPhotos exercise={exercise} columns={4} />
+                </div>
+              )}
 
               <div className="flex border-b border-border mb-6 overflow-x-auto hide-scrollbar">
                 {['overview', 'instructions', 'contraindications', 'progression'].map((tab) => (
