@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { PhysiomeMark } from '@/components/Logo.jsx';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import LanguageSwitcher from '@/components/LanguageSwitcher.jsx';
+import SubscriptionBanner from '@/components/billing/SubscriptionBanner.jsx';
 import { toast } from 'sonner';
 
 const PatientLayout = () => {
@@ -136,6 +137,7 @@ const PatientLayout = () => {
         <div className="hidden md:block absolute top-4 right-8 z-10">
           <LanguageSwitcher />
         </div>
+        <SubscriptionBanner />
         <div className="max-w-5xl mx-auto p-4 md:p-8">
           <Outlet />
         </div>

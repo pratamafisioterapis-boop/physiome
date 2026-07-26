@@ -53,6 +53,13 @@ function err(status: number, message: string) {
   return json({ error: message, message }, status);
 }
 
+// Like `err`, but carries a machine-readable `code` plus context. The client
+// needs this to tell 402 "subscription lapsed" apart from 402 "plan limit
+// reached" and route the user to the right screen.
+function errCode(status: number, message: string, extra: Record<string, unknown>) {
+  return json({ error: message, message, ...extra }, status);
+}
+
 class HttpError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -61,7 +68,14 @@ class HttpError extends Error {
   }
 }
 
-type AuthCtx = { userId: string; role: string; clinicId: string | null };
+type AuthCtx = {
+  userId: string;
+  role: string;
+  clinicId: string | null;
+  // Populated by the write gate in the router so downstream limit checks in
+  // the same request don't have to re-query the subscription.
+  entitlement?: Entitlement;
+};
 
 async function requireAuth(req: Request): Promise<AuthCtx> {
   const authHeader = req.headers.get("Authorization") || "";
@@ -107,6 +121,134 @@ function notFound(msg = "Not found"): never {
 function unwrap<T>(res: { data: T; error: { message: string } | null }): T {
   if (res.error) throw new HttpError(500, res.error.message);
   return res.data;
+}
+
+// ---------- subscription entitlement ----------
+
+// The kill switch. Enforcement ships off so the payment flow can be proven in
+// production before anything starts refusing writes; flipping this env var in
+// the dashboard turns it on (or back off) with no redeploy.
+const ENFORCEMENT_ENABLED = (Deno.env.get("SUBSCRIPTION_ENFORCEMENT") || "").toLowerCase() === "true";
+
+const GRACE_DAYS = 7;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+type EntitlementState = "active" | "grace" | "readonly" | "none";
+
+type Entitlement = {
+  subjectKind: "clinic" | "user" | "none";
+  subjectId: string | null;
+  planCode: string | null;
+  planName: string | null;
+  audience: string | null;
+  status: string;
+  state: EntitlementState;
+  currentPeriodEnd: string | null;
+  graceUntil: string | null;
+  daysRemaining: number;
+  daysUntilLockout: number;
+  canWrite: boolean;
+  enforced: boolean;
+  limits: { maxTherapists: number | null; maxActivePatients: number | null };
+};
+
+const NO_ENTITLEMENT: Entitlement = {
+  subjectKind: "none",
+  subjectId: null,
+  planCode: null,
+  planName: null,
+  audience: null,
+  status: "none",
+  state: "none",
+  currentPeriodEnd: null,
+  graceUntil: null,
+  daysRemaining: 0,
+  daysUntilLockout: 0,
+  canWrite: false,
+  enforced: ENFORCEMENT_ENABLED,
+  limits: { maxTherapists: null, maxActivePatients: null },
+};
+
+// Which subscription governs this caller? A B2C patient has their own
+// per-user subscription; a patient who joined via a clinic invite code is
+// covered by their clinic, so we fall back to that.
+async function resolveSubscriptionRow(ctx: AuthCtx) {
+  const selectCols = "*, subscription_plans(code, name_id, name_en, audience, max_therapists, max_active_patients)";
+
+  if (ctx.role === "patient") {
+    const { data: own } = await admin
+      .from("subscriptions")
+      .select(selectCols)
+      .eq("user_id", ctx.userId)
+      .maybeSingle();
+    if (own) return own;
+  }
+
+  if (!ctx.clinicId) return null;
+
+  const { data: clinicSub } = await admin
+    .from("subscriptions")
+    .select(selectCols)
+    .eq("clinic_id", ctx.clinicId)
+    .maybeSingle();
+  return clinicSub ?? null;
+}
+
+// `state` is derived from timestamps rather than read off `status`. That is
+// deliberate: if the nightly sweep fails for a week, nobody gets free access
+// and nobody gets wrongly locked out either. `status` is for reporting.
+function computeEntitlement(row: Record<string, unknown> | null): Entitlement {
+  if (!row) return { ...NO_ENTITLEMENT };
+
+  const plan = (row.subscription_plans ?? null) as Record<string, unknown> | null;
+  const status = String(row.status ?? "none");
+  const periodEnd = row.current_period_end ? new Date(String(row.current_period_end)) : null;
+  const graceUntil = row.grace_until ? new Date(String(row.grace_until)) : null;
+  const now = Date.now();
+
+  let state: EntitlementState;
+  if (status === "cancelled" || status === "expired") {
+    state = "readonly";
+  } else if (periodEnd && now <= periodEnd.getTime()) {
+    state = "active";
+  } else if (graceUntil && now <= graceUntil.getTime()) {
+    state = "grace";
+  } else {
+    state = "readonly";
+  }
+
+  return {
+    subjectKind: row.clinic_id ? "clinic" : "user",
+    subjectId: String(row.clinic_id ?? row.user_id ?? ""),
+    planCode: plan ? String(plan.code) : String(row.plan_code ?? ""),
+    planName: plan ? String(plan.name_id) : null,
+    audience: plan ? String(plan.audience) : null,
+    status,
+    state,
+    currentPeriodEnd: periodEnd ? periodEnd.toISOString() : null,
+    graceUntil: graceUntil ? graceUntil.toISOString() : null,
+    daysRemaining: periodEnd ? Math.ceil((periodEnd.getTime() - now) / DAY_MS) : 0,
+    daysUntilLockout: graceUntil ? Math.ceil((graceUntil.getTime() - now) / DAY_MS) : 0,
+    canWrite: state === "active" || state === "grace",
+    enforced: ENFORCEMENT_ENABLED,
+    limits: {
+      maxTherapists: plan?.max_therapists != null ? Number(plan.max_therapists) : null,
+      maxActivePatients: plan?.max_active_patients != null ? Number(plan.max_active_patients) : null,
+    },
+  };
+}
+
+async function getEntitlement(ctx: AuthCtx): Promise<Entitlement> {
+  if (ctx.role === "super_admin") {
+    return {
+      ...NO_ENTITLEMENT,
+      subjectKind: "none",
+      status: "internal",
+      state: "active",
+      canWrite: true,
+    };
+  }
+  return computeEntitlement(await resolveSubscriptionRow(ctx));
 }
 
 // ---------- auth routes ----------
@@ -252,6 +394,14 @@ async function authLogin(body: Record<string, unknown>) {
 
   const { data: therapist } = await admin.from("therapists").select("id").eq("userId", user.id).maybeSingle();
 
+  // Embedded here as well as in /auth/me, otherwise a freshly logged-in
+  // session has no subscription state until the next page refresh.
+  const subscription = await getEntitlement({
+    userId: user.id,
+    role: user.role,
+    clinicId: user.clinic_id,
+  });
+
   return json({
     message: "Login successful",
     token: signInData.session.access_token,
@@ -262,6 +412,7 @@ async function authLogin(body: Record<string, unknown>) {
       role: user.role,
       clinic_id: user.clinic_id,
       therapistId: therapist?.id,
+      subscription,
     },
   });
 }
@@ -300,7 +451,8 @@ async function authMe(ctx: AuthCtx) {
     .eq("id", ctx.userId)
     .single();
   if (!user) return notFound("User not found");
-  return json({ ...user, therapistId: user.therapists?.[0]?.id, therapists: undefined });
+  const subscription = await getEntitlement(ctx);
+  return json({ ...user, therapistId: user.therapists?.[0]?.id, therapists: undefined, subscription });
 }
 
 async function authUpdateProfile(ctx: AuthCtx, body: Record<string, unknown>) {
@@ -1635,6 +1787,73 @@ async function createPatientPackage(ctx: AuthCtx, body: Record<string, unknown>)
   return json(data, 201);
 }
 
+// ---------- subscriptions (Physiome charging its customers) ----------
+
+// Public: the pricing page has to render before anyone logs in. Only plans an
+// operator has explicitly published are returned, so the placeholder prices
+// the catalogue ships with are never shown to a buyer.
+async function listPublicPlans(url: URL) {
+  const audience = url.searchParams.get("audience");
+  let query = admin
+    .from("subscription_plans")
+    .select("code, name_id, name_en, description_id, description_en, audience, price_idr, period_months, period_days, max_therapists, max_active_patients, features")
+    .eq("is_public", true)
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  if (audience) query = query.eq("audience", audience);
+
+  const { data, error } = await query;
+  if (error) throw new HttpError(500, error.message);
+  return json(data ?? []);
+}
+
+async function getMySubscription(ctx: AuthCtx) {
+  const entitlement = await getEntitlement(ctx);
+  const usage = await countPlanUsage(ctx);
+  return json({ ...entitlement, usage });
+}
+
+// Usage is reported next to the plan limits so the billing page can show
+// "3 of 5 therapists" without a second round trip.
+async function countPlanUsage(ctx: AuthCtx): Promise<{ therapists: number; activePatients: number }> {
+  if (!ctx.clinicId) return { therapists: 0, activePatients: 0 };
+
+  const [{ count: therapists }, { count: activePatients }] = await Promise.all([
+    admin
+      .from("therapists")
+      .select("id", { count: "exact", head: true })
+      .eq("clinic_id", ctx.clinicId)
+      .eq("status", "Active"),
+    admin
+      .from("patients")
+      .select("id", { count: "exact", head: true })
+      .eq("clinic_id", ctx.clinicId)
+      .eq("status", "Active"),
+  ]);
+
+  return { therapists: therapists ?? 0, activePatients: activePatients ?? 0 };
+}
+
+async function listMyTransactions(ctx: AuthCtx) {
+  const query = admin
+    .from("payment_transactions")
+    .select("order_id, plan_code, gross_amount, status, payment_type, settlement_time, created_at, snap_redirect_url, expires_at")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  // A patient only ever sees their own orders. Note a B2C patient's clinic_id
+  // is the house clinic, so scoping them by clinic would show them every other
+  // B2C patient's payments.
+  const scoped = ctx.role === "patient" || !ctx.clinicId
+    ? query.eq("user_id", ctx.userId)
+    : query.eq("clinic_id", ctx.clinicId);
+
+  const { data, error } = await scoped;
+  if (error) throw new HttpError(500, error.message);
+  return json(data ?? []);
+}
+
 // ---------- language preferences ----------
 
 async function getLanguagePreference(ctx: AuthCtx, userId: string) {
@@ -2152,6 +2371,8 @@ Deno.serve(async (req: Request) => {
     if (path === "/auth/login" && method === "POST") return await authLogin(await body());
     if (path === "/auth/forgot-password" && method === "POST") return await authForgotPassword(await body());
     if (path === "/auth/reset-password" && method === "POST") return await authResetPassword(await body());
+    // Public: the pricing page renders before login.
+    if (path === "/subscription/plans" && method === "GET") return await listPublicPlans(url);
 
     // Everything below requires auth
     const ctx = await requireAuth(req);
@@ -2315,6 +2536,11 @@ Deno.serve(async (req: Request) => {
         if (method === "GET" && segments.length === 2) return await listPatientPackages(ctx);
         if (method === "POST" && segments.length === 2) return await createPatientPackage(ctx, await body());
       }
+    }
+
+    if (segments[0] === "subscription") {
+      if (segments[1] === "me" && method === "GET") return await getMySubscription(ctx);
+      if (segments[1] === "transactions" && method === "GET" && segments.length === 2) return await listMyTransactions(ctx);
     }
 
     if (segments[0] === "user-preferences" && segments[1] === "language") {

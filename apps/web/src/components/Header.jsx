@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import LanguageSwitcher from '@/components/LanguageSwitcher.jsx';
 import { SidebarContent } from '@/components/Sidebar.jsx';
+import SubscriptionBanner from '@/components/billing/SubscriptionBanner.jsx';
 
 const Header = () => {
   const { currentUser, logout } = useAuth();
@@ -109,6 +110,7 @@ const Header = () => {
           </DropdownMenu>
         </div>
       </div>
+      <SubscriptionBanner />
     </header>
   );
 };

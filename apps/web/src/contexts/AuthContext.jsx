@@ -14,7 +14,14 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [initialLoading, setInitialLoading] = useState(true);
-  
+
+  // /auth/update-profile tidak mengembalikan blok subscription, jadi
+  // setCurrentUser(response) polos akan menghapusnya dari state. Merge ini
+  // mempertahankan field yang tidak dikirim endpoint bersangkutan.
+  const mergeCurrentUser = useCallback((patch) => {
+    setCurrentUser((prev) => (prev ? { ...prev, ...patch } : patch));
+  }, []);
+
   useEffect(() => {
     const initAuth = async () => {
       const token = localStorage.getItem('auth_token');
@@ -113,7 +120,7 @@ export const AuthProvider = ({ children }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ clinic_id: clinicId })
       });
-      setCurrentUser(updated);
+      mergeCurrentUser(updated);
       return updated;
     } catch (error) {
       console.error('Failed to update user clinic ID:', error);
@@ -127,10 +134,24 @@ export const AuthProvider = ({ children }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(fields)
     });
-    setCurrentUser(updated);
+    mergeCurrentUser(updated);
     return updated;
   };
-  
+
+  // Dipanggil halaman status pembayaran setelah settlement, supaya banner dan
+  // gerbang tulis langsung terbuka tanpa perlu login ulang.
+  const refreshSubscription = useCallback(async () => {
+    if (!localStorage.getItem('auth_token')) return null;
+    try {
+      const subscription = await apiServerClient.fetch('/subscription/me');
+      mergeCurrentUser({ subscription });
+      return subscription;
+    } catch (error) {
+      console.error('Failed to refresh subscription:', error);
+      return null;
+    }
+  }, [mergeCurrentUser]);
+
   const refreshUser = async () => {
     const token = localStorage.getItem('auth_token');
     if (currentUser && token) {
@@ -148,11 +169,24 @@ export const AuthProvider = ({ children }) => {
     () => !!currentUser && !!localStorage.getItem('auth_token'),
     [currentUser]
   );
-  
+
+  const subscription = currentUser?.subscription ?? null;
+
+  // Fail-open di klien: server yang otoritatif dan membalas 402 kalau tulis
+  // ditolak. Kalau state langganan belum sempat termuat, UI tidak boleh
+  // menonaktifkan tombol dan membuat aplikasi tampak rusak.
+  const canWrite = React.useMemo(() => {
+    if (currentUser?.role === 'super_admin') return true;
+    if (!subscription || subscription.enforced === false) return true;
+    return subscription.canWrite !== false;
+  }, [currentUser, subscription]);
+
   const value = {
     currentUser,
     isAuthenticated,
     initialLoading,
+    subscription,
+    canWrite,
     login,
     signup,
     logout,
@@ -160,7 +194,8 @@ export const AuthProvider = ({ children }) => {
     resetPassword,
     updateUserClinicId,
     updateProfile,
-    refreshUser
+    refreshUser,
+    refreshSubscription
   };
   
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
