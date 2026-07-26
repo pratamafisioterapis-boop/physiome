@@ -214,8 +214,8 @@ export default function ExerciseLibraryPage() {
                           <button onClick={() => setPreviewExercise(ex)} className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-white transition-colors" title="Preview">
                             <Eye className="w-4 h-4" />
                           </button>
-                          {/* Global library rows belong to no clinic and are read-only (the API rejects edits). */}
-                          {ex.clinic_id && (
+                          {/* Global library rows (no clinic_id) are read-only for clinics - only super_admin may edit them. */}
+                          {(ex.clinic_id || currentUser?.role === 'super_admin') && (
                             <>
                               <button onClick={() => setVideoExercise(ex)} className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-white transition-colors" title="Upload Video">
                                 <Video className="w-4 h-4" />
