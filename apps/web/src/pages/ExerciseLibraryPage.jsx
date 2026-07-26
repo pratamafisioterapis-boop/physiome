@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Search, Play, Plus, Dumbbell, Edit2, Trash2, Eye, BookOpen, ShieldAlert, TrendingUp, X } from 'lucide-react';
+import { Search, Play, Plus, Dumbbell, Edit2, Trash2, Eye, BookOpen, ShieldAlert, TrendingUp, X, Video } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import Header from '@/components/Header.jsx';
 import AddExerciseModal from '@/components/exercises/AddExerciseModal.jsx';
 import EditExerciseModal from '@/components/exercises/EditExerciseModal.jsx';
 import DeleteExerciseConfirmation from '@/components/exercises/DeleteExerciseConfirmation.jsx';
+import VideoManagementModal from '@/components/exercises/VideoManagementModal.jsx';
 import Modal from '@/components/Modal.jsx';
 import VideoPlayerComponent from '@/components/exercises/VideoPlayerComponent.jsx';
 import { useTranslation } from 'react-i18next';
@@ -41,6 +42,7 @@ export default function ExerciseLibraryPage() {
   const [editingExercise, setEditingExercise] = useState(null);
   const [deletingExercise, setDeletingExercise] = useState(null);
   const [previewExercise, setPreviewExercise] = useState(null);
+  const [videoExercise, setVideoExercise] = useState(null);
 
   const fetchExercises = useCallback(async () => {
     if (!currentUser) return;
@@ -215,10 +217,13 @@ export default function ExerciseLibraryPage() {
                           {/* Global library rows belong to no clinic and are read-only (the API rejects edits). */}
                           {ex.clinic_id && (
                             <>
-                              <button onClick={() => setEditingExercise(ex)} className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-white transition-colors">
+                              <button onClick={() => setVideoExercise(ex)} className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-white transition-colors" title="Upload Video">
+                                <Video className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => setEditingExercise(ex)} className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-white transition-colors" title="Edit">
                                 <Edit2 className="w-4 h-4" />
                               </button>
-                              <button onClick={() => setDeletingExercise(ex)} className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-white transition-colors">
+                              <button onClick={() => setDeletingExercise(ex)} className="w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-white transition-colors" title="Delete">
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             </>
@@ -295,11 +300,23 @@ export default function ExerciseLibraryPage() {
       )}
       
       {deletingExercise && (
-        <DeleteExerciseConfirmation 
-          isOpen={!!deletingExercise} 
-          onClose={() => setDeletingExercise(null)} 
-          onSuccess={fetchExercises} 
-          exercise={deletingExercise} 
+        <DeleteExerciseConfirmation
+          isOpen={!!deletingExercise}
+          onClose={() => setDeletingExercise(null)}
+          onSuccess={fetchExercises}
+          exercise={deletingExercise}
+        />
+      )}
+
+      {videoExercise && (
+        <VideoManagementModal
+          isOpen={!!videoExercise}
+          onClose={() => setVideoExercise(null)}
+          exercise={videoExercise}
+          onUpdate={() => {
+            setVideoExercise(null);
+            fetchExercises();
+          }}
         />
       )}
 
