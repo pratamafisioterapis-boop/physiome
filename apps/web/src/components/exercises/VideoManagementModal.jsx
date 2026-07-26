@@ -9,56 +9,32 @@ import { toast } from 'sonner';
 import { Trash2 } from 'lucide-react';
 
 const VideoManagementModal = ({ isOpen, onClose, exercise, onUpdate }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isLinking, setIsLinking] = useState(false);
 
   const existingVideoUrl = exercise?.video_url || null;
 
-  const handleUpload = async () => {
-    if (!selectedFile) return;
-
-    setIsUploading(true);
-    setUploadProgress(10); // Start progress immediately for UX
-
+  // VideoUploadComponent uploads the file itself and hands back the created
+  // `videos` row here; we just link it to this exercise.
+  const handleUploadSuccess = async (uploadedVideo) => {
+    setIsLinking(true);
     try {
-      const formData = new FormData();
-      formData.append('video_file', selectedFile);
-
-      // Fake progress interval while real upload happens
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => Math.min(prev + 10, 90));
-      }, 300);
-
-      const uploadedVideo = await apiServerClient.fetch('/videos', {
-        method: 'POST',
-        body: formData
-      });
-
       const updatedRecord = await apiServerClient.fetch(`/exercises/${exercise.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ video_url: uploadedVideo.video_url })
+        body: JSON.stringify({
+          video_url: uploadedVideo.video_url,
+          thumbnail_url: uploadedVideo.thumbnail_url
+        })
       });
 
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-
-      toast.success('Video uploaded successfully');
+      toast.success('Video linked to exercise');
       onUpdate(updatedRecord);
-      setSelectedFile(null);
-
-      setTimeout(() => {
-        onClose();
-        setUploadProgress(0);
-        setIsUploading(false);
-      }, 500);
-
+      onClose();
     } catch (error) {
-      console.error('Error uploading video:', error);
-      toast.error('Failed to upload video');
-      setIsUploading(false);
-      setUploadProgress(0);
+      console.error('Error linking video to exercise:', error);
+      toast.error('Video uploaded, but failed to link it to the exercise');
+    } finally {
+      setIsLinking(false);
     }
   };
 
@@ -81,22 +57,22 @@ const VideoManagementModal = ({ isOpen, onClose, exercise, onUpdate }) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !isUploading && onClose()}>
+    <Dialog open={isOpen} onOpenChange={(open) => !isLinking && onClose()}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Manage Exercise Video</DialogTitle>
           <DialogDescription>
-            Upload a demonstration video for {exercise?.name}. Maximum size 100MB.
+            Upload a demonstration video for {exercise?.name}. Maximum size 500MB.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          {existingVideoUrl && !selectedFile && (
+          {existingVideoUrl && (
             <div className="space-y-3">
               <h4 className="text-sm font-medium">Current Video</h4>
               <VideoPlayerComponent videoUrl={existingVideoUrl} thumbnailUrl={exercise.thumbnail_url} />
               <div className="flex justify-end">
-                <Button variant="destructive" size="sm" onClick={handleDelete} className="gap-2" disabled={isUploading}>
+                <Button variant="destructive" size="sm" onClick={handleDelete} className="gap-2" disabled={isLinking}>
                   <Trash2 className="w-4 h-4" /> Delete Video
                 </Button>
               </div>
@@ -105,20 +81,13 @@ const VideoManagementModal = ({ isOpen, onClose, exercise, onUpdate }) => {
 
           <div className="space-y-3">
             <h4 className="text-sm font-medium">{existingVideoUrl ? 'Replace Video' : 'Upload New Video'}</h4>
-            <VideoUploadComponent 
-              onFileSelect={setSelectedFile} 
-              isUploading={isUploading} 
-              uploadProgress={uploadProgress} 
-            />
+            <VideoUploadComponent onUploadSuccess={handleUploadSuccess} />
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={isUploading}>
-            Cancel
-          </Button>
-          <Button onClick={handleUpload} disabled={!selectedFile || isUploading}>
-            {isUploading ? 'Uploading...' : 'Save Video'}
+          <Button variant="outline" onClick={onClose} disabled={isLinking}>
+            Close
           </Button>
         </DialogFooter>
       </DialogContent>
