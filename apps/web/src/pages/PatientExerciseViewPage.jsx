@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardContent } from '@/components/ui/card';
 import VideoPlayerComponent from '@/components/exercises/VideoPlayerComponent.jsx';
+import ExerciseDemoPhotos from '@/components/exercises/ExerciseDemoPhotos.jsx';
+import { hasDemoPhotos } from '@/lib/exerciseMedia.js';
 import FullscreenTimerMode from '@/components/timer/FullscreenTimerMode.jsx';
 import SessionDataTracker from '@/components/timer/SessionDataTracker.jsx';
 import apiServerClient from '@/lib/apiServerClient.js';
@@ -175,11 +177,21 @@ const PatientExerciseViewPage = () => {
             )}
           </div>
 
-          <VideoPlayerComponent 
-            videoUrl={videoUrl} 
-            thumbnailUrl={currentExercise.details.thumbnail_url} 
-            title={currentExercise.details.name} 
-          />
+          {/* Tanpa video, foto peragaan yang menuntun pasien menjalankan
+              latihannya — jangan biarkan layar ini kosong. */}
+          {videoUrl || currentExercise.details.thumbnail_url ? (
+            <VideoPlayerComponent
+              videoUrl={videoUrl}
+              thumbnailUrl={currentExercise.details.thumbnail_url}
+              title={currentExercise.details.name}
+            />
+          ) : null}
+
+          {hasDemoPhotos(currentExercise.details) && (
+            <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+              <ExerciseDemoPhotos exercise={currentExercise.details} columns={3} />
+            </div>
+          )}
 
           <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
             <h3 className="text-lg font-semibold mb-3">Cara melakukan</h3>

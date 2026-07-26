@@ -609,10 +609,18 @@ async function getExercise(ctx: AuthCtx, id: string) {
   return json(data);
 }
 
+// Demonstration photos own storage objects, so they are only ever written
+// through /exercises/:id/demo-photos — that path validates the URLs and cleans
+// up the files a change orphans. A generic create/update must not touch them.
+function withoutDemoPhotos(body: Record<string, unknown>) {
+  const { demo_photos: _ignored, ...rest } = body;
+  return rest;
+}
+
 async function createExercise(ctx: AuthCtx, body: Record<string, unknown>) {
   const { data, error } = await admin
     .from("exercises")
-    .insert({ ...body, clinic_id: ctx.clinicId, created_by: ctx.userId })
+    .insert({ ...withoutDemoPhotos(body), clinic_id: ctx.clinicId, created_by: ctx.userId })
     .select()
     .single();
   if (error) throw new HttpError(500, error.message);
@@ -633,13 +641,19 @@ async function requireWritableExercise(ctx: AuthCtx, id: string) {
 async function updateExercise(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
   if (Object.keys(body).length === 0) bad("No data provided for update");
   await requireWritableExercise(ctx, id);
-  const { data, error } = await admin.from("exercises").update(body).eq("id", id).select().single();
+  const update = withoutDemoPhotos(body);
+  if (Object.keys(update).length === 0) bad("Use /exercises/:id/demo-photos to change demonstration photos");
+  const { data, error } = await admin.from("exercises").update(update).eq("id", id).select().single();
   if (error) throw new HttpError(500, error.message);
   return json(data);
 }
 
 async function deleteExercise(ctx: AuthCtx, id: string) {
-  const { data: exercise } = await admin.from("exercises").select("video_url, thumbnail_url").eq("id", id).maybeSingle();
+  const { data: exercise } = await admin
+    .from("exercises")
+    .select("video_url, thumbnail_url, demo_photos")
+    .eq("id", id)
+    .maybeSingle();
 
   if (ctx.role === "super_admin") {
     await admin.from("exercises").delete().eq("id", id);
@@ -650,6 +664,9 @@ async function deleteExercise(ctx: AuthCtx, id: string) {
   // Don't leave the storage objects behind once the row referencing them is gone.
   await removeVideoAssetIfOrphan(exercise?.video_url);
   await removeVideoAssetIfOrphan(exercise?.thumbnail_url);
+  for (const photo of Array.isArray(exercise?.demo_photos) ? exercise.demo_photos : []) {
+    await removePhotoAssetIfOrphan((photo as Record<string, unknown>)?.url as string | undefined);
+  }
   return json({ message: "Exercise deleted successfully" });
 }
 
@@ -1406,6 +1423,163 @@ async function setExerciseVideo(ctx: AuthCtx, exerciseId: string, req: Request) 
   return json(data);
 }
 
+// ---------- exercise demonstration photos ----------
+
+const PHOTO_BUCKET = "exercise-photos";
+const PHOTO_PUBLIC_MARKER = `/storage/v1/object/public/${PHOTO_BUCKET}/`;
+const PHOTO_MIME = ["image/jpeg", "image/png", "image/webp"];
+const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
+const MAX_PHOTOS_PER_EXERCISE = 12;
+
+type DemoPhoto = { url: string; caption: string; caption_en: string | null };
+
+async function uploadPhotoAsset(ctx: AuthCtx, file: File) {
+  if (file.size > MAX_PHOTO_BYTES) bad("Each photo must be 10 MB or smaller");
+  if (file.type && !PHOTO_MIME.includes(file.type)) bad("Photos must be JPEG, PNG or WebP");
+
+  const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+  const objectPath = `${videoFolder(ctx)}/${crypto.randomUUID()}.${ext}`;
+  const { error } = await admin.storage
+    .from(PHOTO_BUCKET)
+    .upload(objectPath, file, { contentType: file.type || undefined, upsert: false });
+  if (error) throw new HttpError(500, `Upload error: ${error.message}`);
+  return admin.storage.from(PHOTO_BUCKET).getPublicUrl(objectPath).data.publicUrl;
+}
+
+// Only removes files we host. A photo could in principle be reused on another
+// exercise, so check nothing else points at it before deleting the object.
+async function removePhotoAssetIfOrphan(fileUrl: string | null | undefined) {
+  if (!fileUrl) return;
+  const idx = fileUrl.indexOf(PHOTO_PUBLIC_MARKER);
+  if (idx === -1) return;
+
+  // Must be a JSON *string*: postgrest-js turns a JS array into a Postgres
+  // array literal (`cs.{...}`), which is not jsonb containment and never matches.
+  const { data } = await admin
+    .from("exercises")
+    .select("id")
+    .contains("demo_photos", JSON.stringify([{ url: fileUrl }]))
+    .limit(1);
+  if ((data?.length ?? 0) > 0) return;
+
+  const objectPath = decodeURIComponent(fileUrl.slice(idx + PHOTO_PUBLIC_MARKER.length).split("?")[0]);
+  await admin.storage.from(PHOTO_BUCKET).remove([objectPath]).catch(() => {});
+}
+
+function readDemoPhotos(row: Record<string, any>): DemoPhoto[] {
+  return Array.isArray(row?.demo_photos) ? row.demo_photos as DemoPhoto[] : [];
+}
+
+/** Normalises whatever the client sent into the stored shape. */
+function normalisePhoto(input: unknown): DemoPhoto | null {
+  const raw = (input ?? {}) as Record<string, unknown>;
+  const url = String(raw.url ?? "").trim();
+  if (!url) return null;
+  const captionEn = String(raw.caption_en ?? "").trim();
+  return {
+    url,
+    caption: String(raw.caption ?? "").trim(),
+    caption_en: captionEn || null,
+  };
+}
+
+async function saveDemoPhotos(exerciseId: string, photos: DemoPhoto[], previous: DemoPhoto[]) {
+  const { data, error } = await admin
+    .from("exercises")
+    .update({ demo_photos: photos })
+    .eq("id", exerciseId)
+    .select()
+    .single();
+  if (error) throw new HttpError(500, error.message);
+
+  // Anything dropped from the set is a candidate for deletion — but only after
+  // the row no longer references it, or the orphan check would see itself.
+  const kept = new Set(photos.map((p) => p.url));
+  for (const photo of previous) {
+    if (!kept.has(photo.url)) await removePhotoAssetIfOrphan(photo.url);
+  }
+  return data;
+}
+
+/**
+ * Appends uploaded photos. Multipart, one request per photo so the client can
+ * show real per-file progress (`photo` = the file, `caption` = its step text).
+ * Also accepts several files in one request for convenience.
+ */
+async function addExerciseDemoPhotos(ctx: AuthCtx, exerciseId: string, req: Request) {
+  const exercise = await requireWritableExercise(ctx, exerciseId);
+  const contentType = req.headers.get("content-type") || "";
+  if (!contentType.includes("multipart/form-data")) bad("Photo upload must be multipart/form-data");
+
+  const form = await req.formData();
+  const files = form.getAll("photo").filter((f): f is File => f instanceof File && f.size > 0);
+  if (!files.length) bad("At least one photo file is required");
+
+  const existing = readDemoPhotos(exercise);
+  if (existing.length + files.length > MAX_PHOTOS_PER_EXERCISE) {
+    bad(`An exercise can hold at most ${MAX_PHOTOS_PER_EXERCISE} demonstration photos`);
+  }
+
+  const captions = form.getAll("caption").map((c) => String(c));
+  const captionsEn = form.getAll("caption_en").map((c) => String(c));
+
+  const added: DemoPhoto[] = [];
+  try {
+    for (const [i, file] of files.entries()) {
+      added.push({
+        url: await uploadPhotoAsset(ctx, file),
+        caption: (captions[i] ?? "").trim(),
+        caption_en: (captionsEn[i] ?? "").trim() || null,
+      });
+    }
+
+    const { data, error } = await admin
+      .from("exercises")
+      .update({ demo_photos: [...existing, ...added] })
+      .eq("id", exerciseId)
+      .select()
+      .single();
+    if (error) throw new HttpError(500, error.message);
+    return json(data);
+  } catch (error) {
+    // Nothing references these objects yet, so a partial failure must not leave
+    // them sitting in the bucket forever.
+    for (const photo of added) await removePhotoAssetIfOrphan(photo.url);
+    throw error;
+  }
+}
+
+/**
+ * Replaces the whole set. One endpoint covers reordering, editing captions and
+ * removing a step, because all three are "here is the new list" to the client.
+ */
+async function replaceExerciseDemoPhotos(ctx: AuthCtx, exerciseId: string, body: Record<string, unknown>) {
+  const exercise = await requireWritableExercise(ctx, exerciseId);
+  const input = Array.isArray(body.photos) ? body.photos : null;
+  if (!input) bad("`photos` must be an array");
+  if (input.length > MAX_PHOTOS_PER_EXERCISE) {
+    bad(`An exercise can hold at most ${MAX_PHOTOS_PER_EXERCISE} demonstration photos`);
+  }
+
+  const previous = readDemoPhotos(exercise);
+  const known = new Set(previous.map((p) => p.url));
+  const photos = input.map(normalisePhoto).filter((p): p is DemoPhoto => p !== null);
+
+  // This endpoint only reorders, relabels and removes — every URL must already
+  // belong to this exercise. Accepting arbitrary URLs would let a caller attach
+  // another clinic's uploaded photo, or hotlink an image we do not control.
+  for (const photo of photos) {
+    if (!known.has(photo.url)) bad("Unknown photo — upload it first");
+  }
+
+  return json(await saveDemoPhotos(exerciseId, photos, previous));
+}
+
+async function deleteExerciseDemoPhotos(ctx: AuthCtx, exerciseId: string) {
+  const exercise = await requireWritableExercise(ctx, exerciseId);
+  return json(await saveDemoPhotos(exerciseId, [], readDemoPhotos(exercise)));
+}
+
 async function deleteExerciseVideo(ctx: AuthCtx, exerciseId: string) {
   const exercise = await requireWritableExercise(ctx, exerciseId);
 
@@ -2157,6 +2331,13 @@ Deno.serve(async (req: Request) => {
       if (segments.length === 3 && segments[2] === "video") {
         if (method === "POST" || method === "PUT") return await setExerciseVideo(ctx, segments[1], req);
         if (method === "DELETE") return await deleteExerciseVideo(ctx, segments[1]);
+      }
+      // /exercises/:id/demo-photos - POST uploads (multipart), PUT replaces the
+      // whole ordered set (reorder / caption edit / remove one), DELETE clears.
+      if (segments.length === 3 && segments[2] === "demo-photos") {
+        if (method === "POST") return await addExerciseDemoPhotos(ctx, segments[1], req);
+        if (method === "PUT") return await replaceExerciseDemoPhotos(ctx, segments[1], await body());
+        if (method === "DELETE") return await deleteExerciseDemoPhotos(ctx, segments[1]);
       }
       if (method === "GET" && segments.length === 1) return await listExercises(ctx);
       if (method === "GET" && segments.length === 2) return await getExercise(ctx, segments[1]);
