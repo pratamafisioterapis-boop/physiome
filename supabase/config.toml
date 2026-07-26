@@ -1,0 +1,19 @@
+project_id = "kulmcujbxkjjpppyorxp"
+
+# NOTE: this file is only read by `supabase functions deploy` from the CLI.
+# If functions are deployed from the dashboard or via the management API,
+# verify_jwt must be toggled there instead and this file is documentation.
+
+[functions.api]
+# The router serves public endpoints (login, register, password reset, the
+# public plan catalogue) and applies requireAuth to everything else itself.
+verify_jwt = false
+
+[functions.midtrans-webhook]
+# Midtrans cannot send a Supabase apikey header. The function authenticates
+# every request with the SHA-512 signature in the notification body instead.
+verify_jwt = false
+
+[functions.subscription-cron]
+# Invoked by pg_cron via pg_net. Authenticated with the x-cron-secret header.
+verify_jwt = false

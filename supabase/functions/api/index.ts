@@ -6,7 +6,7 @@
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
-import webpush from "npm:web-push@3.6.7";
+import { sendWebPush } from "../_shared/push.ts";
 import {
   fetchTransactionStatus,
   generateOrderId,
@@ -19,14 +19,9 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-// Web Push (chat notifications). Optional: if unset, push sends are silently
-// skipped (chat itself still works via polling) rather than erroring.
-const VAPID_PUBLIC_KEY = Deno.env.get("VAPID_PUBLIC_KEY") || "";
-const VAPID_PRIVATE_KEY = Deno.env.get("VAPID_PRIVATE_KEY") || "";
-const VAPID_CONTACT_EMAIL = Deno.env.get("VAPID_CONTACT_EMAIL") || "mailto:support@physiome.app";
-if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
-  webpush.setVapidDetails(VAPID_CONTACT_EMAIL, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
-}
+// Web Push (chat notifications) now lives in ../_shared/push.ts, which the
+// billing reminder cron shares. VAPID setup happens on import there; if the
+// keys are unset, sends are skipped silently and chat still works via polling.
 
 const admin: SupabaseClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -2378,25 +2373,7 @@ async function resolveMessageRecipients(senderRole: string, patientId: string, c
 }
 
 async function sendChatPushNotification(userIds: string[], payload: Record<string, unknown>) {
-  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY || userIds.length === 0) return;
-
-  const { data: subs } = await admin.from("push_subscriptions").select("*").in("user_id", userIds);
-  if (!subs?.length) return;
-
-  await Promise.all(
-    subs.map(async (sub: Record<string, any>) => {
-      const subscription = { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } };
-      try {
-        await webpush.sendNotification(subscription, JSON.stringify(payload));
-      } catch (e: any) {
-        if (e?.statusCode === 404 || e?.statusCode === 410) {
-          await admin.from("push_subscriptions").delete().eq("id", sub.id);
-        } else {
-          console.error("push send error", e?.message || e);
-        }
-      }
-    }),
-  );
+  await sendWebPush(admin, userIds, payload);
 }
 
 async function listMessages(ctx: AuthCtx, url: URL) {
