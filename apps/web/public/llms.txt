@@ -15,10 +15,12 @@
 - [Exercise Programs | Physiome](/exerciseprogramlist): No description available
 - [Exercise Programs | Physiome](/exerciseprograms): No description available
 - [Forgot Password - Physiome](/forgotpassword): Reset your Physiome account password
+- [Langganan - Super Admin](/superadminsubscriptions): No description available
 - [Language Settings | Physiome](/therapistlanguagesettings): No description available
 - [Login - Physiome](/login): Login to your Physiome account to manage your physiotherapy clinic
 - [My Dashboard | Physiome](/patientdashboard): No description available
 - [Onboarding - Physiome](/onboarding): Complete your clinic setup
+- [Paket Langganan - Physiome](/superadminplans): No description available
 - [Patient Monitoring - Physiome](/patientmonitoring): No description available
 - [Patients - Physiome](/patientlist): Manage your clinic
 - [Payment Settings | Super Admin](/superadminpaymentsettings): No description available

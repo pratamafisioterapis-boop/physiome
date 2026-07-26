@@ -29,6 +29,8 @@ export const SidebarContent = () => {
           { name: 'Super Admin Console', path: '/super-admin', icon: LayoutDashboard, roles: ['super_admin'] },
           { name: 'Clinics', path: '/super-admin/clinics', icon: Building2, roles: ['super_admin'] },
           { name: 'Users', path: '/super-admin/users', icon: User, roles: ['super_admin'] },
+          { name: 'Paket Langganan', path: '/super-admin/plans', icon: CreditCard, roles: ['super_admin'] },
+          { name: 'Langganan', path: '/super-admin/subscriptions', icon: ClipboardCheck, roles: ['super_admin'] },
           { name: 'Payment Settings', path: '/super-admin/payment-settings', icon: Settings, roles: ['super_admin'] },
         ]
       },

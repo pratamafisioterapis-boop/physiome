@@ -20,7 +20,7 @@ export const FeatureCard = ({ icon: Icon, title, description, delay = 0 }) => (
   </motion.div>
 );
 
-export const PricingCard = ({ name, price, description, features, highlighted = false, delay = 0 }) => (
+export const PricingCard = ({ name, price, period = '/bln', description, features, highlighted = false, delay = 0, onSelect }) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -45,7 +45,7 @@ export const PricingCard = ({ name, price, description, features, highlighted = 
     
     <div className="mb-8">
       <span className="text-5xl font-extrabold tracking-tight">{price}</span>
-      {price !== 'Custom' && <span className={`text-lg font-medium ml-1 ${highlighted ? 'text-secondary-foreground/70' : 'text-muted-foreground'}`}>/bln</span>}
+      {price !== 'Custom' && <span className={`text-lg font-medium ml-1 ${highlighted ? 'text-secondary-foreground/70' : 'text-muted-foreground'}`}>{period}</span>}
     </div>
     
     <ul className="space-y-4 mb-10 flex-1">
@@ -58,10 +58,11 @@ export const PricingCard = ({ name, price, description, features, highlighted = 
     </ul>
     
     <div className="mt-auto">
-      <Button 
+      <Button
+        onClick={onSelect}
         className={`w-full h-14 rounded-xl text-base font-bold transition-all duration-300 ${
-          highlighted 
-            ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-primary' 
+          highlighted
+            ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-primary'
             : 'bg-primary-light text-primary hover:bg-primary hover:text-white'
         }`}
       >

@@ -52,10 +52,12 @@ export default function SuperAdminDashboard() {
     setError(null);
     try {
       if (action === 'subscribe') {
+        // Perpanjangan manual satu bulan. Untuk kontrol penuh (paket lain,
+        // durasi lain, pasien B2C) gunakan /super-admin/subscriptions.
         await apiServerClient.fetch(`/super-admin/clinics/${clinicId}/subscribe`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan: 'pro', payment_method: 'manual' })
+          body: JSON.stringify({ plan_code: 'clinic-monthly', months: 1 })
         });
       } else {
         await apiServerClient.fetch(`/super-admin/clinics/${clinicId}/cancel`, {
@@ -129,7 +131,7 @@ export default function SuperAdminDashboard() {
                     <TableHead>Admins</TableHead>
                     <TableHead>Subscription</TableHead>
                     <TableHead>Plan</TableHead>
-                    <TableHead>Started</TableHead>
+                    <TableHead>Berlaku sampai</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -168,8 +170,10 @@ export default function SuperAdminDashboard() {
                             <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">unsubscribed</span>
                           )}
                         </TableCell>
-                        <TableCell>{clinic.subscription?.plan || '-'}</TableCell>
-                        <TableCell>{formatDate(clinic.subscription?.started_at)}</TableCell>
+                        <TableCell>
+                          {clinic.subscription?.subscription_plans?.name_id || clinic.subscription?.plan_code || '-'}
+                        </TableCell>
+                        <TableCell>{formatDate(clinic.subscription?.current_period_end)}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex flex-wrap justify-end gap-2">
                             <Button
@@ -178,7 +182,7 @@ export default function SuperAdminDashboard() {
                               onClick={() => handleSubscription(clinic.id, 'subscribe')}
                               disabled={loading}
                             >
-                              Activate Pro
+                              +1 bulan
                             </Button>
                             <Button
                               size="sm"

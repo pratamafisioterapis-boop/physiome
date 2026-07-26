@@ -1,9 +1,11 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { TestimonialCard, PricingCard } from './LandingCards.jsx';
 import { Button } from '@/components/ui/button';
+import apiServerClient from '@/lib/apiServerClient.js';
+import { formatPeriod, formatRupiah, planFeatures } from '@/lib/billing.js';
 
 export const TestimonialsSection = () => {
   const testimonials = [
@@ -48,47 +50,88 @@ export const TestimonialsSection = () => {
   );
 };
 
+// Dipertahankan sebagai fallback, bukan sebagai sumber kebenaran. Halaman
+// depan tidak boleh menampilkan bagian harga yang kosong kalau API sedang
+// tidak bisa dihubungi — dan Enterprise memang tidak punya baris di database
+// karena harganya dinegosiasikan.
+const FALLBACK_PLANS = [
+  {
+    name: "Starter",
+    price: "Rp 399k",
+    description: "Untuk praktisi mandiri yang baru memulai digitalisasi.",
+    features: [
+      "1 Fisioterapis",
+      "Hingga 50 Pasien Aktif",
+      "Akses Video Library Dasar",
+      "Aplikasi Pasien Standar",
+      "Email Support"
+    ]
+  },
+  {
+    name: "Professional",
+    price: "Rp 899k",
+    description: "Solusi lengkap untuk klinik yang sedang berkembang pesat.",
+    highlighted: true,
+    features: [
+      "Hingga 5 Fisioterapis",
+      "Pasien Aktif Tidak Terbatas",
+      "AI Program Generator & Analytics",
+      "Telehealth Terintegrasi",
+      "Custom Branding Aplikasi",
+      "Priority Support 24/7"
+    ]
+  }
+];
+
+const ENTERPRISE_PLAN = {
+  name: "Enterprise",
+  price: "Custom",
+  description: "Sistem skala besar untuk jaringan rumah sakit dan klinik.",
+  features: [
+    "Terapis Tidak Terbatas",
+    "Manajemen Multi-Cabang",
+    "Integrasi EMR & API Access",
+    "Dedicated Account Manager",
+    "Custom Feature Development"
+  ]
+};
+
 export const PricingSection = () => {
-  const plans = [
-    {
-      name: "Starter",
-      price: "Rp 399k",
-      description: "Untuk praktisi mandiri yang baru memulai digitalisasi.",
-      features: [
-        "1 Fisioterapis",
-        "Hingga 50 Pasien Aktif",
-        "Akses Video Library Dasar",
-        "Aplikasi Pasien Standar",
-        "Email Support"
+  const navigate = useNavigate();
+  const [plans, setPlans] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    apiServerClient
+      .fetch('/subscription/plans')
+      .then((data) => {
+        if (cancelled) return;
+        const published = (Array.isArray(data) ? data : []).filter((p) => p.audience !== 'internal');
+        // Kosong berarti operator belum mempublikasikan paket apa pun.
+        // Jatuh ke fallback daripada menampilkan bagian harga yang hampa.
+        setPlans(published.length ? published : null);
+      })
+      .catch(() => { if (!cancelled) setPlans(null); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const cards = plans
+    ? [
+        ...plans.map((plan, i) => ({
+          name: plan.name_id,
+          price: formatRupiah(plan.price_idr),
+          period: ` ${formatPeriod(plan)}`,
+          description: plan.description_id || '',
+          features: planFeatures(plan),
+          highlighted: plans.length > 1 && i === Math.min(1, plans.length - 1),
+          onSelect: () => navigate(`/register?plan=${encodeURIComponent(plan.code)}`),
+        })),
+        ENTERPRISE_PLAN,
       ]
-    },
-    {
-      name: "Professional",
-      price: "Rp 899k",
-      description: "Solusi lengkap untuk klinik yang sedang berkembang pesat.",
-      highlighted: true,
-      features: [
-        "Hingga 5 Fisioterapis",
-        "Pasien Aktif Tidak Terbatas",
-        "AI Program Generator & Analytics",
-        "Telehealth Terintegrasi",
-        "Custom Branding Aplikasi",
-        "Priority Support 24/7"
-      ]
-    },
-    {
-      name: "Enterprise",
-      price: "Custom",
-      description: "Sistem skala besar untuk jaringan rumah sakit dan klinik.",
-      features: [
-        "Terapis Tidak Terbatas",
-        "Manajemen Multi-Cabang",
-        "Integrasi EMR & API Access",
-        "Dedicated Account Manager",
-        "Custom Feature Development"
-      ]
-    }
-  ];
+    : [...FALLBACK_PLANS, ENTERPRISE_PLAN].map((plan) => ({
+        ...plan,
+        onSelect: () => navigate(plan.price === 'Custom' ? '/pricing' : '/register'),
+      }));
 
   return (
     <section id="pricing" className="py-24">
@@ -99,8 +142,13 @@ export const PricingSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
-          {plans.map((plan, i) => (
-            <PricingCard key={i} {...plan} delay={i * 0.1} />
+          {cards.map((plan, i) => (
+            <PricingCard
+              key={plan.name}
+              {...plan}
+              onSelect={plan.onSelect || (() => navigate('/pricing'))}
+              delay={i * 0.1}
+            />
           ))}
         </div>
       </div>

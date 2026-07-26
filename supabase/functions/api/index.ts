@@ -2199,6 +2199,137 @@ async function countPlanUsage(ctx: AuthCtx): Promise<{ therapists: number; activ
   return { therapists: therapists ?? 0, activePatients: activePatients ?? 0 };
 }
 
+// ---------- super admin: plans and subscriptions ----------
+
+async function superAdminListPlans(ctx: AuthCtx) {
+  requireSuperAdmin(ctx);
+  const { data, error } = await admin
+    .from("subscription_plans")
+    .select("*")
+    .order("sort_order", { ascending: true });
+  if (error) throw new HttpError(500, error.message);
+  return json(data ?? []);
+}
+
+async function superAdminUpdatePlan(ctx: AuthCtx, code: string, body: Record<string, unknown>) {
+  requireSuperAdmin(ctx);
+
+  // Whitelisted so a stray field cannot rewrite `code` or `subject_kind` and
+  // silently repoint every subscription that references this plan.
+  const EDITABLE = [
+    "name_id", "name_en", "description_id", "description_en",
+    "price_idr", "period_months", "period_days",
+    "max_therapists", "max_active_patients", "features",
+    "is_public", "is_active", "sort_order",
+  ];
+
+  const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  for (const key of EDITABLE) {
+    if (body[key] !== undefined) patch[key] = body[key];
+  }
+
+  if (patch.price_idr !== undefined) {
+    const price = Number(patch.price_idr);
+    if (!Number.isFinite(price) || price < 0) bad("price_idr must be a non-negative number");
+    // IDR has no minor unit and Midtrans rejects a fractional gross_amount.
+    patch.price_idr = Math.round(price);
+  }
+
+  // Publishing a plan with a placeholder price is the one mistake that costs
+  // real money, so it is refused rather than merely warned about.
+  if (patch.is_public === true) {
+    const { data: current } = await admin
+      .from("subscription_plans")
+      .select("price_idr, audience")
+      .eq("code", code)
+      .maybeSingle();
+    const effectivePrice = patch.price_idr !== undefined ? Number(patch.price_idr) : Number(current?.price_idr ?? 0);
+    if (effectivePrice <= 0 && current?.audience !== "internal") {
+      return errCode(400, "Tetapkan harga sebelum mempublikasikan paket ini.", {
+        code: "price_required_before_publish",
+      });
+    }
+  }
+
+  const { data, error } = await admin
+    .from("subscription_plans")
+    .update(patch)
+    .eq("code", code)
+    .select()
+    .maybeSingle();
+  if (error) throw new HttpError(500, error.message);
+  if (!data) return notFound("Paket tidak ditemukan");
+  return json(data);
+}
+
+async function superAdminListSubscriptions(ctx: AuthCtx) {
+  requireSuperAdmin(ctx);
+  const { data, error } = await admin
+    .from("subscriptions")
+    .select("*, clinics(name, is_house_clinic), users(fullName, email), subscription_plans(name_id, price_idr)")
+    .order("current_period_end", { ascending: true })
+    .limit(500);
+  if (error) throw new HttpError(500, error.message);
+  return json(data ?? []);
+}
+
+async function superAdminListTransactions(ctx: AuthCtx) {
+  requireSuperAdmin(ctx);
+  const { data, error } = await admin
+    .from("payment_transactions")
+    .select("*, clinics(name), users(fullName, email)")
+    .order("created_at", { ascending: false })
+    .limit(200);
+  if (error) throw new HttpError(500, error.message);
+  return json(data ?? []);
+}
+
+/**
+ * Manual override: comps, refunds, and goodwill extensions. Kept even though
+ * payment is automated, because there is always a case the gateway cannot
+ * express.
+ */
+async function superAdminAdjustSubscription(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
+  requireSuperAdmin(ctx);
+  const { plan_code, status, extend_months, extend_days } = body as Record<string, string>;
+
+  const { data: current } = await admin.from("subscriptions").select("*").eq("id", id).maybeSingle();
+  if (!current) return notFound("Langganan tidak ditemukan");
+
+  const patch: Record<string, unknown> = { updated_at: new Date().toISOString(), source: "manual" };
+  if (plan_code) patch.plan_code = plan_code;
+  if (status) {
+    if (!["trialing", "active", "past_due", "expired", "cancelled"].includes(status)) bad("Invalid status");
+    patch.status = status;
+  }
+
+  const months = Number(extend_months) || 0;
+  const days = Number(extend_days) || 0;
+  if (months || days) {
+    // Extend from whichever is later, so extending an already-lapsed
+    // subscription starts from today rather than adding to a past date.
+    const base = new Date(Math.max(Date.now(), new Date(current.current_period_end).getTime()));
+    const end = new Date(base);
+    end.setMonth(end.getMonth() + months);
+    end.setDate(end.getDate() + days);
+    patch.current_period_end = end.toISOString();
+    patch.grace_until = new Date(end.getTime() + GRACE_DAYS * DAY_MS).toISOString();
+    patch.status = status || "active";
+    // The ladder restarts so the customer is not immediately re-nagged.
+    patch.reminder_stage = null;
+    patch.last_reminder_sent_at = null;
+  }
+
+  const { data, error } = await admin
+    .from("subscriptions")
+    .update(patch)
+    .eq("id", id)
+    .select()
+    .maybeSingle();
+  if (error) throw new HttpError(500, error.message);
+  return json(data);
+}
+
 async function listMyTransactions(ctx: AuthCtx) {
   const query = admin
     .from("payment_transactions")
@@ -2471,7 +2602,10 @@ async function superAdminListClinics(ctx: AuthCtx) {
   const { data: clinics } = await admin.from("clinics").select("*");
   const clinicIds = (clinics ?? []).map((c: Record<string, any>) => c.id);
 
-  const { data: subs } = await admin.from("clinic_subscriptions").select("*").in("clinic_id", clinicIds.length ? clinicIds : ["00000000-0000-0000-0000-000000000000"]);
+  const { data: subs } = await admin
+    .from("subscriptions")
+    .select("*, subscription_plans(name_id, price_idr)")
+    .in("clinic_id", clinicIds.length ? clinicIds : ["00000000-0000-0000-0000-000000000000"]);
   const { data: admins } = await admin.from("users").select("id, email, fullName, clinic_id").eq("role", "admin").in("clinic_id", clinicIds.length ? clinicIds : ["00000000-0000-0000-0000-000000000000"]);
 
   const result = (clinics ?? []).map((c: Record<string, any>) => ({
@@ -2482,29 +2616,55 @@ async function superAdminListClinics(ctx: AuthCtx) {
   return json(result);
 }
 
+// Manual grant. Unlike a payment, this needs an explicit end date, otherwise
+// "active" would mean forever and the reminder ladder would never fire.
 async function superAdminSubscribe(ctx: AuthCtx, clinicId: string, body: Record<string, unknown>) {
   requireSuperAdmin(ctx);
-  const { plan = "basic", payment_method = "manual" } = body as Record<string, string>;
+  const { plan_code = "clinic-monthly", months } = body as Record<string, string>;
 
-  const { data: existing } = await admin.from("clinic_subscriptions").select("id").eq("clinic_id", clinicId).maybeSingle();
-  let result;
-  if (existing) {
-    const { data } = await admin
-      .from("clinic_subscriptions")
-      .update({ status: "active", plan, payment_method, started_at: new Date().toISOString(), ended_at: null })
-      .eq("id", existing.id)
-      .select()
-      .single();
-    result = data;
-  } else {
-    const { data } = await admin
-      .from("clinic_subscriptions")
-      .insert({ clinic_id: clinicId, status: "active", plan, payment_method, started_at: new Date().toISOString() })
-      .select()
-      .single();
-    result = data;
-  }
-  return json(result);
+  const { data: planRow } = await admin
+    .from("subscription_plans")
+    .select("period_months, period_days")
+    .eq("code", plan_code)
+    .maybeSingle();
+  if (!planRow) return notFound(`Paket ${plan_code} tidak ditemukan`);
+
+  const { data: existing } = await admin
+    .from("subscriptions")
+    .select("id, current_period_end")
+    .eq("clinic_id", clinicId)
+    .maybeSingle();
+
+  // Extend from whichever is later so a manual grant on a still-valid
+  // subscription adds to it rather than shortening it.
+  const base = new Date(Math.max(
+    Date.now(),
+    existing?.current_period_end ? new Date(existing.current_period_end).getTime() : 0,
+  ));
+  const end = new Date(base);
+  end.setMonth(end.getMonth() + (Number(months) || Number(planRow.period_months) || 0));
+  end.setDate(end.getDate() + (Number(planRow.period_days) || 0));
+  if (end.getTime() <= Date.now()) end.setMonth(end.getMonth() + 1);
+
+  const patch = {
+    plan_code,
+    status: "active",
+    current_period_start: new Date().toISOString(),
+    current_period_end: end.toISOString(),
+    grace_until: new Date(end.getTime() + GRACE_DAYS * DAY_MS).toISOString(),
+    source: "manual",
+    cancel_at_period_end: false,
+    reminder_stage: null,
+    last_reminder_sent_at: null,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { data, error } = existing
+    ? await admin.from("subscriptions").update(patch).eq("id", existing.id).select().single()
+    : await admin.from("subscriptions").insert({ clinic_id: clinicId, ...patch }).select().single();
+
+  if (error) throw new HttpError(500, error.message);
+  return json(data);
 }
 
 async function superAdminCancel(ctx: AuthCtx, clinicId: string) {
@@ -2512,8 +2672,8 @@ async function superAdminCancel(ctx: AuthCtx, clinicId: string) {
   // `count` is only populated when the option is requested explicitly;
   // without it this always reported 0 rows updated even on success.
   const { error, count } = await admin
-    .from("clinic_subscriptions")
-    .update({ status: "cancelled", ended_at: new Date().toISOString() }, { count: "exact" })
+    .from("subscriptions")
+    .update({ status: "cancelled", updated_at: new Date().toISOString() }, { count: "exact" })
     .eq("clinic_id", clinicId);
   if (error) throw new HttpError(500, error.message);
   return json({ success: true, updated: count ?? 0 });
@@ -3149,6 +3309,15 @@ Deno.serve(async (req: Request) => {
         if (method === "GET") return await superAdminGetPaymentSettings(ctx);
         if (method === "POST") return await superAdminSavePaymentSettings(ctx, await body());
       }
+      if (segments[1] === "plans") {
+        if (method === "GET" && segments.length === 2) return await superAdminListPlans(ctx);
+        if (method === "PUT" && segments.length === 3) return await superAdminUpdatePlan(ctx, segments[2], await body());
+      }
+      if (segments[1] === "subscriptions") {
+        if (method === "GET" && segments.length === 2) return await superAdminListSubscriptions(ctx);
+        if (method === "PUT" && segments.length === 3) return await superAdminAdjustSubscription(ctx, segments[2], await body());
+      }
+      if (segments[1] === "transactions" && method === "GET") return await superAdminListTransactions(ctx);
       if (segments[1] === "users") {
         if (method === "GET" && segments.length === 2) return await superAdminListUsers(ctx);
         if (method === "POST" && segments.length === 2) return await superAdminCreateUser(ctx, await body());
