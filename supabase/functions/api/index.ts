@@ -86,6 +86,16 @@ function requireSuperAdmin(ctx: AuthCtx) {
   if (ctx.role !== "super_admin") throw new HttpError(403, "Forbidden: super_admins only");
 }
 
+// Billing (clinic -> its own patients) is staff-only. The UI already hides
+// these screens from patients, but the UI is not a security boundary: without
+// this check any authenticated patient could read and write their whole
+// clinic's invoices, payments, and price list.
+function requireClinician(ctx: AuthCtx) {
+  if (!["admin", "therapist", "super_admin"].includes(ctx.role)) {
+    throw new HttpError(403, "Forbidden: clinic staff only");
+  }
+}
+
 function bad(msg: string): never {
   throw new HttpError(400, msg);
 }
@@ -926,17 +936,20 @@ async function deleteCategory(ctx: AuthCtx, id: string) {
 // ---------- service packages (catalog, distinct from patient_packages) ----------
 
 async function listPackages(ctx: AuthCtx) {
+  requireClinician(ctx);
   const { data } = await admin.from("packages").select("*").eq("clinic_id", ctx.clinicId).order("created_at", { ascending: false });
   return json(data ?? []);
 }
 
 async function createPackage(ctx: AuthCtx, body: Record<string, unknown>) {
+  requireClinician(ctx);
   const { data, error } = await admin.from("packages").insert({ ...body, clinic_id: ctx.clinicId }).select().single();
   if (error) throw new HttpError(500, error.message);
   return json(data, 201);
 }
 
 async function updatePackage(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
+  requireClinician(ctx);
   const { data, error } = await admin.from("packages").update(body).eq("id", id).eq("clinic_id", ctx.clinicId).select().maybeSingle();
   if (error) throw new HttpError(500, error.message);
   if (!data) return notFound("Package not found");
@@ -944,6 +957,7 @@ async function updatePackage(ctx: AuthCtx, id: string, body: Record<string, unkn
 }
 
 async function deletePackage(ctx: AuthCtx, id: string) {
+  requireClinician(ctx);
   await admin.from("packages").delete().eq("id", id).eq("clinic_id", ctx.clinicId);
   return json({ message: "Package deleted successfully" });
 }
@@ -1519,17 +1533,20 @@ async function adminStats(ctx: AuthCtx) {
 // ---------- billing ----------
 
 async function listInvoices(ctx: AuthCtx) {
+  requireClinician(ctx);
   const { data } = await admin.from("invoices").select("*, patients(name)").eq("clinic_id", ctx.clinicId).order("invoiceDate", { ascending: false });
   return json(data ?? []);
 }
 
 async function getInvoice(ctx: AuthCtx, id: string) {
+  requireClinician(ctx);
   const { data } = await admin.from("invoices").select("*, patients(name), payments(*)").eq("id", id).eq("clinic_id", ctx.clinicId).maybeSingle();
   if (!data) return notFound("Invoice not found");
   return json(data);
 }
 
 async function createInvoice(ctx: AuthCtx, body: Record<string, unknown>) {
+  requireClinician(ctx);
   const { patientId, therapistId, invoiceDate, dueDate, totalAmount, packageType } = body as Record<string, string>;
   const invoiceNumber = `INV-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
   const { data, error } = await admin
@@ -1551,6 +1568,7 @@ async function createInvoice(ctx: AuthCtx, body: Record<string, unknown>) {
 }
 
 async function updateInvoice(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
+  requireClinician(ctx);
   const data = { ...body } as Record<string, unknown>;
   if (data.totalAmount !== undefined) data.totalAmount = parseInt(data.totalAmount as string);
   if (data.amountPaid !== undefined) data.amountPaid = parseInt(data.amountPaid as string);
@@ -1562,11 +1580,13 @@ async function updateInvoice(ctx: AuthCtx, id: string, body: Record<string, unkn
 }
 
 async function deleteInvoice(ctx: AuthCtx, id: string) {
+  requireClinician(ctx);
   await admin.from("invoices").delete().eq("id", id).eq("clinic_id", ctx.clinicId);
   return json({ message: "Invoice deleted" });
 }
 
 async function listPayments(ctx: AuthCtx) {
+  requireClinician(ctx);
   const { data } = await admin
     .from("payments")
     .select("*, invoices!inner(invoiceNumber, clinic_id), patients(name)")
@@ -1576,6 +1596,7 @@ async function listPayments(ctx: AuthCtx) {
 }
 
 async function createPayment(ctx: AuthCtx, body: Record<string, unknown>) {
+  requireClinician(ctx);
   const { invoiceId, patientId, paymentAmount, paymentDate, paymentMethod, referenceNumber, notes } = body as Record<string, string>;
   const { data: invoice } = await admin.from("invoices").select("id").eq("id", invoiceId).eq("clinic_id", ctx.clinicId).maybeSingle();
   if (!invoice) return err(403, "Access denied to invoice");
@@ -1590,6 +1611,7 @@ async function createPayment(ctx: AuthCtx, body: Record<string, unknown>) {
 }
 
 async function listPatientPackages(ctx: AuthCtx) {
+  requireClinician(ctx);
   const { data } = await admin
     .from("patient_packages")
     .select("*, patients!inner(name, clinic_id)")
@@ -1599,6 +1621,7 @@ async function listPatientPackages(ctx: AuthCtx) {
 }
 
 async function createPatientPackage(ctx: AuthCtx, body: Record<string, unknown>) {
+  requireClinician(ctx);
   const { patientId, packageId, totalSessions, expiryDate } = body as Record<string, string>;
   const { data: patient } = await admin.from("patients").select("id").eq("id", patientId).eq("clinic_id", ctx.clinicId).maybeSingle();
   if (!patient) return err(403, "Access denied to patient");
@@ -1699,9 +1722,11 @@ async function superAdminSubscribe(ctx: AuthCtx, clinicId: string, body: Record<
 
 async function superAdminCancel(ctx: AuthCtx, clinicId: string) {
   requireSuperAdmin(ctx);
+  // `count` is only populated when the option is requested explicitly;
+  // without it this always reported 0 rows updated even on success.
   const { error, count } = await admin
     .from("clinic_subscriptions")
-    .update({ status: "cancelled", ended_at: new Date().toISOString() })
+    .update({ status: "cancelled", ended_at: new Date().toISOString() }, { count: "exact" })
     .eq("clinic_id", clinicId);
   if (error) throw new HttpError(500, error.message);
   return json({ success: true, updated: count ?? 0 });
@@ -1864,9 +1889,27 @@ async function superAdminDeleteUser(ctx: AuthCtx, id: string) {
 // that thread. All access flows through this function (service role), so we
 // enforce ownership here rather than via RLS.
 
+// Matching on `userId` first matters: email is not unique across clinics, so
+// the old email-only lookup could hand a patient the chart of a same-email
+// patient in a different clinic. The email fallback stays for legacy rows
+// created before `patients.userId` was populated.
 async function resolvePatientForUser(ctx: AuthCtx): Promise<{ id: string } | null> {
+  const { data: byUserId } = await admin
+    .from("patients")
+    .select("id")
+    .eq("userId", ctx.userId)
+    .maybeSingle();
+  if (byUserId) return byUserId;
+
   const { data: user } = await admin.from("users").select("email").eq("id", ctx.userId).single();
-  const { data: patient } = await admin.from("patients").select("id").eq("email", user?.email).maybeSingle();
+  if (!user?.email) return null;
+
+  const { data: patient } = await admin
+    .from("patients")
+    .select("id")
+    .eq("email", user.email)
+    .eq("clinic_id", ctx.clinicId)
+    .maybeSingle();
   return patient ?? null;
 }
 

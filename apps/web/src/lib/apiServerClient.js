@@ -33,7 +33,14 @@ const apiServerClient = {
         if (!response.ok) {
             // Coba parse body error, jika gagal, gunakan statusText
             const errorBody = await response.json().catch(() => ({ error: response.statusText }));
-            throw new Error(errorBody.error || `Request failed with status ${response.status}`);
+            const error = new Error(errorBody.error || `Request failed with status ${response.status}`);
+            // Status dan kode dilampirkan supaya pemanggil bisa membedakan
+            // 401 (login ulang), 403 (salah peran), dan 402 (langganan tidak
+            // aktif). Pesan error tetap sama, jadi kode lama tidak berubah.
+            error.status = response.status;
+            error.code = errorBody.code || null;
+            error.body = errorBody;
+            throw error;
         }
 
         return response.json();
@@ -72,7 +79,11 @@ const apiServerClient = {
                 if (xhr.status >= 200 && xhr.status < 300) {
                     resolve(payload);
                 } else {
-                    reject(new Error(payload?.error || payload?.message || `Upload gagal (${xhr.status})`));
+                    const error = new Error(payload?.error || payload?.message || `Upload gagal (${xhr.status})`);
+                    error.status = xhr.status;
+                    error.code = payload?.code || null;
+                    error.body = payload;
+                    reject(error);
                 }
             });
 
