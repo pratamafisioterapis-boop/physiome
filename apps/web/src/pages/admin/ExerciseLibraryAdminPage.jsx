@@ -24,7 +24,7 @@ const ExerciseLibraryAdminPage = () => {
 
   useEffect(() => {
     const fetchExercises = async () => {
-      if (!currentUser?.clinic_id) return;
+      if (!currentUser) return;
       try {
         const records = await apiServerClient.fetch('/exercises');
         setExercises(records);
@@ -52,7 +52,11 @@ const ExerciseLibraryAdminPage = () => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <h1 className="text-3xl font-bold text-foreground tracking-tight">Exercise Library</h1>
-                  <p className="text-muted-foreground mt-1">Manage your clinic's exercise database.</p>
+                  <p className="text-muted-foreground mt-1">
+                    {currentUser?.role === 'super_admin'
+                      ? 'Manage the global exercise library shared across all clinics.'
+                      : "Manage your clinic's exercise database."}
+                  </p>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => setIsImportOpen(true)}><Upload className="w-4 h-4 mr-2" /> Import</Button>
