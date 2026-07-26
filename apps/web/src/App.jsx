@@ -143,9 +143,9 @@ function App() {
             <Route path="/therapist/invoices" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><InvoiceListPage /></RoleProtectedRoute>} />
             <Route path="/therapist/payments" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><PaymentListPage /></RoleProtectedRoute>} />
 
-            <Route path="/admin/exercises" element={<RoleProtectedRoute allowedRoles={['admin']}><ExerciseLibraryAdminPage /></RoleProtectedRoute>} />
-            <Route path="/admin/exercises/new" element={<RoleProtectedRoute allowedRoles={['admin']}><AddExercisePage /></RoleProtectedRoute>} />
-            <Route path="/admin/exercises/:id/edit" element={<RoleProtectedRoute allowedRoles={['admin']}><EditExercisePage /></RoleProtectedRoute>} />
+            <Route path="/admin/exercises" element={<RoleProtectedRoute allowedRoles={['admin', 'super_admin']}><ExerciseLibraryAdminPage /></RoleProtectedRoute>} />
+            <Route path="/admin/exercises/new" element={<RoleProtectedRoute allowedRoles={['admin', 'super_admin']}><AddExercisePage /></RoleProtectedRoute>} />
+            <Route path="/admin/exercises/:id/edit" element={<RoleProtectedRoute allowedRoles={['admin', 'super_admin']}><EditExercisePage /></RoleProtectedRoute>} />
             <Route path="/admin/categories" element={<RoleProtectedRoute allowedRoles={['admin']}><CategoriesManagementPage /></RoleProtectedRoute>} />
             <Route path="/admin/statistics" element={<RoleProtectedRoute allowedRoles={['admin']}><ExerciseStatisticsPage /></RoleProtectedRoute>} />
             <Route path="/admin/languages" element={<RoleProtectedRoute allowedRoles={['admin']}><LanguageManagementPage /></RoleProtectedRoute>} />

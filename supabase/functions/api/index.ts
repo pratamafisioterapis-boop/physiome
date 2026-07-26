@@ -593,16 +593,18 @@ async function deleteAppointment(ctx: AuthCtx, id: string) {
 // ---------- exercises ----------
 
 async function listExercises(ctx: AuthCtx) {
-  const { data } = await admin
-    .from("exercises")
-    .select("*")
-    .or(`clinic_id.eq.${ctx.clinicId},clinic_id.is.null`)
-    .order("name", { ascending: true });
+  // ctx.clinicId is null for super_admin (no clinic) - "clinic_id.eq.<null>" isn't valid
+  // UUID syntax for PostgREST, so build the OR clause only when there's a real clinic to match.
+  let query = admin.from("exercises").select("*");
+  query = ctx.clinicId ? query.or(`clinic_id.eq.${ctx.clinicId},clinic_id.is.null`) : query.is("clinic_id", null);
+  const { data } = await query.order("name", { ascending: true });
   return json(data ?? []);
 }
 
 async function getExercise(ctx: AuthCtx, id: string) {
-  const { data } = await admin.from("exercises").select("*").eq("id", id).or(`clinic_id.eq.${ctx.clinicId},clinic_id.is.null`).maybeSingle();
+  let query = admin.from("exercises").select("*").eq("id", id);
+  query = ctx.clinicId ? query.or(`clinic_id.eq.${ctx.clinicId},clinic_id.is.null`) : query.is("clinic_id", null);
+  const { data } = await query.maybeSingle();
   if (!data) return notFound("Exercise not found");
   return json(data);
 }
@@ -621,7 +623,8 @@ async function updateExercise(ctx: AuthCtx, id: string, body: Record<string, unk
   if (Object.keys(body).length === 0) bad("No data provided for update");
   const { data: exercise } = await admin.from("exercises").select("clinic_id").eq("id", id).maybeSingle();
   if (!exercise) return notFound("Exercise not found");
-  if (exercise.clinic_id !== ctx.clinicId) {
+  // Global templates (clinic_id null) may only be edited by super_admin; clinics may only edit their own rows.
+  if (ctx.role !== "super_admin" && exercise.clinic_id !== ctx.clinicId) {
     return err(403, "You do not have permission to edit this exercise. Global templates cannot be modified.");
   }
   const { data, error } = await admin.from("exercises").update(body).eq("id", id).select().single();
@@ -630,7 +633,11 @@ async function updateExercise(ctx: AuthCtx, id: string, body: Record<string, unk
 }
 
 async function deleteExercise(ctx: AuthCtx, id: string) {
-  await admin.from("exercises").delete().eq("id", id).eq("clinic_id", ctx.clinicId);
+  if (ctx.role === "super_admin") {
+    await admin.from("exercises").delete().eq("id", id);
+  } else {
+    await admin.from("exercises").delete().eq("id", id).eq("clinic_id", ctx.clinicId);
+  }
   return json({ message: "Exercise deleted successfully" });
 }
 
