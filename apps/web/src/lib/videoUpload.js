@@ -1,7 +1,11 @@
 // Aturan & util upload video yang dipakai bersama oleh semua layar upload,
 // supaya batas ukuran/format tidak lagi berbeda-beda antar komponen.
 
-export const MAX_VIDEO_SIZE_MB = 200;
+// Berkas diunggah lewat Edge Function, dan `req.formData()` di sana menahan
+// seluruh isi file di memori. Edge Function Supabase hanya punya ~256MB memori,
+// jadi batas klien harus jauh di bawah itu — kalau tidak, fungsi mati kehabisan
+// memori dan upload gagal tanpa pesan yang jelas.
+export const MAX_VIDEO_SIZE_MB = 40;
 export const MAX_VIDEO_SIZE = MAX_VIDEO_SIZE_MB * 1024 * 1024;
 
 export const ACCEPTED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
