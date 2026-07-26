@@ -15,7 +15,9 @@ const VideoPickerModal = ({ isOpen, onClose, onSelect }) => {
         setIsLoading(true);
         try {
           const data = await apiServerClient.fetch('/videos');
-          setVideos(Array.isArray(data) ? data : data.data || []);
+          const rows = Array.isArray(data) ? data : data.data || [];
+          // Baris tanpa video_url tidak bisa dipasang ke latihan - sembunyikan.
+          setVideos(rows.filter((v) => v.video_url));
         } catch (error) {
           console.error("Error fetching videos:", error);
           toast.error("Failed to load videos from library");
@@ -64,7 +66,9 @@ const VideoPickerModal = ({ isOpen, onClose, onSelect }) => {
         ) : (
           <div className="text-center py-12 bg-muted/30 rounded-2xl border border-dashed">
             <FileVideo className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">No videos found. Upload them in "My Videos" first.</p>
+            <p className="text-sm text-muted-foreground">
+              Pustaka video masih kosong. Unggah lewat halaman &ldquo;My Videos&rdquo;, atau lewat ikon video pada kartu latihan.
+            </p>
           </div>
         )}
         <div className="flex justify-end pt-2">

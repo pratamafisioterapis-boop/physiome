@@ -7,6 +7,7 @@ import TextArea from '@/components/TextArea.jsx';
 import VideoPlayerComponent from './VideoPlayerComponent.jsx';
 import VideoPickerModal from './VideoPickerModal.jsx';
 import apiServerClient from '@/lib/apiServerClient.js';
+import { thumbnailForUrl } from '@/lib/videoUpload.js';
 import { toast } from 'sonner';
 import { Search } from 'lucide-react';
 
@@ -26,19 +27,11 @@ const AddExerciseModal = ({ isOpen, onClose, onSuccess }) => {
     const { name, value } = e.target;
     setFormData(prev => {
       const newData = { ...prev, [name]: value };
-      
+
       // Otomatis isi thumbnail jika video_url adalah link YouTube dan thumbnail masih kosong
-      if (name === 'video_url' && value) {
-        const isYouTube = value.includes('youtube.com') || value.includes('youtu.be');
-        if (isYouTube) {
-          const videoId = value.includes('v=') 
-            ? value.split('v=')[1]?.split('&')[0] 
-            : value.split('/').pop();
-          
-          if (videoId && !prev.thumbnail_url) {
-            newData.thumbnail_url = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-          }
-        }
+      if (name === 'video_url' && value && !prev.thumbnail_url) {
+        const autoThumbnail = thumbnailForUrl(value);
+        if (autoThumbnail) newData.thumbnail_url = autoThumbnail;
       }
       return newData;
     });
@@ -152,7 +145,10 @@ const AddExerciseModal = ({ isOpen, onClose, onSuccess }) => {
             </Button>
           </div>
         </div>
-        <p className="text-[10px] text-muted-foreground -mt-3">Supports YouTube embeds and direct MP4/MOV links.</p>
+        <p className="text-[10px] text-muted-foreground -mt-3">
+          Mendukung YouTube dan tautan langsung MP4/WebM/MOV. Untuk mengunggah file video,
+          simpan latihan ini dulu lalu klik ikon video pada kartunya.
+        </p>
 
         {formData.video_url && (
           <div className="space-y-2 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">

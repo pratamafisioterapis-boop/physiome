@@ -5,21 +5,22 @@ import Input from '@/components/Input.jsx';
 import Select from '@/components/Select.jsx';
 import TextArea from '@/components/TextArea.jsx';
 import VideoPlayerComponent from './VideoPlayerComponent.jsx';
-import VideoPickerModal from './VideoPickerModal.jsx';
+import VideoManagementModal from './VideoManagementModal.jsx';
 import apiServerClient from '@/lib/apiServerClient.js';
 import { toast } from 'sonner';
-import { Search } from 'lucide-react';
+import { Video } from 'lucide-react';
 
 const EditExerciseModal = ({ isOpen, onClose, onSuccess, exercise }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isVideoPickerOpen, setIsVideoPickerOpen] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  // Video dikelola terpisah (tersimpan seketika), jadi form ini menyimpan
+  // salinannya hanya untuk pratinjau - bukan untuk dikirim saat "Save".
+  const [videoState, setVideoState] = useState({ video_url: null, thumbnail_url: null });
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     body_region: '',
     difficulty: 'Beginner',
-    thumbnail_url: '',
-    video_url: '',
     instructions: '',
     contraindications: '',
     progression_tips: ''
@@ -32,35 +33,20 @@ const EditExerciseModal = ({ isOpen, onClose, onSuccess, exercise }) => {
         description: exercise.description || '',
         body_region: exercise.body_region || '',
         difficulty: exercise.difficulty || 'Beginner',
-        thumbnail_url: exercise.thumbnail_url || '',
-        video_url: exercise.video_url || exercise.gif_url || '',
         instructions: exercise.instructions || '',
         contraindications: exercise.contraindications || '',
         progression_tips: exercise.progression_tips || ''
+      });
+      setVideoState({
+        video_url: exercise.video_url || exercise.gif_url || null,
+        thumbnail_url: exercise.thumbnail_url || null
       });
     }
   }, [isOpen, exercise]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => {
-      const newData = { ...prev, [name]: value };
-      
-      // Otomatis isi thumbnail jika video_url adalah link YouTube dan thumbnail masih kosong
-      if (name === 'video_url' && value) {
-        const isYouTube = value.includes('youtube.com') || value.includes('youtu.be');
-        if (isYouTube) {
-          const videoId = value.includes('v=') 
-            ? value.split('v=')[1]?.split('&')[0] 
-            : value.split('/').pop();
-          
-          if (videoId && !prev.thumbnail_url) {
-            newData.thumbnail_url = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-          }
-        }
-      }
-      return newData;
-    });
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -82,14 +68,11 @@ const EditExerciseModal = ({ isOpen, onClose, onSuccess, exercise }) => {
     }
   };
 
-  const handleVideoSelect = (video) => {
-    setFormData(prev => ({
-      ...prev,
-      video_url: video.video_url,
-      thumbnail_url: video.thumbnail_url || prev.thumbnail_url
-    }));
-    setIsVideoPickerOpen(false);
-    toast.info(`Selected video: ${video.name}`);
+  // VideoManagementModal sudah menyimpan ke server; di sini cukup selaraskan
+  // pratinjau lokal dan beri tahu daftar latihan agar ikut menyegarkan.
+  const handleVideoUpdated = (updated) => {
+    setVideoState({ video_url: updated?.video_url || null, thumbnail_url: updated?.thumbnail_url || null });
+    onSuccess?.();
   };
 
   return (
@@ -137,46 +120,44 @@ const EditExerciseModal = ({ isOpen, onClose, onSuccess, exercise }) => {
             { label: 'Advanced', value: 'Advanced' }
           ]} />
         </div>
-        <Input label="Thumbnail URL" name="thumbnail_url" value={formData.thumbnail_url} onChange={handleChange} />
-        <div className="space-y-1.5">
-          <label className="block text-sm font-medium text-foreground">Video/GIF URL</label>
-          <div className="flex gap-2">
-            <Input
-              name="video_url"
-              value={formData.video_url}
-              onChange={handleChange}
-              placeholder="Paste link or browse library..."
-              className="flex-1"
-            />
-            <Button 
-              type="button" 
-              variant="outline" 
-              className="shrink-0 h-10 border-dashed hover:border-primary hover:text-primary"
-              onClick={() => setIsVideoPickerOpen(true)}
+        <div className="space-y-2 rounded-xl border border-border bg-muted/30 p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium text-foreground">Video peragaan</p>
+              <p className="text-xs text-muted-foreground">
+                {videoState.video_url ? 'Video sudah terpasang untuk latihan ini.' : 'Belum ada video untuk latihan ini.'}
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="shrink-0"
+              onClick={() => setIsVideoModalOpen(true)}
             >
-              <Search className="w-4 h-4 mr-2" /> Browse
+              <Video className="w-4 h-4 mr-2" /> {videoState.video_url ? 'Kelola video' : 'Tambah video'}
             </Button>
           </div>
-        </div>
-        <p className="text-[10px] text-muted-foreground -mt-3">Supports YouTube embeds and direct MP4/MOV links.</p>
 
-        {formData.video_url && (
-          <div className="space-y-2 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Video Preview</label>
-            <VideoPlayerComponent 
-              videoUrl={formData.video_url} 
-              thumbnailUrl={formData.thumbnail_url} 
-              title={formData.name || 'Exercise Preview'} 
+          {videoState.video_url && (
+            <VideoPlayerComponent
+              videoUrl={videoState.video_url}
+              thumbnailUrl={videoState.thumbnail_url}
+              title={formData.name || 'Exercise Preview'}
             />
-          </div>
-        )}
+          )}
+
+          <p className="text-[10px] text-muted-foreground">
+            Perubahan video tersimpan langsung, terpisah dari tombol &ldquo;Save Changes&rdquo;.
+          </p>
+        </div>
       </form>
     </Modal>
 
-    <VideoPickerModal 
-      isOpen={isVideoPickerOpen}
-      onClose={() => setIsVideoPickerOpen(false)}
-      onSelect={handleVideoSelect}
+    <VideoManagementModal
+      isOpen={isVideoModalOpen}
+      onClose={() => setIsVideoModalOpen(false)}
+      exercise={{ ...exercise, ...videoState }}
+      onUpdate={handleVideoUpdated}
     />
     </>
   );
