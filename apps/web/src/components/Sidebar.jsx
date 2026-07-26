@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, Calendar, Settings, LogOut, 
   Activity, Video, Dumbbell, ClipboardList, TrendingUp, BarChart3, Presentation, PlusSquare,
-  Building2, User, HeartPulse, MessageSquare
+  Building2, User, HeartPulse, MessageSquare, CreditCard
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { cn } from '@/lib/utils.js';
@@ -131,6 +131,7 @@ export const SidebarContent = () => {
     {
       title: t('nav.settings'),
       items: [
+        { name: 'Langganan', path: '/billing', icon: CreditCard, roles: ['admin'] },
         { name: t('nav.settings'), path: '/settings', icon: Settings, roles: ['admin', 'therapist'] },
       ]
     }

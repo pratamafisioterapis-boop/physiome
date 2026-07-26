@@ -6,29 +6,31 @@
 - [- Physiome](/patientprogress): No description available
 - [- Physiome](/theraphistlist): Manage your clinic
 - [| Physiome](/exercisedetail): No description available
-- [| Physiome](/exerciseprogrambuilder): No description available
 - [Admin Dashboard | Physiome](/admindashboard): No description available
 - [AI Program Generator | Physiome](/aiexerciseprogramgenerator): No description available
 - [Appointment Details | Physiome](/appointmentdetail): No description available
 - [Appointments - Physiome](/appointmentlist): No description available
-- [Assign Program | Physiome](/programassignment): No description available
 - [Calendar - Physiome](/calendarview): No description available
 - [Dashboard | Physiome](/dashboard): No description available
 - [Exercise Programs | Physiome](/exerciseprogramlist): No description available
 - [Exercise Programs | Physiome](/exerciseprograms): No description available
+- [Forgot Password - Physiome](/forgotpassword): Reset your Physiome account password
 - [Language Settings | Physiome](/therapistlanguagesettings): No description available
 - [Login - Physiome](/login): Login to your Physiome account to manage your physiotherapy clinic
 - [My Dashboard | Physiome](/patientdashboard): No description available
 - [Onboarding - Physiome](/onboarding): Complete your clinic setup
+- [Patient Monitoring - Physiome](/patientmonitoring): No description available
 - [Patients - Physiome](/patientlist): Manage your clinic
 - [Payment Settings | Super Admin](/superadminpaymentsettings): No description available
 - [Physiome | Software Manajemen Klinik Fisioterapi Cerdas](/home): No description available
 - [Physiome | Software Manajemen Klinik Fisioterapi Modern](/landing): Tingkatkan kepatuhan latihan dan hasil terapi pasien Anda dengan Physiome. Platform manajemen klinik fisioterapi pintar dengan AI, Telehealth, dan Aplikasi Pasien.
 - [Program Tracking | Physiome](/patientprogramtracking): No description available
 - [Reports | Physiome](/reports): No description available
+- [Reset Password - Physiome](/resetpassword): Set a new password for your Physiome account
 - [Saved Programs | Physiome](/savedprograms): No description available
 - [Session | Physiome](/patientexerciseview): No description available
 - [Settings | Physiome](/settings): No description available
 - [Sign up - Physiome](/signup): Create your Physiome account and start managing your physiotherapy clinic
 - [SOAP Notes | Physiome](/soapnotes): No description available
 - [Super Admin | Physiome](/superadmindashboard): No description available
+- [Telehealth Call - Physiome](/telehealthcall): No description available

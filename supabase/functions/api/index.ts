@@ -7,6 +7,13 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 import webpush from "npm:web-push@3.6.7";
+import {
+  fetchTransactionStatus,
+  generateOrderId,
+  mapTransactionStatus,
+  snapCreateTransaction,
+  toStoredStatus,
+} from "../_shared/midtrans.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -1854,6 +1861,210 @@ async function listMyTransactions(ctx: AuthCtx) {
   return json(data ?? []);
 }
 
+// Who is buying, and which subscription row does the payment attach to?
+// Solo practices are clinics, so only B2C patients resolve to a user subject.
+async function resolveCheckoutSubject(
+  ctx: AuthCtx,
+  plan: Record<string, unknown>,
+): Promise<{ kind: "clinic" | "user"; id: string }> {
+  if (plan.subject_kind === "user") {
+    if (ctx.role !== "patient") bad("Paket ini hanya untuk akun pasien");
+    return { kind: "user", id: ctx.userId };
+  }
+  if (!ctx.clinicId) bad("Akun Anda tidak terhubung ke klinik mana pun");
+  if (ctx.role !== "admin") throw new HttpError(403, "Hanya admin klinik yang dapat berlangganan");
+  return { kind: "clinic", id: ctx.clinicId };
+}
+
+async function createCheckout(ctx: AuthCtx, body: Record<string, unknown>) {
+  const planCode = String((body as Record<string, string>).planCode || "");
+  if (!planCode) bad("planCode is required");
+
+  const { data: plan } = await admin
+    .from("subscription_plans")
+    .select("*")
+    .eq("code", planCode)
+    .eq("is_active", true)
+    .maybeSingle();
+  if (!plan) return notFound("Paket tidak ditemukan");
+  if (Number(plan.price_idr) <= 0) bad("Paket ini tidak dijual");
+
+  const subject = await resolveCheckoutSubject(ctx, plan);
+
+  // Checkout-side idempotency: a double-clicked button should reuse the live
+  // Snap page rather than spraying orphan pending orders. order_id must be
+  // globally unique forever, so we cannot simply reuse the id.
+  const { data: reusable } = await admin
+    .from("payment_transactions")
+    .select("order_id, snap_token, snap_redirect_url, gross_amount, expires_at")
+    .eq(subject.kind === "clinic" ? "clinic_id" : "user_id", subject.id)
+    .eq("plan_code", planCode)
+    .eq("status", "pending")
+    .gt("expires_at", new Date().toISOString())
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (reusable?.snap_redirect_url) {
+    return json({
+      orderId: reusable.order_id,
+      token: reusable.snap_token,
+      redirectUrl: reusable.snap_redirect_url,
+      grossAmount: reusable.gross_amount,
+      reused: true,
+    });
+  }
+
+  const orderId = generateOrderId(subject.kind, subject.id, planCode);
+  const grossAmount = Number(plan.price_idr);
+  const expiryMinutes = 60;
+  const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000).toISOString();
+
+  const { data: user } = await admin
+    .from("users")
+    .select("fullName, email, phone")
+    .eq("id", ctx.userId)
+    .maybeSingle();
+
+  // Insert BEFORE calling Snap, so a Snap timeout still leaves a traceable
+  // order the reconciliation sweep can pick up.
+  const { error: insertError } = await admin.from("payment_transactions").insert({
+    order_id: orderId,
+    clinic_id: subject.kind === "clinic" ? subject.id : null,
+    user_id: subject.kind === "user" ? subject.id : null,
+    plan_code: planCode,
+    gross_amount: grossAmount,
+    status: "pending",
+    expires_at: expiresAt,
+    created_by: ctx.userId,
+  });
+  if (insertError) throw new HttpError(500, insertError.message);
+
+  const appBaseUrl = Deno.env.get("APP_BASE_URL") || "https://physiome.ruangdata.online";
+
+  try {
+    const snap = await snapCreateTransaction({
+      orderId,
+      grossAmount,
+      itemId: planCode,
+      itemName: String(plan.name_id),
+      customer: { name: user?.fullName, email: user?.email, phone: user?.phone },
+      finishUrl: `${appBaseUrl}/billing/status?order_id=${encodeURIComponent(orderId)}`,
+      expiryMinutes,
+    });
+
+    await admin
+      .from("payment_transactions")
+      .update({
+        snap_token: snap.token,
+        snap_redirect_url: snap.redirect_url,
+        raw_charge_response: snap.raw,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("order_id", orderId);
+
+    return json({
+      orderId,
+      token: snap.token,
+      redirectUrl: snap.redirect_url,
+      grossAmount,
+      reused: false,
+    }, 201);
+  } catch (e) {
+    await admin
+      .from("payment_transactions")
+      .update({ status: "failure", updated_at: new Date().toISOString() })
+      .eq("order_id", orderId);
+    throw new HttpError(502, e instanceof Error ? e.message : "Gagal membuat transaksi pembayaran");
+  }
+}
+
+// Reconciliation path #1 (the status page polls this). Webhooks get lost; if
+// the row is still pending we ask Midtrans directly and apply whatever we
+// find. Safe to race with the webhook because applying is latched by
+// payment_transactions.applied_at.
+async function getTransaction(ctx: AuthCtx, orderId: string) {
+  const { data: txn } = await admin
+    .from("payment_transactions")
+    .select("*")
+    .eq("order_id", orderId)
+    .maybeSingle();
+  if (!txn) return notFound("Transaksi tidak ditemukan");
+
+  const ownsIt = txn.created_by === ctx.userId ||
+    (txn.user_id && txn.user_id === ctx.userId) ||
+    (txn.clinic_id && txn.clinic_id === ctx.clinicId && ctx.role !== "patient");
+  if (!ownsIt && ctx.role !== "super_admin") return err(403, "Akses ditolak");
+
+  let current = txn;
+  const staleMs = Date.now() - new Date(txn.created_at).getTime();
+  if (txn.status === "pending" && staleMs > 30_000) {
+    const applied = await reconcileTransaction(orderId);
+    if (applied) {
+      const { data: refreshed } = await admin
+        .from("payment_transactions")
+        .select("*")
+        .eq("order_id", orderId)
+        .maybeSingle();
+      if (refreshed) current = refreshed;
+    }
+  }
+
+  return json({
+    orderId: current.order_id,
+    planCode: current.plan_code,
+    status: current.status,
+    outcome: mapTransactionStatus(current.status, current.fraud_status),
+    grossAmount: current.gross_amount,
+    paymentType: current.payment_type,
+    settlementTime: current.settlement_time,
+    snapRedirectUrl: current.snap_redirect_url,
+    expiresAt: current.expires_at,
+    createdAt: current.created_at,
+  });
+}
+
+/**
+ * Pull the authoritative status from Midtrans and, if it settled, apply it.
+ * Shared by the status page and the nightly sweep. Returns true if anything
+ * changed. Never throws -- a Midtrans outage must not break the caller.
+ */
+async function reconcileTransaction(orderId: string): Promise<boolean> {
+  let remote: Record<string, unknown> | null = null;
+  try {
+    remote = await fetchTransactionStatus(orderId);
+  } catch (e) {
+    console.error("reconcile: midtrans status lookup failed", orderId, e);
+    return false;
+  }
+  if (!remote) return false;
+
+  const transactionStatus = remote.transaction_status as string | undefined;
+  const outcome = mapTransactionStatus(transactionStatus, remote.fraud_status as string | undefined);
+
+  await admin
+    .from("payment_transactions")
+    .update({
+      status: toStoredStatus(transactionStatus),
+      payment_type: (remote.payment_type as string) ?? null,
+      midtrans_transaction_id: (remote.transaction_id as string) ?? null,
+      fraud_status: (remote.fraud_status as string) ?? null,
+      settlement_time: remote.settlement_time ? new Date(String(remote.settlement_time)).toISOString() : null,
+      raw_notification: remote,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("order_id", orderId);
+
+  if (outcome !== "paid") return true;
+
+  const { error } = await admin.rpc("apply_subscription_payment", { p_order_id: orderId });
+  if (error) {
+    console.error("reconcile: apply_subscription_payment failed", orderId, error.message);
+    return false;
+  }
+  return true;
+}
+
 // ---------- language preferences ----------
 
 async function getLanguagePreference(ctx: AuthCtx, userId: string) {
@@ -2540,7 +2751,9 @@ Deno.serve(async (req: Request) => {
 
     if (segments[0] === "subscription") {
       if (segments[1] === "me" && method === "GET") return await getMySubscription(ctx);
+      if (segments[1] === "checkout" && method === "POST") return await createCheckout(ctx, await body());
       if (segments[1] === "transactions" && method === "GET" && segments.length === 2) return await listMyTransactions(ctx);
+      if (segments[1] === "transactions" && method === "GET" && segments.length === 3) return await getTransaction(ctx, segments[2]);
     }
 
     if (segments[0] === "user-preferences" && segments[1] === "language") {

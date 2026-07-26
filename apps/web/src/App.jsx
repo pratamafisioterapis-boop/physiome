@@ -73,10 +73,16 @@ import AssessmentsPage from '@/pages/patient/AssessmentsPage.jsx';
 import SOAPNotesPage from '@/pages/SOAPNotesPage.jsx';
 import SOAPHistoryPage from '@/pages/therapist/SOAPHistoryPage.jsx';
 
-// Billing & Packages
+// Billing & Packages (klinik menagih pasiennya)
 import PackageManagementPage from '@/pages/therapist/PackageManagementPage.jsx';
 import InvoiceListPage from '@/pages/therapist/InvoiceListPage.jsx';
 import PaymentListPage from '@/pages/therapist/PaymentListPage.jsx';
+
+// Langganan Physiome (Physiome menagih pelanggannya)
+import PricingPage from '@/pages/billing/PricingPage.jsx';
+import CheckoutPage from '@/pages/billing/CheckoutPage.jsx';
+import PaymentStatusPage from '@/pages/billing/PaymentStatusPage.jsx';
+import SubscriptionPage from '@/pages/billing/SubscriptionPage.jsx';
 
 // New Core Pages
 import ExerciseProgramsPage from '@/pages/ExerciseProgramsPage.jsx';
@@ -100,7 +106,14 @@ function App() {
             <Route path="/register" element={<SignupPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
             <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
+
+            {/* Langganan Physiome. Terbuka untuk semua peran yang login: pasien
+                B2C mengelola langganannya sendiri di sini juga. */}
+            <Route path="/billing" element={<ProtectedRoute><SubscriptionPage /></ProtectedRoute>} />
+            <Route path="/billing/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+            <Route path="/billing/status" element={<ProtectedRoute><PaymentStatusPage /></ProtectedRoute>} />
             
             <Route path="/dashboard" element={<ProtectedRoute><DashboardRouter /></ProtectedRoute>} />
             
