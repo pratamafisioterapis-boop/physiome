@@ -68,6 +68,8 @@ import PatientLanguageSettingsPage from '@/pages/patient/PatientLanguageSettings
 import PatientAccountSettingsPage from '@/pages/patient/PatientAccountSettingsPage.jsx';
 import AchievementsPage from '@/pages/patient/AchievementsPage.jsx';
 import AssessmentsPage from '@/pages/patient/AssessmentsPage.jsx';
+import PatientLibraryPage from '@/pages/patient/PatientLibraryPage.jsx';
+import SelfAssignedReviewPage from '@/pages/therapist/SelfAssignedReviewPage.jsx';
 
 // SOAP Notes Assistant
 import SOAPNotesPage from '@/pages/SOAPNotesPage.jsx';
@@ -151,6 +153,7 @@ function App() {
             <Route path="/settings/language" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><TherapistLanguageSettingsPage /></RoleProtectedRoute>} />
 
             <Route path="/therapist/soap-notes/history" element={<RoleProtectedRoute allowedRoles={['therapist']}><SOAPHistoryPage /></RoleProtectedRoute>} />
+            <Route path="/therapist/self-assigned-review" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><SelfAssignedReviewPage /></RoleProtectedRoute>} />
             
             <Route path="/therapist/packages" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><PackageManagementPage /></RoleProtectedRoute>} />
             <Route path="/therapist/invoices" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><InvoiceListPage /></RoleProtectedRoute>} />
@@ -170,6 +173,7 @@ function App() {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<PatientDashboardPage />} />
               <Route path="programs" element={<MyExerciseProgramsPage />} />
+              <Route path="library" element={<PatientLibraryPage />} />
               <Route path="programs/:assignmentId" element={<PatientExerciseViewPage />} />
               <Route path="videos" element={<ExerciseVideosPage />} />
               <Route path="recovery" element={<RecoveryProgressPage />} />

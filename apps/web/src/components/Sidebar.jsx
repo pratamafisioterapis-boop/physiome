@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, Calendar, Settings, LogOut, 
   Activity, Video, Dumbbell, ClipboardList, TrendingUp, BarChart3, Presentation, PlusSquare,
-  Building2, User, HeartPulse, MessageSquare, CreditCard
+  Building2, User, HeartPulse, MessageSquare, CreditCard, ClipboardCheck
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { cn } from '@/lib/utils.js';
@@ -124,6 +124,7 @@ export const SidebarContent = () => {
         { name: t('nav.builder'), path: '/program-builder', icon: PlusSquare, roles: ['super_admin', 'admin', 'therapist'] },
         { name: t('nav.templates'), path: '/program-templates', icon: Presentation, roles: ['super_admin','admin', 'therapist'] },
         { name: t('nav.assigned'), path: '/assigned-programs', icon: ClipboardList, roles: ['admin', 'therapist'] },
+        { name: 'Tinjauan Mandiri', path: '/therapist/self-assigned-review', icon: ClipboardCheck, roles: ['admin', 'therapist'] },
         { name: t('nav.patientProgress'), path: '/patient-progress', icon: TrendingUp, roles: ['admin', 'therapist'] },
         { name: t('nav.analytics'), path: '/exercise-analytics', icon: BarChart3, roles: ['admin', 'therapist'] },
       ]

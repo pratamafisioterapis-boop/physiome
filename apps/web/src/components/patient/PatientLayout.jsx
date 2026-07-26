@@ -4,7 +4,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Dumbbell, Video, TrendingUp, Activity, 
   Calendar, MessageSquare, MonitorPlay, ClipboardList, 
-  Trophy, BookOpen, User, LogOut, Menu, X, Globe, CreditCard
+  Trophy, BookOpen, User, LogOut, Menu, X, Globe, CreditCard, Library
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +31,7 @@ const PatientLayout = () => {
   const navItems = [
     { name: t('nav.dashboard'), path: '/patient/dashboard', icon: LayoutDashboard },
     { name: t('nav.myPrograms'), path: '/patient/programs', icon: Dumbbell },
+    { name: 'Katalog Latihan', path: '/patient/library', icon: Library },
     { name: t('nav.exerciseVideos'), path: '/patient/videos', icon: Video },
     { name: t('nav.recoveryProgress'), path: '/patient/recovery', icon: TrendingUp },
     { name: t('nav.painTracking'), path: '/patient/pain-tracking', icon: Activity },

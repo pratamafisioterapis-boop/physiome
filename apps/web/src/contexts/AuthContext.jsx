@@ -62,10 +62,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-  const signup = async ({ accountType, clinicName, fullName, email, password, phone, inviteCode, packagePlan, paymentMethod }) => {
+  const signup = async ({ accountType, clinicName, fullName, email, password, phone, inviteCode, packagePlan, alsoPractises }) => {
     try {
       // Use the backend registration endpoint to handle invite code validation and user creation
-      const { token, user } = await apiServerClient.fetch('/auth/register', {
+      const { token, user, checkoutPlanCode } = await apiServerClient.fetch('/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }) => {
           phone: phone || undefined,
           inviteCode: inviteCode || undefined,
           packagePlan: packagePlan || 'demo-14',
-          paymentMethod: paymentMethod || 'transfer'
+          alsoPractises: alsoPractises !== false
         })
       });
 
@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('auth_token', token);
       setCurrentUser(user);
 
-      return { user, clinicName };
+      return { user, clinicName, checkoutPlanCode };
     } catch (error) {
       setCurrentUser(null);
       throw error;

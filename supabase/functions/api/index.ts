@@ -253,7 +253,106 @@ async function getEntitlement(ctx: AuthCtx): Promise<Entitlement> {
   return computeEntitlement(await resolveSubscriptionRow(ctx));
 }
 
+/**
+ * Would adding one more therapist/patient exceed the clinic's plan?
+ * Returns a 402 Response when it would, otherwise null.
+ *
+ * Usable from unauthenticated paths (invite-code signup), which is why it
+ * takes a clinicId rather than an AuthCtx.
+ */
+async function checkPlanLimit(
+  clinicId: string | null,
+  kind: "therapist" | "patient",
+): Promise<Response | null> {
+  if (!ENFORCEMENT_ENABLED || !clinicId) return null;
+
+  const { data: clinic } = await admin
+    .from("clinics")
+    .select("is_house_clinic")
+    .eq("id", clinicId)
+    .maybeSingle();
+
+  // Direct-to-consumer patients live in the house clinic and each pay for
+  // themselves, so they must not count against its patient allowance.
+  if (clinic?.is_house_clinic && kind === "patient") return null;
+
+  const { data: sub } = await admin
+    .from("subscriptions")
+    .select("plan_code, subscription_plans(max_therapists, max_active_patients)")
+    .eq("clinic_id", clinicId)
+    .maybeSingle();
+
+  const plan = sub?.subscription_plans as Record<string, unknown> | null | undefined;
+  if (!plan) return null;
+
+  const limit = kind === "therapist" ? plan.max_therapists : plan.max_active_patients;
+  if (limit == null) return null;
+
+  const table = kind === "therapist" ? "therapists" : "patients";
+  const { count } = await admin
+    .from(table)
+    .select("id", { count: "exact", head: true })
+    .eq("clinic_id", clinicId)
+    .eq("status", "Active");
+
+  const current = count ?? 0;
+  if (current < Number(limit)) return null;
+
+  const noun = kind === "therapist" ? "fisioterapis" : "pasien aktif";
+  return errCode(
+    402,
+    `Paket Anda dibatasi ${limit} ${noun}. Upgrade paket untuk menambah lagi.`,
+    { code: "plan_limit_reached", limit: Number(limit), current, plan_code: sub?.plan_code, kind },
+  );
+}
+
+/** Same check for authenticated routes. Throws nothing; returns a Response. */
+async function checkCtxPlanLimit(ctx: AuthCtx, kind: "therapist" | "patient") {
+  return await checkPlanLimit(ctx.clinicId, kind);
+}
+
 // ---------- auth routes ----------
+
+const DAY = 24 * 60 * 60 * 1000;
+
+/** Start a trial for a freshly created subject. Free, and always real: the
+ * old flow wrote status "pending" for paid plans, which locked nobody out but
+ * also meant the trial was fiction. */
+async function startTrial(
+  subject: { clinicId?: string; userId?: string },
+  planCode: string,
+) {
+  const { data: plan } = await admin
+    .from("subscription_plans")
+    .select("period_months, period_days")
+    .eq("code", planCode)
+    .maybeSingle();
+
+  const days = plan ? (Number(plan.period_days) || 0) + (Number(plan.period_months) || 0) * 30 : 14;
+  const periodEnd = new Date(Date.now() + days * DAY);
+
+  const { error } = await admin.from("subscriptions").insert({
+    clinic_id: subject.clinicId ?? null,
+    user_id: subject.userId ?? null,
+    plan_code: planCode,
+    status: "trialing",
+    current_period_start: new Date().toISOString(),
+    current_period_end: periodEnd.toISOString(),
+    grace_until: new Date(periodEnd.getTime() + GRACE_DAYS * DAY).toISOString(),
+    source: "trial",
+  });
+  if (error) console.error("failed to start trial", planCode, error.message);
+}
+
+/** The clinic that owns direct-to-consumer patients. */
+async function getHouseClinicId(): Promise<string | null> {
+  const { data } = await admin
+    .from("clinics")
+    .select("id")
+    .eq("is_house_clinic", true)
+    .maybeSingle();
+  return data?.id ?? null;
+}
 
 async function authRegister(body: Record<string, unknown>) {
   const {
@@ -265,7 +364,6 @@ async function authRegister(body: Record<string, unknown>) {
     inviteCode,
     accountType,
     packagePlan,
-    paymentMethod,
   } = body as Record<string, string>;
 
   if (!email || !password || !fullName) bad("email, password, and fullName are required");
@@ -273,11 +371,16 @@ async function authRegister(body: Record<string, unknown>) {
   const { data: existing } = await admin.from("users").select("id").eq("email", email).maybeSingle();
   if (existing) return err(400, "Email is already registered");
 
+  // A solo practice is a clinic with one member, not a third kind of tenant.
+  const isPractice = accountType === "clinic" || accountType === "solo" || !accountType;
+  const isDirectPatient = accountType === "patient" && !inviteCode;
+
   let clinicId: string | null = null;
   let userRole = "admin";
   let inviteId: string | null = null;
+  let createdClinic = false;
 
-  if (accountType === "therapist" || accountType === "patient") {
+  if (accountType === "therapist" || (accountType === "patient" && inviteCode)) {
     if (!inviteCode) bad(`An invite code from your clinic is required to sign up as a ${accountType}`);
 
     const { data: codeData } = await admin
@@ -300,15 +403,30 @@ async function authRegister(body: Record<string, unknown>) {
     clinicId = codeData.clinic_id;
     userRole = codeData.role;
     inviteId = codeData.id;
-  } else {
-    if (!clinicName) bad("Clinic name is required");
+
+    const limitError = await checkPlanLimit(clinicId, userRole === "therapist" ? "therapist" : "patient");
+    if (limitError) return limitError;
+  } else if (isDirectPatient) {
+    // Public self-signup: no invite code, attached to the house clinic.
+    clinicId = await getHouseClinicId();
+    if (!clinicId) {
+      console.error("patient self-signup attempted but no clinic has is_house_clinic = true");
+      return err(503, "Pendaftaran pasien mandiri belum tersedia. Silakan hubungi klinik Anda.");
+    }
+    userRole = "patient";
+  } else if (isPractice) {
+    const name = clinicName || (accountType === "solo" ? `Praktik ${fullName}` : "");
+    if (!name) bad("Clinic name is required");
     const { data: newClinic, error: clinicError } = await admin
       .from("clinics")
-      .insert({ name: clinicName })
+      .insert({ name })
       .select()
       .single();
     if (clinicError) throw new HttpError(500, clinicError.message);
     clinicId = newClinic.id;
+    createdClinic = true;
+  } else {
+    bad(`Unknown accountType: ${accountType}`);
   }
 
   const { data: created, error: createError } = await admin.auth.admin.createUser({
@@ -352,26 +470,45 @@ async function authRegister(body: Record<string, unknown>) {
     }
   }
 
-  if (!inviteId) {
-    await admin.from("clinics").update({ created_by: userRow.id }).eq("id", clinicId);
-    await admin.from("clinic_subscriptions").insert({
+  // A therapists row for every clinician, created eagerly.
+  //
+  // appointments.therapist_id is a FK to therapists.id, but signup used to
+  // create only a users row -- so a solo practitioner could not book an
+  // appointment for themselves. Solo owners always treat patients; for a
+  // multi-therapist clinic the founder opts in with `alsoPractises`.
+  const alsoPractises = body.alsoPractises !== false;
+  if (userRole === "therapist" || (createdClinic && (accountType === "solo" || alsoPractises))) {
+    const { error: therapistError } = await admin.from("therapists").insert({
+      userId: userRow.id,
       clinic_id: clinicId,
-      status: packagePlan === "demo-14" ? "active" : "pending",
-      plan: packagePlan || "demo-14",
-      payment_method: paymentMethod || "transfer",
-      started_at: new Date().toISOString(),
-      ended_at: packagePlan === "demo-14" ? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() : null,
+      status: "Active",
     });
+    // Non-fatal: authUpdateProfile creates this lazily too, so a failure here
+    // degrades rather than losing the whole registration.
+    if (therapistError) console.error("failed to create therapist row", therapistError.message);
+  }
+
+  if (createdClinic) {
+    await admin.from("clinics").update({ created_by: userRow.id }).eq("id", clinicId);
+    await startTrial({ clinicId: clinicId! }, "trial-14");
+  } else if (isDirectPatient) {
+    await startTrial({ userId: userRow.id }, "patient-trial-7");
   }
 
   const { data: signInData, error: signInError } = await freshAuthClient().auth.signInWithPassword({ email, password });
   if (signInError || !signInData?.session) throw new HttpError(500, "Registered but failed to create session");
+
+  // If they picked a paid plan at signup, the client sends them straight to
+  // checkout. The trial runs regardless, so nobody is ever locked out while
+  // they decide.
+  const checkoutPlanCode = packagePlan && packagePlan !== "demo-14" ? packagePlan : null;
 
   return json(
     {
       message: "Registration successful",
       token: signInData.session.access_token,
       refreshToken: signInData.session.refresh_token,
+      checkoutPlanCode,
       user: { id: userRow.id, fullName: userRow.fullName, role: userRow.role, clinic_id: clinicId },
     },
     201,
@@ -502,6 +639,9 @@ async function createPatient(ctx: AuthCtx, body: Record<string, unknown>) {
   const { name, email, phone, gender, birth_date, ...rest } = body as Record<string, string>;
   const normalizedGender = typeof gender === "string" ? gender.toLowerCase() : undefined;
 
+  const limitError = await checkCtxPlanLimit(ctx, "patient");
+  if (limitError) return limitError;
+
   const { data: patient, error } = await admin
     .from("patients")
     .insert({
@@ -616,6 +756,9 @@ async function getTherapist(ctx: AuthCtx, id: string) {
 async function createTherapist(ctx: AuthCtx, body: Record<string, unknown>) {
   const { fullName, email, password, phone, specialization, licenseNumber } = body as Record<string, string>;
   if (!fullName || !email || !password) bad("Full name, email, and password are required");
+
+  const limitError = await checkCtxPlanLimit(ctx, "therapist");
+  if (limitError) return limitError;
 
   const { data: created, error: createError } = await admin.auth.admin.createUser({ email, password, email_confirm: true });
   if (createError || !created?.user) throw new HttpError(500, createError?.message || "Failed to create account");
@@ -819,8 +962,30 @@ async function deleteExercise(ctx: AuthCtx, id: string) {
 
 // ---------- exercise programs ----------
 
-async function listProgramTemplates() {
-  const { data } = await admin.from("exercise_programs").select("*").is("clinic_id", null).eq("status", "Active").order("name", { ascending: true });
+// The global program library. Also serves the direct-to-consumer patient
+// catalogue, hence the filters -- all of these columns already exist on
+// exercise_programs.
+async function listProgramTemplates(url?: URL) {
+  let query = admin
+    .from("exercise_programs")
+    .select("*")
+    .is("clinic_id", null)
+    .eq("status", "Active")
+    .order("name", { ascending: true });
+
+  const indication = url?.searchParams.get("indication");
+  const bodyRegion = url?.searchParams.get("body_region");
+  const difficulty = url?.searchParams.get("difficulty");
+  const phase = url?.searchParams.get("phase");
+  const search = url?.searchParams.get("q");
+
+  if (indication) query = query.ilike("indication", `%${indication}%`);
+  if (bodyRegion) query = query.eq("body_region", bodyRegion);
+  if (difficulty) query = query.eq("difficulty", difficulty);
+  if (phase) query = query.ilike("phase", `%${phase}%`);
+  if (search) query = query.or(`name.ilike.%${search}%,indication.ilike.%${search}%`);
+
+  const { data } = await query;
   const formatted = (data ?? []).map((t: Record<string, any>) => ({ ...t, exercisesCount: Array.isArray(t.exercises) ? t.exercises.length : 0 }));
   return json(formatted);
 }
@@ -1168,6 +1333,13 @@ async function createInviteCode(ctx: AuthCtx, body: Record<string, unknown>) {
   if (!ctx.clinicId) bad("You must belong to a clinic to create invite codes");
   const { code, role, expires_at } = body as Record<string, string>;
   if (role && !INVITE_ROLES.includes(role)) bad("Invalid role");
+
+  // Fail at invite time rather than when the invitee tries to register --
+  // being turned away at signup after receiving a code is a far worse
+  // experience than the admin learning about the limit up front.
+  const limitError = await checkCtxPlanLimit(ctx, role === "patient" ? "patient" : "therapist");
+  if (limitError) return limitError;
+
   const { data, error } = await admin
     .from("invite_codes")
     .insert({
@@ -1787,6 +1959,205 @@ async function createPatientPackage(ctx: AuthCtx, body: Record<string, unknown>)
     .single();
   if (error) throw new HttpError(500, error.message);
   return json(data, 201);
+}
+
+// ---------- direct-to-consumer patient self-service ----------
+
+// Red-flag screening. Answering "yes" to any of these means the complaint may
+// need urgent or hands-on assessment, and self-guided exercise is not an
+// appropriate first step -- so the catalogue stays closed and the patient is
+// routed to a therapist instead.
+//
+// Drafted from standard musculoskeletal red flags. A physiotherapist should
+// review this list before it goes live.
+const RED_FLAG_QUESTIONS = [
+  { id: "chest_pain", label: "Nyeri dada, sesak napas, atau jantung berdebar saat beraktivitas" },
+  { id: "cauda_equina", label: "Kebas di area selangkangan, atau kesulitan menahan buang air kecil/besar" },
+  { id: "progressive_weakness", label: "Kelemahan otot yang makin memberat, atau kebas yang menjalar" },
+  { id: "recent_trauma", label: "Cedera berat, jatuh, atau kecelakaan dalam 6 minggu terakhir" },
+  { id: "unexplained_weight_loss", label: "Berat badan turun drastis tanpa sebab jelas" },
+  { id: "fever_infection", label: "Demam, menggigil, atau nyeri yang memburuk saat malam dan tidak mereda dengan istirahat" },
+  { id: "recent_surgery", label: "Baru menjalani operasi pada area yang dikeluhkan" },
+  { id: "pregnancy", label: "Sedang hamil" },
+  { id: "cancer_history", label: "Riwayat kanker" },
+];
+
+async function getScreeningQuestions() {
+  return json({ questions: RED_FLAG_QUESTIONS });
+}
+
+async function getMyScreening(ctx: AuthCtx) {
+  if (ctx.role !== "patient") throw new HttpError(403, "Hanya untuk akun pasien");
+  const patient = await resolvePatientForUser(ctx);
+  if (!patient) return notFound("Profil pasien tidak ditemukan");
+
+  const { data } = await admin
+    .from("patient_screenings")
+    .select("*")
+    .eq("patient_id", patient.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return json({
+    screening: data ?? null,
+    cleared: Boolean(data?.cleared && data?.disclaimer_accepted_at),
+    questions: RED_FLAG_QUESTIONS,
+  });
+}
+
+async function submitScreening(ctx: AuthCtx, body: Record<string, unknown>) {
+  if (ctx.role !== "patient") throw new HttpError(403, "Hanya untuk akun pasien");
+  const patient = await resolvePatientForUser(ctx);
+  if (!patient) return notFound("Profil pasien tidak ditemukan");
+
+  const answers = (body.answers ?? {}) as Record<string, unknown>;
+  const disclaimerAccepted = body.disclaimerAccepted === true;
+
+  const redFlags = RED_FLAG_QUESTIONS
+    .filter((q) => answers[q.id] === true)
+    .map((q) => q.id);
+
+  const cleared = redFlags.length === 0;
+
+  const { data, error } = await admin
+    .from("patient_screenings")
+    .insert({
+      patient_id: patient.id,
+      answers,
+      red_flags: redFlags,
+      cleared,
+      disclaimer_accepted_at: disclaimerAccepted ? new Date().toISOString() : null,
+    })
+    .select()
+    .single();
+  if (error) throw new HttpError(500, error.message);
+
+  return json({
+    screening: data,
+    cleared: cleared && disclaimerAccepted,
+    redFlags,
+    message: cleared
+      ? "Skrining selesai."
+      : "Berdasarkan jawaban Anda, kondisi ini sebaiknya diperiksa fisioterapis terlebih dahulu sebelum memulai latihan mandiri.",
+  }, 201);
+}
+
+/**
+ * A patient starts a global-library program themselves.
+ *
+ * The assignment goes live immediately -- the patient never waits in a queue --
+ * but is flagged for review so a Kaffah therapist can approve or adjust it.
+ * That is the hybrid: automatic for the patient, still supervised.
+ *
+ * Being a POST, this is covered by the subscription write gate: an unpaid
+ * patient may browse the catalogue but not start a program.
+ */
+async function createSelfAssignment(ctx: AuthCtx, body: Record<string, unknown>) {
+  if (ctx.role !== "patient") throw new HttpError(403, "Hanya untuk akun pasien");
+
+  const houseClinicId = await getHouseClinicId();
+  if (!houseClinicId || ctx.clinicId !== houseClinicId) {
+    return err(403, "Program mandiri hanya tersedia untuk pasien yang mendaftar langsung.");
+  }
+
+  const patient = await resolvePatientForUser(ctx);
+  if (!patient) return notFound("Profil pasien tidak ditemukan");
+
+  const { data: screening } = await admin
+    .from("patient_screenings")
+    .select("cleared, disclaimer_accepted_at")
+    .eq("patient_id", patient.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!screening?.cleared || !screening?.disclaimer_accepted_at) {
+    return errCode(
+      403,
+      "Selesaikan skrining keamanan dan setujui pernyataan sebelum memulai program.",
+      { code: "screening_required" },
+    );
+  }
+
+  const programId = String((body as Record<string, string>).program_id || "");
+  if (!programId) bad("program_id is required");
+
+  // Only the global library is self-assignable; another clinic's private
+  // programme must never be reachable this way.
+  const { data: program } = await admin
+    .from("exercise_programs")
+    .select("id, expected_duration")
+    .eq("id", programId)
+    .is("clinic_id", null)
+    .eq("status", "Active")
+    .maybeSingle();
+  if (!program) return notFound("Program tidak ditemukan di library umum");
+
+  const weeks = Number(String(program.expected_duration ?? "").match(/\d+/)?.[0]);
+  const durationDays = Number.isFinite(weeks) && weeks > 0 ? weeks * 7 : 28;
+
+  const start = new Date();
+  const end = new Date(start.getTime() + durationDays * DAY);
+
+  const { data, error } = await admin
+    .from("program_assignments")
+    .insert({
+      program_id: programId,
+      patient_id: patient.id,
+      clinic_id: houseClinicId,
+      start_date: start.toISOString(),
+      end_date: end.toISOString(),
+      status: "Active",
+      self_selected: true,
+      review_status: "pending",
+      therapist_notes: "Dipilih sendiri oleh pasien. Menunggu tinjauan fisioterapis.",
+    })
+    .select()
+    .single();
+  if (error) throw new HttpError(500, error.message);
+
+  return json(data, 201);
+}
+
+/** The Kaffah therapist review queue for self-selected programmes. */
+async function listSelfAssignedForReview(ctx: AuthCtx) {
+  requireClinician(ctx);
+  const { data, error } = await admin
+    .from("program_assignments")
+    .select("*, exercise_programs(name, indication, precautions, progression_criteria), patients(name, email, main_complaint)")
+    .eq("clinic_id", ctx.clinicId)
+    .eq("self_selected", true)
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) throw new HttpError(500, error.message);
+  return json(data ?? []);
+}
+
+async function reviewSelfAssignment(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
+  requireClinician(ctx);
+  const { review_status, review_notes, status } = body as Record<string, string>;
+  if (!["approved", "modified"].includes(review_status)) {
+    bad("review_status must be 'approved' or 'modified'");
+  }
+
+  const { data, error } = await admin
+    .from("program_assignments")
+    .update({
+      review_status,
+      review_notes: review_notes || null,
+      reviewed_by: ctx.userId,
+      reviewed_at: new Date().toISOString(),
+      ...(status ? { status } : {}),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .eq("clinic_id", ctx.clinicId)
+    .select()
+    .maybeSingle();
+  if (error) throw new HttpError(500, error.message);
+  if (!data) return notFound("Penugasan program tidak ditemukan");
+  return json(data);
 }
 
 // ---------- subscriptions (Physiome charging its customers) ----------
@@ -2618,7 +2989,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (segments[0] === "exercise-programs") {
-      if (segments[1] === "templates" && method === "GET") return await listProgramTemplates();
+      if (segments[1] === "templates" && method === "GET") return await listProgramTemplates(url);
       if (method === "GET" && segments.length === 1) return await listExercisePrograms(ctx);
       if (method === "POST" && segments.length === 1) return await createExerciseProgram(ctx, await body());
       if (method === "GET" && segments.length === 2) return await getExerciseProgram(ctx, segments[1]);
@@ -2628,9 +2999,20 @@ Deno.serve(async (req: Request) => {
 
     if (segments[0] === "program-assignments") {
       if (segments[1] === "my-exercises" && method === "GET") return await myExercises(ctx);
+      if (segments[1] === "self" && method === "POST") return await createSelfAssignment(ctx, await body());
+      if (segments[1] === "self-review" && method === "GET") return await listSelfAssignedForReview(ctx);
+      if (segments[1] === "self-review" && method === "PUT" && segments.length === 3) {
+        return await reviewSelfAssignment(ctx, segments[2], await body());
+      }
       if (method === "GET" && segments.length === 1) return await listProgramAssignments(ctx, url);
       if (method === "GET" && segments.length === 2) return await getProgramAssignment(ctx, segments[1]);
       if (method === "POST" && segments.length === 1) return await createProgramAssignment(ctx, await body());
+    }
+
+    if (segments[0] === "screening") {
+      if (segments[1] === "questions" && method === "GET") return await getScreeningQuestions();
+      if (segments[1] === "me" && method === "GET") return await getMyScreening(ctx);
+      if (method === "POST" && segments.length === 1) return await submitScreening(ctx, await body());
     }
 
     if (segments[0] === "soap-notes") {
