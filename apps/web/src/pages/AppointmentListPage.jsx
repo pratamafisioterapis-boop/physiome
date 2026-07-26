@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
+import WriteGuard from '@/components/billing/WriteGuard.jsx';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import Button from '@/components/Button.jsx';
 import Input from '@/components/Input.jsx';
@@ -99,10 +100,12 @@ const AppointmentListPage = () => {
                     <CalendarIcon className="w-4 h-4" />
                     {t('common.calendarView') || 'Calendar View'}
                   </Button>
-                  <Button onClick={() => setIsCreateOpen(true)} className="gap-2 w-full sm:w-auto">
-                    <Plus className="w-4 h-4" />
-                    {t('common.createAppointment') || 'Create Appointment'}
-                  </Button>
+                  <WriteGuard>
+                    <Button onClick={() => setIsCreateOpen(true)} className="gap-2 w-full sm:w-auto">
+                      <Plus className="w-4 h-4" />
+                      {t('common.createAppointment') || 'Create Appointment'}
+                    </Button>
+                  </WriteGuard>
                 </div>
               </div>
 

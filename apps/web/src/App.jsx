@@ -11,6 +11,8 @@ import SuperAdminDashboard from '@/pages/SuperAdminDashboard.jsx';
 import SuperAdminPaymentSettings from '@/pages/SuperAdminPaymentSettings.jsx';
 import SuperAdminClinics from '@/pages/SuperAdminClinics.jsx';
 import SuperAdminUsers from '@/pages/SuperAdminUsers.jsx';
+import SuperAdminPlans from '@/pages/SuperAdminPlans.jsx';
+import SuperAdminSubscriptions from '@/pages/SuperAdminSubscriptions.jsx';
 import LandingPage from '@/pages/LandingPage.jsx';
 import LoginPage from '@/pages/LoginPage.jsx';
 import SignupPage from '@/pages/SignupPage.jsx';
@@ -68,15 +70,23 @@ import PatientLanguageSettingsPage from '@/pages/patient/PatientLanguageSettings
 import PatientAccountSettingsPage from '@/pages/patient/PatientAccountSettingsPage.jsx';
 import AchievementsPage from '@/pages/patient/AchievementsPage.jsx';
 import AssessmentsPage from '@/pages/patient/AssessmentsPage.jsx';
+import PatientLibraryPage from '@/pages/patient/PatientLibraryPage.jsx';
+import SelfAssignedReviewPage from '@/pages/therapist/SelfAssignedReviewPage.jsx';
 
 // SOAP Notes Assistant
 import SOAPNotesPage from '@/pages/SOAPNotesPage.jsx';
 import SOAPHistoryPage from '@/pages/therapist/SOAPHistoryPage.jsx';
 
-// Billing & Packages
+// Billing & Packages (klinik menagih pasiennya)
 import PackageManagementPage from '@/pages/therapist/PackageManagementPage.jsx';
 import InvoiceListPage from '@/pages/therapist/InvoiceListPage.jsx';
 import PaymentListPage from '@/pages/therapist/PaymentListPage.jsx';
+
+// Langganan Physiome (Physiome menagih pelanggannya)
+import PricingPage from '@/pages/billing/PricingPage.jsx';
+import CheckoutPage from '@/pages/billing/CheckoutPage.jsx';
+import PaymentStatusPage from '@/pages/billing/PaymentStatusPage.jsx';
+import SubscriptionPage from '@/pages/billing/SubscriptionPage.jsx';
 
 // New Core Pages
 import ExerciseProgramsPage from '@/pages/ExerciseProgramsPage.jsx';
@@ -100,7 +110,14 @@ function App() {
             <Route path="/register" element={<SignupPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
             <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
+
+            {/* Langganan Physiome. Terbuka untuk semua peran yang login: pasien
+                B2C mengelola langganannya sendiri di sini juga. */}
+            <Route path="/billing" element={<ProtectedRoute><SubscriptionPage /></ProtectedRoute>} />
+            <Route path="/billing/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+            <Route path="/billing/status" element={<ProtectedRoute><PaymentStatusPage /></ProtectedRoute>} />
             
             <Route path="/dashboard" element={<ProtectedRoute><DashboardRouter /></ProtectedRoute>} />
             
@@ -138,6 +155,7 @@ function App() {
             <Route path="/settings/language" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><TherapistLanguageSettingsPage /></RoleProtectedRoute>} />
 
             <Route path="/therapist/soap-notes/history" element={<RoleProtectedRoute allowedRoles={['therapist']}><SOAPHistoryPage /></RoleProtectedRoute>} />
+            <Route path="/therapist/self-assigned-review" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><SelfAssignedReviewPage /></RoleProtectedRoute>} />
             
             <Route path="/therapist/packages" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><PackageManagementPage /></RoleProtectedRoute>} />
             <Route path="/therapist/invoices" element={<RoleProtectedRoute allowedRoles={['admin', 'therapist']}><InvoiceListPage /></RoleProtectedRoute>} />
@@ -157,6 +175,7 @@ function App() {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<PatientDashboardPage />} />
               <Route path="programs" element={<MyExerciseProgramsPage />} />
+              <Route path="library" element={<PatientLibraryPage />} />
               <Route path="programs/:assignmentId" element={<PatientExerciseViewPage />} />
               <Route path="videos" element={<ExerciseVideosPage />} />
               <Route path="recovery" element={<RecoveryProgressPage />} />
@@ -177,6 +196,8 @@ function App() {
             <Route path="/super-admin/payment-settings" element={<RoleProtectedRoute allowedRoles={['super_admin']}><SuperAdminPaymentSettings /></RoleProtectedRoute>} />
             <Route path="/super-admin/clinics" element={<RoleProtectedRoute allowedRoles={['super_admin']}><SuperAdminClinics /></RoleProtectedRoute>} />
             <Route path="/super-admin/users" element={<RoleProtectedRoute allowedRoles={['super_admin']}><SuperAdminUsers /></RoleProtectedRoute>} />
+            <Route path="/super-admin/plans" element={<RoleProtectedRoute allowedRoles={['super_admin']}><SuperAdminPlans /></RoleProtectedRoute>} />
+            <Route path="/super-admin/subscriptions" element={<RoleProtectedRoute allowedRoles={['super_admin']}><SuperAdminSubscriptions /></RoleProtectedRoute>} />
             <Route path="*" element={<div className="min-h-screen flex flex-col items-center justify-center bg-background"><h1 className="text-4xl font-bold mb-2">404</h1><a href="/" className="text-primary hover:underline">Back to home</a></div>} />
           </Routes>
           <Toaster position="top-right" theme="system" closeButton richColors />

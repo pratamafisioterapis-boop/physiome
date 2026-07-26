@@ -6,20 +6,30 @@
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
-import webpush from "npm:web-push@3.6.7";
+import { sendWebPush } from "../_shared/push.ts";
+import {
+  canWriteInState,
+  DAY_MS,
+  deriveState,
+  GRACE_DAYS,
+  isWriteGated,
+  type EntitlementState,
+} from "../_shared/subscription.ts";
+import {
+  fetchTransactionStatus,
+  generateOrderId,
+  mapTransactionStatus,
+  snapCreateTransaction,
+  toStoredStatus,
+} from "../_shared/midtrans.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-// Web Push (chat notifications). Optional: if unset, push sends are silently
-// skipped (chat itself still works via polling) rather than erroring.
-const VAPID_PUBLIC_KEY = Deno.env.get("VAPID_PUBLIC_KEY") || "";
-const VAPID_PRIVATE_KEY = Deno.env.get("VAPID_PRIVATE_KEY") || "";
-const VAPID_CONTACT_EMAIL = Deno.env.get("VAPID_CONTACT_EMAIL") || "mailto:support@physiome.app";
-if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
-  webpush.setVapidDetails(VAPID_CONTACT_EMAIL, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
-}
+// Web Push (chat notifications) now lives in ../_shared/push.ts, which the
+// billing reminder cron shares. VAPID setup happens on import there; if the
+// keys are unset, sends are skipped silently and chat still works via polling.
 
 const admin: SupabaseClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -53,6 +63,13 @@ function err(status: number, message: string) {
   return json({ error: message, message }, status);
 }
 
+// Like `err`, but carries a machine-readable `code` plus context. The client
+// needs this to tell 402 "subscription lapsed" apart from 402 "plan limit
+// reached" and route the user to the right screen.
+function errCode(status: number, message: string, extra: Record<string, unknown>) {
+  return json({ error: message, message, ...extra }, status);
+}
+
 class HttpError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -61,7 +78,14 @@ class HttpError extends Error {
   }
 }
 
-type AuthCtx = { userId: string; role: string; clinicId: string | null };
+type AuthCtx = {
+  userId: string;
+  role: string;
+  clinicId: string | null;
+  // Populated by the write gate in the router so downstream limit checks in
+  // the same request don't have to re-query the subscription.
+  entitlement?: Entitlement;
+};
 
 async function requireAuth(req: Request): Promise<AuthCtx> {
   const authHeader = req.headers.get("Authorization") || "";
@@ -86,6 +110,16 @@ function requireSuperAdmin(ctx: AuthCtx) {
   if (ctx.role !== "super_admin") throw new HttpError(403, "Forbidden: super_admins only");
 }
 
+// Billing (clinic -> its own patients) is staff-only. The UI already hides
+// these screens from patients, but the UI is not a security boundary: without
+// this check any authenticated patient could read and write their whole
+// clinic's invoices, payments, and price list.
+function requireClinician(ctx: AuthCtx) {
+  if (!["admin", "therapist", "super_admin"].includes(ctx.role)) {
+    throw new HttpError(403, "Forbidden: clinic staff only");
+  }
+}
+
 function bad(msg: string): never {
   throw new HttpError(400, msg);
 }
@@ -99,7 +133,216 @@ function unwrap<T>(res: { data: T; error: { message: string } | null }): T {
   return res.data;
 }
 
+// ---------- subscription entitlement ----------
+
+// The kill switch. Enforcement ships off so the payment flow can be proven in
+// production before anything starts refusing writes; flipping this env var in
+// the dashboard turns it on (or back off) with no redeploy.
+const ENFORCEMENT_ENABLED = (Deno.env.get("SUBSCRIPTION_ENFORCEMENT") || "").toLowerCase() === "true";
+
+type Entitlement = {
+  subjectKind: "clinic" | "user" | "none";
+  subjectId: string | null;
+  planCode: string | null;
+  planName: string | null;
+  audience: string | null;
+  status: string;
+  state: EntitlementState;
+  currentPeriodEnd: string | null;
+  graceUntil: string | null;
+  daysRemaining: number;
+  daysUntilLockout: number;
+  canWrite: boolean;
+  enforced: boolean;
+  limits: { maxTherapists: number | null; maxActivePatients: number | null };
+};
+
+const NO_ENTITLEMENT: Entitlement = {
+  subjectKind: "none",
+  subjectId: null,
+  planCode: null,
+  planName: null,
+  audience: null,
+  status: "none",
+  state: "none",
+  currentPeriodEnd: null,
+  graceUntil: null,
+  daysRemaining: 0,
+  daysUntilLockout: 0,
+  canWrite: false,
+  enforced: ENFORCEMENT_ENABLED,
+  limits: { maxTherapists: null, maxActivePatients: null },
+};
+
+// Which subscription governs this caller? A B2C patient has their own
+// per-user subscription; a patient who joined via a clinic invite code is
+// covered by their clinic, so we fall back to that.
+async function resolveSubscriptionRow(ctx: AuthCtx) {
+  const selectCols = "*, subscription_plans(code, name_id, name_en, audience, max_therapists, max_active_patients)";
+
+  if (ctx.role === "patient") {
+    const { data: own } = await admin
+      .from("subscriptions")
+      .select(selectCols)
+      .eq("user_id", ctx.userId)
+      .maybeSingle();
+    if (own) return own;
+  }
+
+  if (!ctx.clinicId) return null;
+
+  const { data: clinicSub } = await admin
+    .from("subscriptions")
+    .select(selectCols)
+    .eq("clinic_id", ctx.clinicId)
+    .maybeSingle();
+  return clinicSub ?? null;
+}
+
+function computeEntitlement(row: Record<string, unknown> | null): Entitlement {
+  if (!row) return { ...NO_ENTITLEMENT };
+
+  const plan = (row.subscription_plans ?? null) as Record<string, unknown> | null;
+  const status = String(row.status ?? "none");
+  const periodEnd = row.current_period_end ? new Date(String(row.current_period_end)) : null;
+  const graceUntil = row.grace_until ? new Date(String(row.grace_until)) : null;
+  const now = Date.now();
+
+  const state: EntitlementState = deriveState(status, periodEnd, graceUntil, now);
+
+  return {
+    subjectKind: row.clinic_id ? "clinic" : "user",
+    subjectId: String(row.clinic_id ?? row.user_id ?? ""),
+    planCode: plan ? String(plan.code) : String(row.plan_code ?? ""),
+    planName: plan ? String(plan.name_id) : null,
+    audience: plan ? String(plan.audience) : null,
+    status,
+    state,
+    currentPeriodEnd: periodEnd ? periodEnd.toISOString() : null,
+    graceUntil: graceUntil ? graceUntil.toISOString() : null,
+    daysRemaining: periodEnd ? Math.ceil((periodEnd.getTime() - now) / DAY_MS) : 0,
+    daysUntilLockout: graceUntil ? Math.ceil((graceUntil.getTime() - now) / DAY_MS) : 0,
+    canWrite: canWriteInState(state),
+    enforced: ENFORCEMENT_ENABLED,
+    limits: {
+      maxTherapists: plan?.max_therapists != null ? Number(plan.max_therapists) : null,
+      maxActivePatients: plan?.max_active_patients != null ? Number(plan.max_active_patients) : null,
+    },
+  };
+}
+
+async function getEntitlement(ctx: AuthCtx): Promise<Entitlement> {
+  if (ctx.role === "super_admin") {
+    return {
+      ...NO_ENTITLEMENT,
+      subjectKind: "none",
+      status: "internal",
+      state: "active",
+      canWrite: true,
+    };
+  }
+  return computeEntitlement(await resolveSubscriptionRow(ctx));
+}
+
+/**
+ * Would adding one more therapist/patient exceed the clinic's plan?
+ * Returns a 402 Response when it would, otherwise null.
+ *
+ * Usable from unauthenticated paths (invite-code signup), which is why it
+ * takes a clinicId rather than an AuthCtx.
+ */
+async function checkPlanLimit(
+  clinicId: string | null,
+  kind: "therapist" | "patient",
+): Promise<Response | null> {
+  if (!ENFORCEMENT_ENABLED || !clinicId) return null;
+
+  const { data: clinic } = await admin
+    .from("clinics")
+    .select("is_house_clinic")
+    .eq("id", clinicId)
+    .maybeSingle();
+
+  // Direct-to-consumer patients live in the house clinic and each pay for
+  // themselves, so they must not count against its patient allowance.
+  if (clinic?.is_house_clinic && kind === "patient") return null;
+
+  const { data: sub } = await admin
+    .from("subscriptions")
+    .select("plan_code, subscription_plans(max_therapists, max_active_patients)")
+    .eq("clinic_id", clinicId)
+    .maybeSingle();
+
+  const plan = sub?.subscription_plans as Record<string, unknown> | null | undefined;
+  if (!plan) return null;
+
+  const limit = kind === "therapist" ? plan.max_therapists : plan.max_active_patients;
+  if (limit == null) return null;
+
+  const table = kind === "therapist" ? "therapists" : "patients";
+  const { count } = await admin
+    .from(table)
+    .select("id", { count: "exact", head: true })
+    .eq("clinic_id", clinicId)
+    .eq("status", "Active");
+
+  const current = count ?? 0;
+  if (current < Number(limit)) return null;
+
+  const noun = kind === "therapist" ? "fisioterapis" : "pasien aktif";
+  return errCode(
+    402,
+    `Paket Anda dibatasi ${limit} ${noun}. Upgrade paket untuk menambah lagi.`,
+    { code: "plan_limit_reached", limit: Number(limit), current, plan_code: sub?.plan_code, kind },
+  );
+}
+
+/** Same check for authenticated routes. Throws nothing; returns a Response. */
+async function checkCtxPlanLimit(ctx: AuthCtx, kind: "therapist" | "patient") {
+  return await checkPlanLimit(ctx.clinicId, kind);
+}
+
 // ---------- auth routes ----------
+
+
+/** Start a trial for a freshly created subject. Free, and always real: the
+ * old flow wrote status "pending" for paid plans, which locked nobody out but
+ * also meant the trial was fiction. */
+async function startTrial(
+  subject: { clinicId?: string; userId?: string },
+  planCode: string,
+) {
+  const { data: plan } = await admin
+    .from("subscription_plans")
+    .select("period_months, period_days")
+    .eq("code", planCode)
+    .maybeSingle();
+
+  const days = plan ? (Number(plan.period_days) || 0) + (Number(plan.period_months) || 0) * 30 : 14;
+  const periodEnd = new Date(Date.now() + days * DAY_MS);
+
+  const { error } = await admin.from("subscriptions").insert({
+    clinic_id: subject.clinicId ?? null,
+    user_id: subject.userId ?? null,
+    plan_code: planCode,
+    status: "trialing",
+    current_period_start: new Date().toISOString(),
+    current_period_end: periodEnd.toISOString(),
+    grace_until: new Date(periodEnd.getTime() + GRACE_DAYS * DAY_MS).toISOString(),
+    source: "trial",
+  });
+  if (error) console.error("failed to start trial", planCode, error.message);
+}
+
+/** The clinic that owns direct-to-consumer patients. */
+async function getHouseClinicId(): Promise<string | null> {
+  const { data } = await admin
+    .from("clinics")
+    .select("id")
+    .eq("is_house_clinic", true)
+    .maybeSingle();
+  return data?.id ?? null;
+}
 
 async function authRegister(body: Record<string, unknown>) {
   const {
@@ -111,7 +354,6 @@ async function authRegister(body: Record<string, unknown>) {
     inviteCode,
     accountType,
     packagePlan,
-    paymentMethod,
   } = body as Record<string, string>;
 
   if (!email || !password || !fullName) bad("email, password, and fullName are required");
@@ -119,11 +361,16 @@ async function authRegister(body: Record<string, unknown>) {
   const { data: existing } = await admin.from("users").select("id").eq("email", email).maybeSingle();
   if (existing) return err(400, "Email is already registered");
 
+  // A solo practice is a clinic with one member, not a third kind of tenant.
+  const isPractice = accountType === "clinic" || accountType === "solo" || !accountType;
+  const isDirectPatient = accountType === "patient" && !inviteCode;
+
   let clinicId: string | null = null;
   let userRole = "admin";
   let inviteId: string | null = null;
+  let createdClinic = false;
 
-  if (accountType === "therapist" || accountType === "patient") {
+  if (accountType === "therapist" || (accountType === "patient" && inviteCode)) {
     if (!inviteCode) bad(`An invite code from your clinic is required to sign up as a ${accountType}`);
 
     const { data: codeData } = await admin
@@ -146,15 +393,30 @@ async function authRegister(body: Record<string, unknown>) {
     clinicId = codeData.clinic_id;
     userRole = codeData.role;
     inviteId = codeData.id;
-  } else {
-    if (!clinicName) bad("Clinic name is required");
+
+    const limitError = await checkPlanLimit(clinicId, userRole === "therapist" ? "therapist" : "patient");
+    if (limitError) return limitError;
+  } else if (isDirectPatient) {
+    // Public self-signup: no invite code, attached to the house clinic.
+    clinicId = await getHouseClinicId();
+    if (!clinicId) {
+      console.error("patient self-signup attempted but no clinic has is_house_clinic = true");
+      return err(503, "Pendaftaran pasien mandiri belum tersedia. Silakan hubungi klinik Anda.");
+    }
+    userRole = "patient";
+  } else if (isPractice) {
+    const name = clinicName || (accountType === "solo" ? `Praktik ${fullName}` : "");
+    if (!name) bad("Clinic name is required");
     const { data: newClinic, error: clinicError } = await admin
       .from("clinics")
-      .insert({ name: clinicName })
+      .insert({ name })
       .select()
       .single();
     if (clinicError) throw new HttpError(500, clinicError.message);
     clinicId = newClinic.id;
+    createdClinic = true;
+  } else {
+    bad(`Unknown accountType: ${accountType}`);
   }
 
   const { data: created, error: createError } = await admin.auth.admin.createUser({
@@ -198,26 +460,45 @@ async function authRegister(body: Record<string, unknown>) {
     }
   }
 
-  if (!inviteId) {
-    await admin.from("clinics").update({ created_by: userRow.id }).eq("id", clinicId);
-    await admin.from("clinic_subscriptions").insert({
+  // A therapists row for every clinician, created eagerly.
+  //
+  // appointments.therapist_id is a FK to therapists.id, but signup used to
+  // create only a users row -- so a solo practitioner could not book an
+  // appointment for themselves. Solo owners always treat patients; for a
+  // multi-therapist clinic the founder opts in with `alsoPractises`.
+  const alsoPractises = body.alsoPractises !== false;
+  if (userRole === "therapist" || (createdClinic && (accountType === "solo" || alsoPractises))) {
+    const { error: therapistError } = await admin.from("therapists").insert({
+      userId: userRow.id,
       clinic_id: clinicId,
-      status: packagePlan === "demo-14" ? "active" : "pending",
-      plan: packagePlan || "demo-14",
-      payment_method: paymentMethod || "transfer",
-      started_at: new Date().toISOString(),
-      ended_at: packagePlan === "demo-14" ? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() : null,
+      status: "Active",
     });
+    // Non-fatal: authUpdateProfile creates this lazily too, so a failure here
+    // degrades rather than losing the whole registration.
+    if (therapistError) console.error("failed to create therapist row", therapistError.message);
+  }
+
+  if (createdClinic) {
+    await admin.from("clinics").update({ created_by: userRow.id }).eq("id", clinicId);
+    await startTrial({ clinicId: clinicId! }, "trial-14");
+  } else if (isDirectPatient) {
+    await startTrial({ userId: userRow.id }, "patient-trial-7");
   }
 
   const { data: signInData, error: signInError } = await freshAuthClient().auth.signInWithPassword({ email, password });
   if (signInError || !signInData?.session) throw new HttpError(500, "Registered but failed to create session");
+
+  // If they picked a paid plan at signup, the client sends them straight to
+  // checkout. The trial runs regardless, so nobody is ever locked out while
+  // they decide.
+  const checkoutPlanCode = packagePlan && packagePlan !== "demo-14" ? packagePlan : null;
 
   return json(
     {
       message: "Registration successful",
       token: signInData.session.access_token,
       refreshToken: signInData.session.refresh_token,
+      checkoutPlanCode,
       user: { id: userRow.id, fullName: userRow.fullName, role: userRow.role, clinic_id: clinicId },
     },
     201,
@@ -242,6 +523,14 @@ async function authLogin(body: Record<string, unknown>) {
 
   const { data: therapist } = await admin.from("therapists").select("id").eq("userId", user.id).maybeSingle();
 
+  // Embedded here as well as in /auth/me, otherwise a freshly logged-in
+  // session has no subscription state until the next page refresh.
+  const subscription = await getEntitlement({
+    userId: user.id,
+    role: user.role,
+    clinicId: user.clinic_id,
+  });
+
   return json({
     message: "Login successful",
     token: signInData.session.access_token,
@@ -252,6 +541,7 @@ async function authLogin(body: Record<string, unknown>) {
       role: user.role,
       clinic_id: user.clinic_id,
       therapistId: therapist?.id,
+      subscription,
     },
   });
 }
@@ -290,7 +580,8 @@ async function authMe(ctx: AuthCtx) {
     .eq("id", ctx.userId)
     .single();
   if (!user) return notFound("User not found");
-  return json({ ...user, therapistId: user.therapists?.[0]?.id, therapists: undefined });
+  const subscription = await getEntitlement(ctx);
+  return json({ ...user, therapistId: user.therapists?.[0]?.id, therapists: undefined, subscription });
 }
 
 async function authUpdateProfile(ctx: AuthCtx, body: Record<string, unknown>) {
@@ -337,6 +628,9 @@ async function getPatient(ctx: AuthCtx, id: string) {
 async function createPatient(ctx: AuthCtx, body: Record<string, unknown>) {
   const { name, email, phone, gender, birth_date, ...rest } = body as Record<string, string>;
   const normalizedGender = typeof gender === "string" ? gender.toLowerCase() : undefined;
+
+  const limitError = await checkCtxPlanLimit(ctx, "patient");
+  if (limitError) return limitError;
 
   const { data: patient, error } = await admin
     .from("patients")
@@ -452,6 +746,9 @@ async function getTherapist(ctx: AuthCtx, id: string) {
 async function createTherapist(ctx: AuthCtx, body: Record<string, unknown>) {
   const { fullName, email, password, phone, specialization, licenseNumber } = body as Record<string, string>;
   if (!fullName || !email || !password) bad("Full name, email, and password are required");
+
+  const limitError = await checkCtxPlanLimit(ctx, "therapist");
+  if (limitError) return limitError;
 
   const { data: created, error: createError } = await admin.auth.admin.createUser({ email, password, email_confirm: true });
   if (createError || !created?.user) throw new HttpError(500, createError?.message || "Failed to create account");
@@ -672,8 +969,30 @@ async function deleteExercise(ctx: AuthCtx, id: string) {
 
 // ---------- exercise programs ----------
 
-async function listProgramTemplates() {
-  const { data } = await admin.from("exercise_programs").select("*").is("clinic_id", null).eq("status", "Active").order("name", { ascending: true });
+// The global program library. Also serves the direct-to-consumer patient
+// catalogue, hence the filters -- all of these columns already exist on
+// exercise_programs.
+async function listProgramTemplates(url?: URL) {
+  let query = admin
+    .from("exercise_programs")
+    .select("*")
+    .is("clinic_id", null)
+    .eq("status", "Active")
+    .order("name", { ascending: true });
+
+  const indication = url?.searchParams.get("indication");
+  const bodyRegion = url?.searchParams.get("body_region");
+  const difficulty = url?.searchParams.get("difficulty");
+  const phase = url?.searchParams.get("phase");
+  const search = url?.searchParams.get("q");
+
+  if (indication) query = query.ilike("indication", `%${indication}%`);
+  if (bodyRegion) query = query.eq("body_region", bodyRegion);
+  if (difficulty) query = query.eq("difficulty", difficulty);
+  if (phase) query = query.ilike("phase", `%${phase}%`);
+  if (search) query = query.or(`name.ilike.%${search}%,indication.ilike.%${search}%`);
+
+  const { data } = await query;
   const formatted = (data ?? []).map((t: Record<string, any>) => ({ ...t, exercisesCount: Array.isArray(t.exercises) ? t.exercises.length : 0 }));
   return json(formatted);
 }
@@ -943,17 +1262,20 @@ async function deleteCategory(ctx: AuthCtx, id: string) {
 // ---------- service packages (catalog, distinct from patient_packages) ----------
 
 async function listPackages(ctx: AuthCtx) {
+  requireClinician(ctx);
   const { data } = await admin.from("packages").select("*").eq("clinic_id", ctx.clinicId).order("created_at", { ascending: false });
   return json(data ?? []);
 }
 
 async function createPackage(ctx: AuthCtx, body: Record<string, unknown>) {
+  requireClinician(ctx);
   const { data, error } = await admin.from("packages").insert({ ...body, clinic_id: ctx.clinicId }).select().single();
   if (error) throw new HttpError(500, error.message);
   return json(data, 201);
 }
 
 async function updatePackage(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
+  requireClinician(ctx);
   const { data, error } = await admin.from("packages").update(body).eq("id", id).eq("clinic_id", ctx.clinicId).select().maybeSingle();
   if (error) throw new HttpError(500, error.message);
   if (!data) return notFound("Package not found");
@@ -961,6 +1283,7 @@ async function updatePackage(ctx: AuthCtx, id: string, body: Record<string, unkn
 }
 
 async function deletePackage(ctx: AuthCtx, id: string) {
+  requireClinician(ctx);
   await admin.from("packages").delete().eq("id", id).eq("clinic_id", ctx.clinicId);
   return json({ message: "Package deleted successfully" });
 }
@@ -1017,6 +1340,13 @@ async function createInviteCode(ctx: AuthCtx, body: Record<string, unknown>) {
   if (!ctx.clinicId) bad("You must belong to a clinic to create invite codes");
   const { code, role, expires_at } = body as Record<string, string>;
   if (role && !INVITE_ROLES.includes(role)) bad("Invalid role");
+
+  // Fail at invite time rather than when the invitee tries to register --
+  // being turned away at signup after receiving a code is a far worse
+  // experience than the admin learning about the limit up front.
+  const limitError = await checkCtxPlanLimit(ctx, role === "patient" ? "patient" : "therapist");
+  if (limitError) return limitError;
+
   const { data, error } = await admin
     .from("invite_codes")
     .insert({
@@ -1693,17 +2023,20 @@ async function adminStats(ctx: AuthCtx) {
 // ---------- billing ----------
 
 async function listInvoices(ctx: AuthCtx) {
+  requireClinician(ctx);
   const { data } = await admin.from("invoices").select("*, patients(name)").eq("clinic_id", ctx.clinicId).order("invoiceDate", { ascending: false });
   return json(data ?? []);
 }
 
 async function getInvoice(ctx: AuthCtx, id: string) {
+  requireClinician(ctx);
   const { data } = await admin.from("invoices").select("*, patients(name), payments(*)").eq("id", id).eq("clinic_id", ctx.clinicId).maybeSingle();
   if (!data) return notFound("Invoice not found");
   return json(data);
 }
 
 async function createInvoice(ctx: AuthCtx, body: Record<string, unknown>) {
+  requireClinician(ctx);
   const { patientId, therapistId, invoiceDate, dueDate, totalAmount, packageType } = body as Record<string, string>;
   const invoiceNumber = `INV-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
   const { data, error } = await admin
@@ -1725,6 +2058,7 @@ async function createInvoice(ctx: AuthCtx, body: Record<string, unknown>) {
 }
 
 async function updateInvoice(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
+  requireClinician(ctx);
   const data = { ...body } as Record<string, unknown>;
   if (data.totalAmount !== undefined) data.totalAmount = parseInt(data.totalAmount as string);
   if (data.amountPaid !== undefined) data.amountPaid = parseInt(data.amountPaid as string);
@@ -1736,11 +2070,13 @@ async function updateInvoice(ctx: AuthCtx, id: string, body: Record<string, unkn
 }
 
 async function deleteInvoice(ctx: AuthCtx, id: string) {
+  requireClinician(ctx);
   await admin.from("invoices").delete().eq("id", id).eq("clinic_id", ctx.clinicId);
   return json({ message: "Invoice deleted" });
 }
 
 async function listPayments(ctx: AuthCtx) {
+  requireClinician(ctx);
   const { data } = await admin
     .from("payments")
     .select("*, invoices!inner(invoiceNumber, clinic_id), patients(name)")
@@ -1750,6 +2086,7 @@ async function listPayments(ctx: AuthCtx) {
 }
 
 async function createPayment(ctx: AuthCtx, body: Record<string, unknown>) {
+  requireClinician(ctx);
   const { invoiceId, patientId, paymentAmount, paymentDate, paymentMethod, referenceNumber, notes } = body as Record<string, string>;
   const { data: invoice } = await admin.from("invoices").select("id").eq("id", invoiceId).eq("clinic_id", ctx.clinicId).maybeSingle();
   if (!invoice) return err(403, "Access denied to invoice");
@@ -1764,6 +2101,7 @@ async function createPayment(ctx: AuthCtx, body: Record<string, unknown>) {
 }
 
 async function listPatientPackages(ctx: AuthCtx) {
+  requireClinician(ctx);
   const { data } = await admin
     .from("patient_packages")
     .select("*, patients!inner(name, clinic_id)")
@@ -1773,6 +2111,7 @@ async function listPatientPackages(ctx: AuthCtx) {
 }
 
 async function createPatientPackage(ctx: AuthCtx, body: Record<string, unknown>) {
+  requireClinician(ctx);
   const { patientId, packageId, totalSessions, expiryDate } = body as Record<string, string>;
   const { data: patient } = await admin.from("patients").select("id").eq("id", patientId).eq("clinic_id", ctx.clinicId).maybeSingle();
   if (!patient) return err(403, "Access denied to patient");
@@ -1784,6 +2123,607 @@ async function createPatientPackage(ctx: AuthCtx, body: Record<string, unknown>)
     .single();
   if (error) throw new HttpError(500, error.message);
   return json(data, 201);
+}
+
+// ---------- direct-to-consumer patient self-service ----------
+
+// Red-flag screening. Answering "yes" to any of these means the complaint may
+// need urgent or hands-on assessment, and self-guided exercise is not an
+// appropriate first step -- so the catalogue stays closed and the patient is
+// routed to a therapist instead.
+//
+// Drafted from standard musculoskeletal red flags. A physiotherapist should
+// review this list before it goes live.
+const RED_FLAG_QUESTIONS = [
+  { id: "chest_pain", label: "Nyeri dada, sesak napas, atau jantung berdebar saat beraktivitas" },
+  { id: "cauda_equina", label: "Kebas di area selangkangan, atau kesulitan menahan buang air kecil/besar" },
+  { id: "progressive_weakness", label: "Kelemahan otot yang makin memberat, atau kebas yang menjalar" },
+  { id: "recent_trauma", label: "Cedera berat, jatuh, atau kecelakaan dalam 6 minggu terakhir" },
+  { id: "unexplained_weight_loss", label: "Berat badan turun drastis tanpa sebab jelas" },
+  { id: "fever_infection", label: "Demam, menggigil, atau nyeri yang memburuk saat malam dan tidak mereda dengan istirahat" },
+  { id: "recent_surgery", label: "Baru menjalani operasi pada area yang dikeluhkan" },
+  { id: "pregnancy", label: "Sedang hamil" },
+  { id: "cancer_history", label: "Riwayat kanker" },
+];
+
+async function getScreeningQuestions() {
+  return json({ questions: RED_FLAG_QUESTIONS });
+}
+
+async function getMyScreening(ctx: AuthCtx) {
+  if (ctx.role !== "patient") throw new HttpError(403, "Hanya untuk akun pasien");
+  const patient = await resolvePatientForUser(ctx);
+  if (!patient) return notFound("Profil pasien tidak ditemukan");
+
+  const { data } = await admin
+    .from("patient_screenings")
+    .select("*")
+    .eq("patient_id", patient.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return json({
+    screening: data ?? null,
+    cleared: Boolean(data?.cleared && data?.disclaimer_accepted_at),
+    questions: RED_FLAG_QUESTIONS,
+  });
+}
+
+async function submitScreening(ctx: AuthCtx, body: Record<string, unknown>) {
+  if (ctx.role !== "patient") throw new HttpError(403, "Hanya untuk akun pasien");
+  const patient = await resolvePatientForUser(ctx);
+  if (!patient) return notFound("Profil pasien tidak ditemukan");
+
+  const answers = (body.answers ?? {}) as Record<string, unknown>;
+  const disclaimerAccepted = body.disclaimerAccepted === true;
+
+  const redFlags = RED_FLAG_QUESTIONS
+    .filter((q) => answers[q.id] === true)
+    .map((q) => q.id);
+
+  const cleared = redFlags.length === 0;
+
+  const { data, error } = await admin
+    .from("patient_screenings")
+    .insert({
+      patient_id: patient.id,
+      answers,
+      red_flags: redFlags,
+      cleared,
+      disclaimer_accepted_at: disclaimerAccepted ? new Date().toISOString() : null,
+    })
+    .select()
+    .single();
+  if (error) throw new HttpError(500, error.message);
+
+  return json({
+    screening: data,
+    cleared: cleared && disclaimerAccepted,
+    redFlags,
+    message: cleared
+      ? "Skrining selesai."
+      : "Berdasarkan jawaban Anda, kondisi ini sebaiknya diperiksa fisioterapis terlebih dahulu sebelum memulai latihan mandiri.",
+  }, 201);
+}
+
+/**
+ * A patient starts a global-library program themselves.
+ *
+ * The assignment goes live immediately -- the patient never waits in a queue --
+ * but is flagged for review so a Kaffah therapist can approve or adjust it.
+ * That is the hybrid: automatic for the patient, still supervised.
+ *
+ * Being a POST, this is covered by the subscription write gate: an unpaid
+ * patient may browse the catalogue but not start a program.
+ */
+async function createSelfAssignment(ctx: AuthCtx, body: Record<string, unknown>) {
+  if (ctx.role !== "patient") throw new HttpError(403, "Hanya untuk akun pasien");
+
+  const houseClinicId = await getHouseClinicId();
+  if (!houseClinicId || ctx.clinicId !== houseClinicId) {
+    return err(403, "Program mandiri hanya tersedia untuk pasien yang mendaftar langsung.");
+  }
+
+  const patient = await resolvePatientForUser(ctx);
+  if (!patient) return notFound("Profil pasien tidak ditemukan");
+
+  const { data: screening } = await admin
+    .from("patient_screenings")
+    .select("cleared, disclaimer_accepted_at")
+    .eq("patient_id", patient.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!screening?.cleared || !screening?.disclaimer_accepted_at) {
+    return errCode(
+      403,
+      "Selesaikan skrining keamanan dan setujui pernyataan sebelum memulai program.",
+      { code: "screening_required" },
+    );
+  }
+
+  const programId = String((body as Record<string, string>).program_id || "");
+  if (!programId) bad("program_id is required");
+
+  // Only the global library is self-assignable; another clinic's private
+  // programme must never be reachable this way.
+  const { data: program } = await admin
+    .from("exercise_programs")
+    .select("id, expected_duration")
+    .eq("id", programId)
+    .is("clinic_id", null)
+    .eq("status", "Active")
+    .maybeSingle();
+  if (!program) return notFound("Program tidak ditemukan di library umum");
+
+  const weeks = Number(String(program.expected_duration ?? "").match(/\d+/)?.[0]);
+  const durationDays = Number.isFinite(weeks) && weeks > 0 ? weeks * 7 : 28;
+
+  const start = new Date();
+  const end = new Date(start.getTime() + durationDays * DAY_MS);
+
+  const { data, error } = await admin
+    .from("program_assignments")
+    .insert({
+      program_id: programId,
+      patient_id: patient.id,
+      clinic_id: houseClinicId,
+      start_date: start.toISOString(),
+      end_date: end.toISOString(),
+      status: "Active",
+      self_selected: true,
+      review_status: "pending",
+      therapist_notes: "Dipilih sendiri oleh pasien. Menunggu tinjauan fisioterapis.",
+    })
+    .select()
+    .single();
+  if (error) throw new HttpError(500, error.message);
+
+  return json(data, 201);
+}
+
+/** The Kaffah therapist review queue for self-selected programmes. */
+async function listSelfAssignedForReview(ctx: AuthCtx) {
+  requireClinician(ctx);
+  const { data, error } = await admin
+    .from("program_assignments")
+    .select("*, exercise_programs(name, indication, precautions, progression_criteria), patients(name, email, main_complaint)")
+    .eq("clinic_id", ctx.clinicId)
+    .eq("self_selected", true)
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) throw new HttpError(500, error.message);
+  return json(data ?? []);
+}
+
+async function reviewSelfAssignment(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
+  requireClinician(ctx);
+  const { review_status, review_notes, status } = body as Record<string, string>;
+  if (!["approved", "modified"].includes(review_status)) {
+    bad("review_status must be 'approved' or 'modified'");
+  }
+
+  const { data, error } = await admin
+    .from("program_assignments")
+    .update({
+      review_status,
+      review_notes: review_notes || null,
+      reviewed_by: ctx.userId,
+      reviewed_at: new Date().toISOString(),
+      ...(status ? { status } : {}),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .eq("clinic_id", ctx.clinicId)
+    .select()
+    .maybeSingle();
+  if (error) throw new HttpError(500, error.message);
+  if (!data) return notFound("Penugasan program tidak ditemukan");
+  return json(data);
+}
+
+// ---------- subscriptions (Physiome charging its customers) ----------
+
+// Public: the pricing page has to render before anyone logs in. Only plans an
+// operator has explicitly published are returned, so the placeholder prices
+// the catalogue ships with are never shown to a buyer.
+async function listPublicPlans(url: URL) {
+  const audience = url.searchParams.get("audience");
+  let query = admin
+    .from("subscription_plans")
+    .select("code, name_id, name_en, description_id, description_en, audience, price_idr, period_months, period_days, max_therapists, max_active_patients, features")
+    .eq("is_public", true)
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  if (audience) query = query.eq("audience", audience);
+
+  const { data, error } = await query;
+  if (error) throw new HttpError(500, error.message);
+  return json(data ?? []);
+}
+
+async function getMySubscription(ctx: AuthCtx) {
+  const entitlement = await getEntitlement(ctx);
+  const usage = await countPlanUsage(ctx);
+  return json({ ...entitlement, usage });
+}
+
+// Usage is reported next to the plan limits so the billing page can show
+// "3 of 5 therapists" without a second round trip.
+async function countPlanUsage(ctx: AuthCtx): Promise<{ therapists: number; activePatients: number }> {
+  if (!ctx.clinicId) return { therapists: 0, activePatients: 0 };
+
+  const [{ count: therapists }, { count: activePatients }] = await Promise.all([
+    admin
+      .from("therapists")
+      .select("id", { count: "exact", head: true })
+      .eq("clinic_id", ctx.clinicId)
+      .eq("status", "Active"),
+    admin
+      .from("patients")
+      .select("id", { count: "exact", head: true })
+      .eq("clinic_id", ctx.clinicId)
+      .eq("status", "Active"),
+  ]);
+
+  return { therapists: therapists ?? 0, activePatients: activePatients ?? 0 };
+}
+
+// ---------- super admin: plans and subscriptions ----------
+
+async function superAdminListPlans(ctx: AuthCtx) {
+  requireSuperAdmin(ctx);
+  const { data, error } = await admin
+    .from("subscription_plans")
+    .select("*")
+    .order("sort_order", { ascending: true });
+  if (error) throw new HttpError(500, error.message);
+  return json(data ?? []);
+}
+
+async function superAdminUpdatePlan(ctx: AuthCtx, code: string, body: Record<string, unknown>) {
+  requireSuperAdmin(ctx);
+
+  // Whitelisted so a stray field cannot rewrite `code` or `subject_kind` and
+  // silently repoint every subscription that references this plan.
+  const EDITABLE = [
+    "name_id", "name_en", "description_id", "description_en",
+    "price_idr", "period_months", "period_days",
+    "max_therapists", "max_active_patients", "features",
+    "is_public", "is_active", "sort_order",
+  ];
+
+  const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  for (const key of EDITABLE) {
+    if (body[key] !== undefined) patch[key] = body[key];
+  }
+
+  if (patch.price_idr !== undefined) {
+    const price = Number(patch.price_idr);
+    if (!Number.isFinite(price) || price < 0) bad("price_idr must be a non-negative number");
+    // IDR has no minor unit and Midtrans rejects a fractional gross_amount.
+    patch.price_idr = Math.round(price);
+  }
+
+  // Publishing a plan with a placeholder price is the one mistake that costs
+  // real money, so it is refused rather than merely warned about.
+  if (patch.is_public === true) {
+    const { data: current } = await admin
+      .from("subscription_plans")
+      .select("price_idr, audience")
+      .eq("code", code)
+      .maybeSingle();
+    const effectivePrice = patch.price_idr !== undefined ? Number(patch.price_idr) : Number(current?.price_idr ?? 0);
+    if (effectivePrice <= 0 && current?.audience !== "internal") {
+      return errCode(400, "Tetapkan harga sebelum mempublikasikan paket ini.", {
+        code: "price_required_before_publish",
+      });
+    }
+  }
+
+  const { data, error } = await admin
+    .from("subscription_plans")
+    .update(patch)
+    .eq("code", code)
+    .select()
+    .maybeSingle();
+  if (error) throw new HttpError(500, error.message);
+  if (!data) return notFound("Paket tidak ditemukan");
+  return json(data);
+}
+
+async function superAdminListSubscriptions(ctx: AuthCtx) {
+  requireSuperAdmin(ctx);
+  const { data, error } = await admin
+    .from("subscriptions")
+    .select("*, clinics(name, is_house_clinic), users(fullName, email), subscription_plans(name_id, price_idr)")
+    .order("current_period_end", { ascending: true })
+    .limit(500);
+  if (error) throw new HttpError(500, error.message);
+  return json(data ?? []);
+}
+
+async function superAdminListTransactions(ctx: AuthCtx) {
+  requireSuperAdmin(ctx);
+  const { data, error } = await admin
+    .from("payment_transactions")
+    .select("*, clinics(name), users(fullName, email)")
+    .order("created_at", { ascending: false })
+    .limit(200);
+  if (error) throw new HttpError(500, error.message);
+  return json(data ?? []);
+}
+
+/**
+ * Manual override: comps, refunds, and goodwill extensions. Kept even though
+ * payment is automated, because there is always a case the gateway cannot
+ * express.
+ */
+async function superAdminAdjustSubscription(ctx: AuthCtx, id: string, body: Record<string, unknown>) {
+  requireSuperAdmin(ctx);
+  const { plan_code, status, extend_months, extend_days } = body as Record<string, string>;
+
+  const { data: current } = await admin.from("subscriptions").select("*").eq("id", id).maybeSingle();
+  if (!current) return notFound("Langganan tidak ditemukan");
+
+  const patch: Record<string, unknown> = { updated_at: new Date().toISOString(), source: "manual" };
+  if (plan_code) patch.plan_code = plan_code;
+  if (status) {
+    if (!["trialing", "active", "past_due", "expired", "cancelled"].includes(status)) bad("Invalid status");
+    patch.status = status;
+  }
+
+  const months = Number(extend_months) || 0;
+  const days = Number(extend_days) || 0;
+  if (months || days) {
+    // Extend from whichever is later, so extending an already-lapsed
+    // subscription starts from today rather than adding to a past date.
+    const base = new Date(Math.max(Date.now(), new Date(current.current_period_end).getTime()));
+    const end = new Date(base);
+    end.setMonth(end.getMonth() + months);
+    end.setDate(end.getDate() + days);
+    patch.current_period_end = end.toISOString();
+    patch.grace_until = new Date(end.getTime() + GRACE_DAYS * DAY_MS).toISOString();
+    patch.status = status || "active";
+    // The ladder restarts so the customer is not immediately re-nagged.
+    patch.reminder_stage = null;
+    patch.last_reminder_sent_at = null;
+  }
+
+  const { data, error } = await admin
+    .from("subscriptions")
+    .update(patch)
+    .eq("id", id)
+    .select()
+    .maybeSingle();
+  if (error) throw new HttpError(500, error.message);
+  return json(data);
+}
+
+async function listMyTransactions(ctx: AuthCtx) {
+  const query = admin
+    .from("payment_transactions")
+    .select("order_id, plan_code, gross_amount, status, payment_type, settlement_time, created_at, snap_redirect_url, expires_at")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  // A patient only ever sees their own orders. Note a B2C patient's clinic_id
+  // is the house clinic, so scoping them by clinic would show them every other
+  // B2C patient's payments.
+  const scoped = ctx.role === "patient" || !ctx.clinicId
+    ? query.eq("user_id", ctx.userId)
+    : query.eq("clinic_id", ctx.clinicId);
+
+  const { data, error } = await scoped;
+  if (error) throw new HttpError(500, error.message);
+  return json(data ?? []);
+}
+
+// Who is buying, and which subscription row does the payment attach to?
+// Solo practices are clinics, so only B2C patients resolve to a user subject.
+async function resolveCheckoutSubject(
+  ctx: AuthCtx,
+  plan: Record<string, unknown>,
+): Promise<{ kind: "clinic" | "user"; id: string }> {
+  if (plan.subject_kind === "user") {
+    if (ctx.role !== "patient") bad("Paket ini hanya untuk akun pasien");
+    return { kind: "user", id: ctx.userId };
+  }
+  if (!ctx.clinicId) bad("Akun Anda tidak terhubung ke klinik mana pun");
+  if (ctx.role !== "admin") throw new HttpError(403, "Hanya admin klinik yang dapat berlangganan");
+  return { kind: "clinic", id: ctx.clinicId };
+}
+
+async function createCheckout(ctx: AuthCtx, body: Record<string, unknown>) {
+  const planCode = String((body as Record<string, string>).planCode || "");
+  if (!planCode) bad("planCode is required");
+
+  const { data: plan } = await admin
+    .from("subscription_plans")
+    .select("*")
+    .eq("code", planCode)
+    .eq("is_active", true)
+    .maybeSingle();
+  if (!plan) return notFound("Paket tidak ditemukan");
+  if (Number(plan.price_idr) <= 0) bad("Paket ini tidak dijual");
+
+  const subject = await resolveCheckoutSubject(ctx, plan);
+
+  // Checkout-side idempotency: a double-clicked button should reuse the live
+  // Snap page rather than spraying orphan pending orders. order_id must be
+  // globally unique forever, so we cannot simply reuse the id.
+  const { data: reusable } = await admin
+    .from("payment_transactions")
+    .select("order_id, snap_token, snap_redirect_url, gross_amount, expires_at")
+    .eq(subject.kind === "clinic" ? "clinic_id" : "user_id", subject.id)
+    .eq("plan_code", planCode)
+    .eq("status", "pending")
+    .gt("expires_at", new Date().toISOString())
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (reusable?.snap_redirect_url) {
+    return json({
+      orderId: reusable.order_id,
+      token: reusable.snap_token,
+      redirectUrl: reusable.snap_redirect_url,
+      grossAmount: reusable.gross_amount,
+      reused: true,
+    });
+  }
+
+  const orderId = generateOrderId(subject.kind, subject.id, planCode);
+  const grossAmount = Number(plan.price_idr);
+  const expiryMinutes = 60;
+  const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000).toISOString();
+
+  const { data: user } = await admin
+    .from("users")
+    .select("fullName, email, phone")
+    .eq("id", ctx.userId)
+    .maybeSingle();
+
+  // Insert BEFORE calling Snap, so a Snap timeout still leaves a traceable
+  // order the reconciliation sweep can pick up.
+  const { error: insertError } = await admin.from("payment_transactions").insert({
+    order_id: orderId,
+    clinic_id: subject.kind === "clinic" ? subject.id : null,
+    user_id: subject.kind === "user" ? subject.id : null,
+    plan_code: planCode,
+    gross_amount: grossAmount,
+    status: "pending",
+    expires_at: expiresAt,
+    created_by: ctx.userId,
+  });
+  if (insertError) throw new HttpError(500, insertError.message);
+
+  const appBaseUrl = Deno.env.get("APP_BASE_URL") || "https://physiome.ruangdata.online";
+
+  try {
+    const snap = await snapCreateTransaction({
+      orderId,
+      grossAmount,
+      itemId: planCode,
+      itemName: String(plan.name_id),
+      customer: { name: user?.fullName, email: user?.email, phone: user?.phone },
+      finishUrl: `${appBaseUrl}/billing/status?order_id=${encodeURIComponent(orderId)}`,
+      expiryMinutes,
+    });
+
+    await admin
+      .from("payment_transactions")
+      .update({
+        snap_token: snap.token,
+        snap_redirect_url: snap.redirect_url,
+        raw_charge_response: snap.raw,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("order_id", orderId);
+
+    return json({
+      orderId,
+      token: snap.token,
+      redirectUrl: snap.redirect_url,
+      grossAmount,
+      reused: false,
+    }, 201);
+  } catch (e) {
+    await admin
+      .from("payment_transactions")
+      .update({ status: "failure", updated_at: new Date().toISOString() })
+      .eq("order_id", orderId);
+    throw new HttpError(502, e instanceof Error ? e.message : "Gagal membuat transaksi pembayaran");
+  }
+}
+
+// Reconciliation path #1 (the status page polls this). Webhooks get lost; if
+// the row is still pending we ask Midtrans directly and apply whatever we
+// find. Safe to race with the webhook because applying is latched by
+// payment_transactions.applied_at.
+async function getTransaction(ctx: AuthCtx, orderId: string) {
+  const { data: txn } = await admin
+    .from("payment_transactions")
+    .select("*")
+    .eq("order_id", orderId)
+    .maybeSingle();
+  if (!txn) return notFound("Transaksi tidak ditemukan");
+
+  const ownsIt = txn.created_by === ctx.userId ||
+    (txn.user_id && txn.user_id === ctx.userId) ||
+    (txn.clinic_id && txn.clinic_id === ctx.clinicId && ctx.role !== "patient");
+  if (!ownsIt && ctx.role !== "super_admin") return err(403, "Akses ditolak");
+
+  let current = txn;
+  const staleMs = Date.now() - new Date(txn.created_at).getTime();
+  if (txn.status === "pending" && staleMs > 30_000) {
+    const applied = await reconcileTransaction(orderId);
+    if (applied) {
+      const { data: refreshed } = await admin
+        .from("payment_transactions")
+        .select("*")
+        .eq("order_id", orderId)
+        .maybeSingle();
+      if (refreshed) current = refreshed;
+    }
+  }
+
+  return json({
+    orderId: current.order_id,
+    planCode: current.plan_code,
+    status: current.status,
+    outcome: mapTransactionStatus(current.status, current.fraud_status),
+    grossAmount: current.gross_amount,
+    paymentType: current.payment_type,
+    settlementTime: current.settlement_time,
+    snapRedirectUrl: current.snap_redirect_url,
+    expiresAt: current.expires_at,
+    createdAt: current.created_at,
+  });
+}
+
+/**
+ * Pull the authoritative status from Midtrans and, if it settled, apply it.
+ * Shared by the status page and the nightly sweep. Returns true if anything
+ * changed. Never throws -- a Midtrans outage must not break the caller.
+ */
+async function reconcileTransaction(orderId: string): Promise<boolean> {
+  let remote: Record<string, unknown> | null = null;
+  try {
+    remote = await fetchTransactionStatus(orderId);
+  } catch (e) {
+    console.error("reconcile: midtrans status lookup failed", orderId, e);
+    return false;
+  }
+  if (!remote) return false;
+
+  const transactionStatus = remote.transaction_status as string | undefined;
+  const outcome = mapTransactionStatus(transactionStatus, remote.fraud_status as string | undefined);
+
+  await admin
+    .from("payment_transactions")
+    .update({
+      status: toStoredStatus(transactionStatus),
+      payment_type: (remote.payment_type as string) ?? null,
+      midtrans_transaction_id: (remote.transaction_id as string) ?? null,
+      fraud_status: (remote.fraud_status as string) ?? null,
+      settlement_time: remote.settlement_time ? new Date(String(remote.settlement_time)).toISOString() : null,
+      raw_notification: remote,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("order_id", orderId);
+
+  if (outcome !== "paid") return true;
+
+  const { error } = await admin.rpc("apply_subscription_payment", { p_order_id: orderId });
+  if (error) {
+    console.error("reconcile: apply_subscription_payment failed", orderId, error.message);
+    return false;
+  }
+  return true;
 }
 
 // ---------- language preferences ----------
@@ -1835,7 +2775,10 @@ async function superAdminListClinics(ctx: AuthCtx) {
   const { data: clinics } = await admin.from("clinics").select("*");
   const clinicIds = (clinics ?? []).map((c: Record<string, any>) => c.id);
 
-  const { data: subs } = await admin.from("clinic_subscriptions").select("*").in("clinic_id", clinicIds.length ? clinicIds : ["00000000-0000-0000-0000-000000000000"]);
+  const { data: subs } = await admin
+    .from("subscriptions")
+    .select("*, subscription_plans(name_id, price_idr)")
+    .in("clinic_id", clinicIds.length ? clinicIds : ["00000000-0000-0000-0000-000000000000"]);
   const { data: admins } = await admin.from("users").select("id, email, fullName, clinic_id").eq("role", "admin").in("clinic_id", clinicIds.length ? clinicIds : ["00000000-0000-0000-0000-000000000000"]);
 
   const result = (clinics ?? []).map((c: Record<string, any>) => ({
@@ -1846,36 +2789,64 @@ async function superAdminListClinics(ctx: AuthCtx) {
   return json(result);
 }
 
+// Manual grant. Unlike a payment, this needs an explicit end date, otherwise
+// "active" would mean forever and the reminder ladder would never fire.
 async function superAdminSubscribe(ctx: AuthCtx, clinicId: string, body: Record<string, unknown>) {
   requireSuperAdmin(ctx);
-  const { plan = "basic", payment_method = "manual" } = body as Record<string, string>;
+  const { plan_code = "clinic-monthly", months } = body as Record<string, string>;
 
-  const { data: existing } = await admin.from("clinic_subscriptions").select("id").eq("clinic_id", clinicId).maybeSingle();
-  let result;
-  if (existing) {
-    const { data } = await admin
-      .from("clinic_subscriptions")
-      .update({ status: "active", plan, payment_method, started_at: new Date().toISOString(), ended_at: null })
-      .eq("id", existing.id)
-      .select()
-      .single();
-    result = data;
-  } else {
-    const { data } = await admin
-      .from("clinic_subscriptions")
-      .insert({ clinic_id: clinicId, status: "active", plan, payment_method, started_at: new Date().toISOString() })
-      .select()
-      .single();
-    result = data;
-  }
-  return json(result);
+  const { data: planRow } = await admin
+    .from("subscription_plans")
+    .select("period_months, period_days")
+    .eq("code", plan_code)
+    .maybeSingle();
+  if (!planRow) return notFound(`Paket ${plan_code} tidak ditemukan`);
+
+  const { data: existing } = await admin
+    .from("subscriptions")
+    .select("id, current_period_end")
+    .eq("clinic_id", clinicId)
+    .maybeSingle();
+
+  // Extend from whichever is later so a manual grant on a still-valid
+  // subscription adds to it rather than shortening it.
+  const base = new Date(Math.max(
+    Date.now(),
+    existing?.current_period_end ? new Date(existing.current_period_end).getTime() : 0,
+  ));
+  const end = new Date(base);
+  end.setMonth(end.getMonth() + (Number(months) || Number(planRow.period_months) || 0));
+  end.setDate(end.getDate() + (Number(planRow.period_days) || 0));
+  if (end.getTime() <= Date.now()) end.setMonth(end.getMonth() + 1);
+
+  const patch = {
+    plan_code,
+    status: "active",
+    current_period_start: new Date().toISOString(),
+    current_period_end: end.toISOString(),
+    grace_until: new Date(end.getTime() + GRACE_DAYS * DAY_MS).toISOString(),
+    source: "manual",
+    cancel_at_period_end: false,
+    reminder_stage: null,
+    last_reminder_sent_at: null,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { data, error } = existing
+    ? await admin.from("subscriptions").update(patch).eq("id", existing.id).select().single()
+    : await admin.from("subscriptions").insert({ clinic_id: clinicId, ...patch }).select().single();
+
+  if (error) throw new HttpError(500, error.message);
+  return json(data);
 }
 
 async function superAdminCancel(ctx: AuthCtx, clinicId: string) {
   requireSuperAdmin(ctx);
+  // `count` is only populated when the option is requested explicitly;
+  // without it this always reported 0 rows updated even on success.
   const { error, count } = await admin
-    .from("clinic_subscriptions")
-    .update({ status: "cancelled", ended_at: new Date().toISOString() })
+    .from("subscriptions")
+    .update({ status: "cancelled", updated_at: new Date().toISOString() }, { count: "exact" })
     .eq("clinic_id", clinicId);
   if (error) throw new HttpError(500, error.message);
   return json({ success: true, updated: count ?? 0 });
@@ -2038,9 +3009,27 @@ async function superAdminDeleteUser(ctx: AuthCtx, id: string) {
 // that thread. All access flows through this function (service role), so we
 // enforce ownership here rather than via RLS.
 
+// Matching on `userId` first matters: email is not unique across clinics, so
+// the old email-only lookup could hand a patient the chart of a same-email
+// patient in a different clinic. The email fallback stays for legacy rows
+// created before `patients.userId` was populated.
 async function resolvePatientForUser(ctx: AuthCtx): Promise<{ id: string } | null> {
+  const { data: byUserId } = await admin
+    .from("patients")
+    .select("id")
+    .eq("userId", ctx.userId)
+    .maybeSingle();
+  if (byUserId) return byUserId;
+
   const { data: user } = await admin.from("users").select("email").eq("id", ctx.userId).single();
-  const { data: patient } = await admin.from("patients").select("id").eq("email", user?.email).maybeSingle();
+  if (!user?.email) return null;
+
+  const { data: patient } = await admin
+    .from("patients")
+    .select("id")
+    .eq("email", user.email)
+    .eq("clinic_id", ctx.clinicId)
+    .maybeSingle();
   return patient ?? null;
 }
 
@@ -2079,25 +3068,7 @@ async function resolveMessageRecipients(senderRole: string, patientId: string, c
 }
 
 async function sendChatPushNotification(userIds: string[], payload: Record<string, unknown>) {
-  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY || userIds.length === 0) return;
-
-  const { data: subs } = await admin.from("push_subscriptions").select("*").in("user_id", userIds);
-  if (!subs?.length) return;
-
-  await Promise.all(
-    subs.map(async (sub: Record<string, any>) => {
-      const subscription = { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } };
-      try {
-        await webpush.sendNotification(subscription, JSON.stringify(payload));
-      } catch (e: any) {
-        if (e?.statusCode === 404 || e?.statusCode === 410) {
-          await admin.from("push_subscriptions").delete().eq("id", sub.id);
-        } else {
-          console.error("push send error", e?.message || e);
-        }
-      }
-    }),
-  );
+  await sendWebPush(admin, userIds, payload);
 }
 
 async function listMessages(ctx: AuthCtx, url: URL) {
@@ -2283,9 +3254,35 @@ Deno.serve(async (req: Request) => {
     if (path === "/auth/login" && method === "POST") return await authLogin(await body());
     if (path === "/auth/forgot-password" && method === "POST") return await authForgotPassword(await body());
     if (path === "/auth/reset-password" && method === "POST") return await authResetPassword(await body());
+    // Public: the pricing page renders before login.
+    if (path === "/subscription/plans" && method === "GET") return await listPublicPlans(url);
 
     // Everything below requires auth
     const ctx = await requireAuth(req);
+
+    // Subscription write gate.
+    //
+    // Keyed on HTTP method, not an enumerated route list. Eight lines cover all
+    // ~70 handlers, it cannot be forgotten when someone adds handler #71, and it
+    // maps exactly onto the rule we promised: existing data stays readable,
+    // nothing new can be created or changed. A route allowlist would need
+    // re-auditing every time the router grows.
+    //
+    // Note listMessages writes read_at inside a GET; because the gate is
+    // method-based that keeps working in read-only mode, which is what we want.
+    if (ENFORCEMENT_ENABLED && isWriteGated(method, path, ctx.role)) {
+      const ent = await getEntitlement(ctx);
+      if (!ent.canWrite) {
+        return errCode(402, "Langganan Anda tidak aktif. Perpanjang untuk melanjutkan.", {
+          code: "subscription_required",
+          state: ent.state,
+          plan_code: ent.planCode,
+          current_period_end: ent.currentPeriodEnd,
+        });
+      }
+      // Reused by the plan-limit checks downstream, so they cost no extra query.
+      ctx.entitlement = ent;
+    }
 
     if (path === "/auth/me" && method === "GET") return await authMe(ctx);
     if (path === "/auth/update-profile" && method === "PATCH") return await authUpdateProfile(ctx, await body());
@@ -2347,7 +3344,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (segments[0] === "exercise-programs") {
-      if (segments[1] === "templates" && method === "GET") return await listProgramTemplates();
+      if (segments[1] === "templates" && method === "GET") return await listProgramTemplates(url);
       if (method === "GET" && segments.length === 1) return await listExercisePrograms(ctx);
       if (method === "POST" && segments.length === 1) return await createExerciseProgram(ctx, await body());
       if (method === "GET" && segments.length === 2) return await getExerciseProgram(ctx, segments[1]);
@@ -2357,9 +3354,20 @@ Deno.serve(async (req: Request) => {
 
     if (segments[0] === "program-assignments") {
       if (segments[1] === "my-exercises" && method === "GET") return await myExercises(ctx);
+      if (segments[1] === "self" && method === "POST") return await createSelfAssignment(ctx, await body());
+      if (segments[1] === "self-review" && method === "GET") return await listSelfAssignedForReview(ctx);
+      if (segments[1] === "self-review" && method === "PUT" && segments.length === 3) {
+        return await reviewSelfAssignment(ctx, segments[2], await body());
+      }
       if (method === "GET" && segments.length === 1) return await listProgramAssignments(ctx, url);
       if (method === "GET" && segments.length === 2) return await getProgramAssignment(ctx, segments[1]);
       if (method === "POST" && segments.length === 1) return await createProgramAssignment(ctx, await body());
+    }
+
+    if (segments[0] === "screening") {
+      if (segments[1] === "questions" && method === "GET") return await getScreeningQuestions();
+      if (segments[1] === "me" && method === "GET") return await getMyScreening(ctx);
+      if (method === "POST" && segments.length === 1) return await submitScreening(ctx, await body());
     }
 
     if (segments[0] === "soap-notes") {
@@ -2455,6 +3463,13 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    if (segments[0] === "subscription") {
+      if (segments[1] === "me" && method === "GET") return await getMySubscription(ctx);
+      if (segments[1] === "checkout" && method === "POST") return await createCheckout(ctx, await body());
+      if (segments[1] === "transactions" && method === "GET" && segments.length === 2) return await listMyTransactions(ctx);
+      if (segments[1] === "transactions" && method === "GET" && segments.length === 3) return await getTransaction(ctx, segments[2]);
+    }
+
     if (segments[0] === "user-preferences" && segments[1] === "language") {
       if (method === "GET" && segments.length === 3) return await getLanguagePreference(ctx, segments[2]);
       if (method === "POST" && segments.length === 2) return await createLanguagePreference(ctx, await body());
@@ -2474,6 +3489,15 @@ Deno.serve(async (req: Request) => {
         if (method === "GET") return await superAdminGetPaymentSettings(ctx);
         if (method === "POST") return await superAdminSavePaymentSettings(ctx, await body());
       }
+      if (segments[1] === "plans") {
+        if (method === "GET" && segments.length === 2) return await superAdminListPlans(ctx);
+        if (method === "PUT" && segments.length === 3) return await superAdminUpdatePlan(ctx, segments[2], await body());
+      }
+      if (segments[1] === "subscriptions") {
+        if (method === "GET" && segments.length === 2) return await superAdminListSubscriptions(ctx);
+        if (method === "PUT" && segments.length === 3) return await superAdminAdjustSubscription(ctx, segments[2], await body());
+      }
+      if (segments[1] === "transactions" && method === "GET") return await superAdminListTransactions(ctx);
       if (segments[1] === "users") {
         if (method === "GET" && segments.length === 2) return await superAdminListUsers(ctx);
         if (method === "POST" && segments.length === 2) return await superAdminCreateUser(ctx, await body());

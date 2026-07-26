@@ -4,7 +4,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Dumbbell, Video, TrendingUp, Activity, 
   Calendar, MessageSquare, MonitorPlay, ClipboardList, 
-  Trophy, BookOpen, User, LogOut, Menu, X, Globe
+  Trophy, BookOpen, User, LogOut, Menu, X, Globe, CreditCard, Library
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { PhysiomeMark } from '@/components/Logo.jsx';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import LanguageSwitcher from '@/components/LanguageSwitcher.jsx';
+import SubscriptionBanner from '@/components/billing/SubscriptionBanner.jsx';
 import { toast } from 'sonner';
 
 const PatientLayout = () => {
@@ -30,6 +31,7 @@ const PatientLayout = () => {
   const navItems = [
     { name: t('nav.dashboard'), path: '/patient/dashboard', icon: LayoutDashboard },
     { name: t('nav.myPrograms'), path: '/patient/programs', icon: Dumbbell },
+    { name: 'Katalog Latihan', path: '/patient/library', icon: Library },
     { name: t('nav.exerciseVideos'), path: '/patient/videos', icon: Video },
     { name: t('nav.recoveryProgress'), path: '/patient/recovery', icon: TrendingUp },
     { name: t('nav.painTracking'), path: '/patient/pain-tracking', icon: Activity },
@@ -39,6 +41,7 @@ const PatientLayout = () => {
     { name: t('nav.assessments'), path: '/patient/assessments', icon: ClipboardList },
     { name: t('nav.achievements'), path: '/patient/achievements', icon: Trophy },
     { name: t('nav.educationCenter'), path: '/patient/education', icon: BookOpen },
+    { name: 'Langganan', path: '/billing', icon: CreditCard },
     { name: t('nav.myProfile'), path: '/patient/profile', icon: User },
   ];
 
@@ -136,6 +139,7 @@ const PatientLayout = () => {
         <div className="hidden md:block absolute top-4 right-8 z-10">
           <LanguageSwitcher />
         </div>
+        <SubscriptionBanner />
         <div className="max-w-5xl mx-auto p-4 md:p-8">
           <Outlet />
         </div>

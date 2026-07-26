@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, Calendar, Settings, LogOut, 
   Activity, Video, Dumbbell, ClipboardList, TrendingUp, BarChart3, Presentation, PlusSquare,
-  Building2, User, HeartPulse, MessageSquare
+  Building2, User, HeartPulse, MessageSquare, CreditCard, ClipboardCheck
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { cn } from '@/lib/utils.js';
@@ -29,6 +29,8 @@ export const SidebarContent = () => {
           { name: 'Super Admin Console', path: '/super-admin', icon: LayoutDashboard, roles: ['super_admin'] },
           { name: 'Clinics', path: '/super-admin/clinics', icon: Building2, roles: ['super_admin'] },
           { name: 'Users', path: '/super-admin/users', icon: User, roles: ['super_admin'] },
+          { name: 'Paket Langganan', path: '/super-admin/plans', icon: CreditCard, roles: ['super_admin'] },
+          { name: 'Langganan', path: '/super-admin/subscriptions', icon: ClipboardCheck, roles: ['super_admin'] },
           { name: 'Payment Settings', path: '/super-admin/payment-settings', icon: Settings, roles: ['super_admin'] },
         ]
       },
@@ -124,6 +126,7 @@ export const SidebarContent = () => {
         { name: t('nav.builder'), path: '/program-builder', icon: PlusSquare, roles: ['super_admin', 'admin', 'therapist'] },
         { name: t('nav.templates'), path: '/program-templates', icon: Presentation, roles: ['super_admin','admin', 'therapist'] },
         { name: t('nav.assigned'), path: '/assigned-programs', icon: ClipboardList, roles: ['admin', 'therapist'] },
+        { name: 'Tinjauan Mandiri', path: '/therapist/self-assigned-review', icon: ClipboardCheck, roles: ['admin', 'therapist'] },
         { name: t('nav.patientProgress'), path: '/patient-progress', icon: TrendingUp, roles: ['admin', 'therapist'] },
         { name: t('nav.analytics'), path: '/exercise-analytics', icon: BarChart3, roles: ['admin', 'therapist'] },
       ]
@@ -131,6 +134,7 @@ export const SidebarContent = () => {
     {
       title: t('nav.settings'),
       items: [
+        { name: 'Langganan', path: '/billing', icon: CreditCard, roles: ['admin'] },
         { name: t('nav.settings'), path: '/settings', icon: Settings, roles: ['admin', 'therapist'] },
       ]
     }

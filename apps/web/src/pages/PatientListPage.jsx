@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header.jsx';
 import Sidebar from '@/components/Sidebar.jsx';
+import WriteGuard from '@/components/billing/WriteGuard.jsx';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import Button from '@/components/Button.jsx';
 import Input from '@/components/Input.jsx';
@@ -107,10 +108,12 @@ const PatientListPage = () => {
                   <h1 className="text-3xl font-bold text-foreground tracking-tight">Patients</h1>
                   <p className="text-muted-foreground mt-1">Manage your patient records and histories.</p>
                 </div>
-                <Button onClick={() => setIsAddOpen(true)} className="gap-2 shrink-0">
-                  <Plus className="w-4 h-4" />
-                  Add Patient
-                </Button>
+                <WriteGuard>
+                  <Button onClick={() => setIsAddOpen(true)} className="gap-2 shrink-0">
+                    <Plus className="w-4 h-4" />
+                    Add Patient
+                  </Button>
+                </WriteGuard>
               </div>
 
               {/* Filters */}
