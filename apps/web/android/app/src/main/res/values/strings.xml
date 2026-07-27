@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Physiome</string>
+    <string name="title_activity_main">Physiome</string>
+    <string name="package_name">com.physiome.app</string>
+    <string name="custom_url_scheme">com.physiome.app</string>
+</resources>

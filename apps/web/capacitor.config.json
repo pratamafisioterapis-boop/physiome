@@ -1,0 +1,8 @@
+{
+  "appId": "com.physiome.app",
+  "appName": "Physiome",
+  "webDir": "../../dist/apps/web",
+  "server": {
+    "androidScheme": "https"
+  }
+}
